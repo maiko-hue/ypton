@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script>
+    if (!sessionStorage.getItem('sesion_iniciada')) {
+        window.location.href = 'index.html';
+    }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yapear a Contacto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-purple: #742284;
+            --brand-light-purple: #a86cc1;
+            --brand-teal: #00BFA5;
+            --text-gray: #666;
+            --border-color: #eee;
+        }
+
+        /* --- RESET --- */
+        * {
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: white; 
+            color: #333;
+            overflow-x: hidden; 
+        }
+
+        .container {
+            width: 100%; 
+            min-height: 100vh; 
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+        }
+
+        /* --- Header Superior --- */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px; 
+            background-color: white;
+            width: 100%;
+        }
+
+        .close-btn {
+            color: #555;
+            font-size: 24px;
+            text-decoration: none;
+            margin-right: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+        }
+
+        .page-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* --- Tabs (Pestañas) --- */
+        .tabs {
+            display: flex;
+            width: 100%;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 0;
+            font-weight: 700;
+            font-size: 15px;
+            color: #999;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--brand-purple);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px; 
+            background-color: var(--brand-purple);
+        }
+
+        /* --- Buscador --- */
+        .search-section {
+            padding: 15px 20px 10px 20px;
+            width: 100%;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            color: #888;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 12px 12px 45px; 
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            background-color: white;
+            color: #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            -webkit-appearance: none; 
+        }
+
+        .search-input::placeholder {
+            color: #aaa;
+            font-weight: 400;
+        }
+
+        /* --- Lista de Contactos --- */
+        .contact-list {
+            padding: 0 20px;
+            width: 100%;
+            flex: 1; 
+            overflow-y: auto; 
+        }
+
+        .contact-item {
+            padding: 16px 0;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .contact-item:active {
+            background-color: #fafafa; 
+        }
+
+        .contact-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #222;
+            margin-bottom: 3px;
+        }
+
+        .contact-phone {
+            font-size: 14px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        /* --- Resultado "A nuevo celular" --- */
+        .new-contact-container {
+            padding: 20px;
+            display: none; 
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .new-contact-container:active {
+            background-color: #fafafa;
+        }
+
+        .new-contact-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            pointer-events: none;
+        }
+
+        .nc-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nc-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 4px;
+        }
+
+        .nc-number {
+            font-size: 15px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .nc-icon {
+            width: 40px; 
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nc-icon img {
+            width: 28px; 
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .nc-footer-msg {
+            color: #999;
+            font-size: 13px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 15px;
+            text-align: center; 
+        }
+
+        /* --- MODAL DE CARGA (SPINNER) --- */
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: rgba(0,0,0,0.6); z-index: 3000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .loader-overlay.show { opacity: 1; pointer-events: all; }
+
+        .loader-card {
+            background: white; 
+            /* MEDIDAS EXACTAS SOLICITADAS */
+            width: 273px; 
+            height: 117px;
+            border-radius: 16px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .custom-spinner {
+            width: 45px; height: 45px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid var(--brand-teal); /* Turquesa */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <a href="inicio.html" class="close-btn">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+            <div class="page-title">Yapear a</div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active">Contactos</div>
+            <div class="tab" onclick="window.location.href='editable.html'">Yapeos pendientes</div>
+        </div>
+
+        <div class="search-section">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="tel" id="searchInput" class="search-input" placeholder="Ingresa el celular o busca contacto" autocomplete="off" maxlength="9">
+            </div>
+        </div>
+
+        <div class="contact-list" id="contactList">
+            <div class="contact-item">
+                <span class="contact-name">Habraham Meltroso</span>
+                <span class="contact-phone">966 346 842</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-name">Jose Jeri</span>
+                <span class="contact-phone">983 651 056</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-name">Cristian Dominguez</span>
+                <span class="contact-phone">922 150 468</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-name">Anghelo Villalba</span>
+                <span class="contact-phone">977 459 001</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-name">Carrasco Royber</span>
+                <span class="contact-phone">976 591 314</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-name">Kevin Cerna More</span>
+                <span class="contact-phone">956 045 770</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-name">Maria Magdalena</span>
+                <span class="contact-phone">934 014 267</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-name">Maikol E</span>
+                <span class="contact-phone">921 111 379</span>
+            </div>
+        </div>
+
+        <div class="new-contact-container" id="newContactResult">
+            <div class="new-contact-card">
+                <div class="nc-info">
+                    <span class="nc-title">A nuevo celular</span>
+                    <span class="nc-number" id="dynamicNumber">999 999 999</span>
+                </div>
+                <div class="nc-icon">
+                    <img src="img/icono_yapear.png" alt="Yape" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-paper-plane\' style=\'color:#742284; font-size: 24px;\'></i>'">
+                </div>
+            </div>
+            <div class="nc-footer-msg">
+                No necesitas guardarlo en tus contactos
+            </div>
+        </div>
+    </div>
+
+    <div class="loader-overlay" id="loaderModal">
+        <div class="loader-card">
+            <div class="custom-spinner"></div>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('searchInput');
+        const contactList = document.getElementById('contactList');
+        const newContactResult = document.getElementById('newContactResult');
+        const dynamicNumber = document.getElementById('dynamicNumber');
+        const loaderModal = document.getElementById('loaderModal');
+
+        // --- LÓGICA DE BÚSQUEDA Y VALIDACIÓN ---
+        input.addEventListener('input', function(e) {
+            let value = e.target.value;
+            
+            const isNumericStart = /^\d/.test(value);
+
+            if (isNumericStart) {
+                let cleanValue = value.replace(/\D/g, ''); 
+                
+                if (cleanValue.length > 9) {
+                    cleanValue = cleanValue.slice(0, 9);
+                }
+                
+                e.target.value = cleanValue;
+
+                if (cleanValue.length === 9) {
+                    contactList.style.display = 'none'; 
+                    newContactResult.style.display = 'block'; 
+                    
+                    const formattedNumber = cleanValue.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+                    dynamicNumber.textContent = formattedNumber;
+                } else {
+                    contactList.style.display = 'block'; 
+                    newContactResult.style.display = 'none'; 
+                }
+            } else {
+                contactList.style.display = 'block';
+                newContactResult.style.display = 'none';
+            }
+        });
+
+        // --- CLICK EN "A NUEVO CELULAR" (CON RETRASO DE 3s) ---
+        newContactResult.addEventListener('click', function() {
+            const rawNumber = input.value.replace(/\D/g, '');
+            
+            if(rawNumber.length === 9) {
+                // 1. Mostrar Spinner
+                loaderModal.classList.add('show');
+
+                // 2. Esperar 3 segundos
+                setTimeout(() => {
+                    window.location.href = 'monto.html?numero=' + rawNumber;
+                }, 3000);
+            } else {
+                input.style.borderColor = 'red';
+                setTimeout(() => input.style.borderColor = '#e0e0e0', 1000);
+            }
+        });
+    </script>
+</body>
+</html>

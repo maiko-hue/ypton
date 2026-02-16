@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script>
+    if (!sessionStorage.getItem('sesion_iniciada')) {
+        window.location.href = 'index.html';
+    }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opciones</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: white; }
+        .container { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; }
+        
+        .top-image {
+            width: 100%; height: 220px; background-color: #222;
+            background-image: url('img/header_opciones.png');
+            background-size: cover; background-position: center; position: relative;
+        }
+        
+        .back-arrow { position: absolute; top: 20px; left: 20px; color: white; font-size: 24px; cursor: pointer; }
+
+        .menu-container { padding: 20px; margin-top: -20px; background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; position: relative; }
+
+        .btn-option {
+            background: linear-gradient(90deg, #6200ea 0%, #7c4dff 100%);
+            color: white; padding: 18px; border-radius: 30px; margin-bottom: 15px;
+            display: flex; align-items: center; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(100, 0, 230, 0.3);
+            text-decoration: none; transition: transform 0.1s;
+        }
+        .btn-option:active { transform: scale(0.98); }
+
+        .btn-icon { font-size: 24px; width: 40px; text-align: center; margin-right: 10px; }
+        .btn-text { font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .other-options-title { font-size: 16px; color: #666; margin: 20px 0 10px 10px; }
+        
+        .btn-cyan {
+            background: #00bcd4; color: white; padding: 18px; border-radius: 30px; margin-bottom: 15px;
+            display: flex; align-items: center; font-weight: 700; font-size: 14px;
+            text-transform: uppercase; text-decoration: none; cursor: pointer; transition: transform 0.1s;
+        }
+        .btn-cyan:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-image">
+            <i class="fa-solid fa-chevron-left back-arrow" onclick="window.location.href='perfil.html'"></i>
+        </div>
+        <div class="menu-container">
+            
+            <a href="editar_datos.html" class="btn-option">
+                <div class="btn-icon"><i class="fa-regular fa-user"></i></div>
+                <div class="btn-text">Datos de mi cuenta</div>
+            </a>
+
+            <a href="AgregarCm.html" class="btn-option">
+                <div class="btn-icon"><i class="fa-solid fa-phone"></i></div>
+                <div class="btn-text">Agregar contacto</div>
+            </a>
+
+            <a href="AgregarQR.html" class="btn-option">
+                <div class="btn-icon"><i class="fa-solid fa-qrcode"></i></div>
+                <div class="btn-text">Agregar QR</div>
+            </a>
+
+            <a href="editable.html" class="btn-option">
+                <div class="btn-icon"><i class="fa-solid fa-receipt"></i></div>
+                <div class="btn-text">Editar Voucher</div>
+            </a>
+
+            <div class="btn-option">
+                <div class="btn-icon"><i class="fa-solid fa-phone-volume"></i></div>
+                <div class="btn-text">Programar notificación n/a</div>
+            </div>
+
+            <div class="other-options-title">Otras opciones</div>
+
+            <a href="https://t.me/MaikolEsleiter" target="_blank" class="btn-cyan">
+                <div class="btn-icon"><i class="fa-solid fa-headset"></i></div>
+                <div>Contactar soporte</div>
+            </a>
+            
+            <div class="btn-cyan" onclick="window.location.href='sobre.html'">
+                <div class="btn-icon"><i class="fa-solid fa-circle-info"></i></div>
+                <div>Sobre esto</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script>
+    if (!sessionStorage.getItem('sesion_iniciada')) {
+        window.location.href = 'index.html';
+    }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar servicios</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-color: #1E1E1E;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --accent-purple: #7c4dff;
+            --accent-teal: #00BFA5;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px 20px;
+            background-color: var(--bg-color);
+            z-index: 10;
+        }
+
+        .back-btn {
+            color: var(--text-secondary);
+            font-size: 20px;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 5px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .close-btn {
+            color: var(--text-secondary);
+            font-size: 24px;
+            text-decoration: none;
+        }
+
+        /* --- Formulario --- */
+        .form-content {
+            padding: 10px 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Input con diseño de tarjeta */
+        .input-card {
+            background-color: var(--card-color);
+            border-radius: 16px;
+            padding: 18px 20px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            transition: border-color 0.3s;
+        }
+
+        .input-card:focus-within {
+            border-color: var(--accent-teal);
+        }
+
+        .input-icon {
+            color: var(--accent-purple);
+            font-size: 20px;
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .input-field {
+            width: 100%;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            color: white;
+            outline: none;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .input-field::placeholder {
+            color: #555;
+        }
+
+        /* --- Footer Botón --- */
+        .footer {
+            padding: 20px;
+            padding-bottom: 60px; /* Espacio para que no se corte */
+            background-color: var(--bg-color);
+            border-top: 1px solid #222;
+        }
+
+        .btn-yapear {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, #00BFA5, #00897b);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3);
+            transition: transform 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-yapear:active {
+            transform: scale(0.98);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="inicio.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="page-title">Pagar Servicios</div>
+            <a href="inicio.html" class="close-btn"><i class="fa-solid fa-xmark"></i></a>
+        </div>
+
+        <div class="form-content">
+            
+            <div class="form-group">
+                <label class="label">Empresa</label>
+                <div class="input-card">
+                    <i class="fa-solid fa-building input-icon"></i>
+                    <input type="text" id="empresa" class="input-field" placeholder="Ej. PagoEfectivo" value="">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Monto a Pagar</label>
+                <div class="input-card">
+                    <i class="fa-solid fa-sack-dollar input-icon" style="color: var(--accent-teal);"></i>
+                    <input type="number" id="monto" class="input-field" placeholder="0.00" value="">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Nombre del Servicio</label>
+                <div class="input-card">
+                    <i class="fa-solid fa-bolt input-icon" style="color: #ff9800;"></i>
+                    <input type="text" id="servicio" class="input-field" placeholder="Ej. Luz del Sur" value="">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Código de Cliente</label>
+                <div class="input-card">
+                    <i class="fa-solid fa-barcode input-icon" style="color: #2196f3;"></i>
+                    <input type="number" id="codigo" class="input-field" placeholder="Ej. 12345678" value="">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Titular</label>
+                <div class="input-card">
+                    <i class="fa-solid fa-user input-icon" style="color: #e91e63;"></i>
+                    <input type="text" id="titular" class="input-field" placeholder="Nombre completo" value="">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <button id="btnYapear" class="btn-yapear">Yapear Servicio</button>
+        </div>
+    </div>
+
+    <script>
+        const btnYapear = document.getElementById('btnYapear');
+        
+        // Redirección con datos
+        btnYapear.addEventListener('click', () => {
+            const empresa = document.getElementById('empresa').value;
+            const monto = document.getElementById('monto').value;
+            const servicio = document.getElementById('servicio').value;
+            const codigo = document.getElementById('codigo').value;
+            const titular = document.getElementById('titular').value;
+
+            // Enviamos todo a la página de éxito
+            const url = `exito_servicios.html?empresa=${encodeURIComponent(empresa)}&monto=${monto}&servicio=${encodeURIComponent(servicio)}&codigo=${codigo}&titular=${encodeURIComponent(titular)}`;
+            
+            window.location.href = url;
+        });
+    </script>
+</body>
+</html>
