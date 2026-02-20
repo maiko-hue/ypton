@@ -3,7 +3,7 @@
 <head>
     <script type="module" src="seguridad.js"></script>
     <script>
-    if (!sessionStorage.getItem('sesion_iniciada')) {
+    if (!localStorage.getItem('sesion_iniciada')) {
         window.location.href = 'index.html';
     }
     </script>
@@ -65,18 +65,16 @@
             font-weight: 500; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        /* --- CAMBIO: PANEL INFERIOR MÁS ALTO --- */
         .bottom-sheet {
             background-color: white;
             border-top-left-radius: 20px; border-top-right-radius: 20px;
             padding: 25px 20px;
-            /* Margen extra abajo para evitar botones de navegación */
             padding-bottom: max(60px, env(safe-area-inset-bottom));
             color: #333;
         }
 
         .upload-btn {
-            display: flex; align-items: center; justify-content: flex-start; /* Alineado a la izquierda */
+            display: flex; align-items: center; justify-content: flex-start;
             border: 1px solid #eee; border-radius: 8px; padding: 15px;
             font-weight: 600; color: #333; cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -87,10 +85,8 @@
             width: 24px; height: 24px; margin-right: 15px; object-fit: contain;
         }
 
-        /* Input invisible para la galería */
         #fileInput { display: none; }
 
-        /* Loader */
         .loader-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background-color: rgba(0,0,0,0.6); z-index: 3000;
@@ -159,47 +155,90 @@
             setTimeout(() => { window.location.href = 'inicio.html'; }, 800);
         });
 
-        // 2. INICIAR CÁMARA (Solo visual, no escanea de verdad para ahorrar batería)
+        // --- PREPARAMOS EL FOTÓGRAFO INVISIBLE ---
+        const canvasElement = document.createElement('canvas');
+        const canvas = canvasElement.getContext('2d');
+        let escaneando = true; // Para detener la cámara cuando encuentre un QR
+
+        // 2. INICIAR CÁMARA Y ESCÁNER EN VIVO
         const video = document.getElementById('camera-stream');
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then(stream => { video.srcObject = stream; })
+            .then(stream => { 
+                video.srcObject = stream;
+                // playsinline es vital para que no se abra a pantalla completa en iPhone
+                video.setAttribute("playsinline", true); 
+                video.play();
+                
+                // Le decimos al fotógrafo que empiece a trabajar
+                requestAnimationFrame(escanearVideo); 
+            })
             .catch(console.error);
         }
 
-        // 3. LÓGICA DE SUBIR IMAGEN Y LEER QR
+        // BUCLE PRINCIPAL (Se repite unas 30 veces por segundo)
+        function escanearVideo() {
+            if (!escaneando) return; // Si ya atrapamos uno, dejamos de tomar fotos
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                // Ajustamos el tamaño del lienzo al del video
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                
+                // 1. Tomamos la foto
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                // 2. Extraemos los píxeles
+                const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                
+                // 3. Se los pasamos a jsQR
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
+                });
+
+                if (code) {
+                    escaneando = false; // ¡Bingo! Detenemos el motor
+                    video.pause(); // Congelamos la cámara para dar un buen efecto visual
+                    console.log("QR Detectado en vivo:", code.data);
+                    buscarEnFirebase(code.data);
+                }
+            }
+            
+            // Si seguimos escaneando y no ha encontrado nada, vuelve a intentarlo de inmediato
+            if (escaneando) {
+                requestAnimationFrame(escanearVideo);
+            }
+        }
+
+        // 3. LÓGICA DE SUBIR IMAGEN (Galería)
         fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Mostrar Loader
+            escaneando = false; // Detenemos la cámara en vivo por si acaso
             loaderText.textContent = "Analizando QR...";
             loader.classList.add('show');
 
-            // Crear una imagen temporal para leerla con jsQR
             const reader = new FileReader();
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    // Dibujar en canvas invisible para extraer píxeles
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    context.drawImage(img, 0, 0, img.width, img.height);
+                    const canvasGaleria = document.createElement('canvas');
+                    const contextGaleria = canvasGaleria.getContext('2d');
+                    canvasGaleria.width = img.width;
+                    canvasGaleria.height = img.height;
+                    contextGaleria.drawImage(img, 0, 0, img.width, img.height);
                     
-                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                    
-                    // INTENTAR LEER EL QR
+                    const imageData = contextGaleria.getImageData(0, 0, canvasGaleria.width, canvasGaleria.height);
                     const code = jsQR(imageData.data, imageData.width, imageData.height);
 
                     if (code) {
-                        // ¡QR ENCONTRADO! code.data tiene el texto (ej: https://qr.yape...)
-                        console.log("QR Detectado:", code.data);
+                        console.log("QR Detectado en galería:", code.data);
                         buscarEnFirebase(code.data);
                     } else {
                         alert("No se encontró ningún QR válido en la imagen.");
                         loader.classList.remove('show');
+                        escaneando = true; // Volvemos a encender el escáner en vivo si falló
+                        requestAnimationFrame(escanearVideo);
                     }
                 };
                 img.src = event.target.result;
@@ -210,30 +249,14 @@
         // 4. BUSCAR EN FIREBASE Y REDIRIGIR
         async function buscarEnFirebase(qrCodeData) {
             loaderText.textContent = "Buscando datos...";
+            loader.classList.add('show');
             
             try {
-                // Buscamos en la colección "codigos_qr" usando el código largo como ID
-                // IMPORTANTE: Como los QRs tienen barras "/" que rompen Firebase,
-                // vamos a codificarlo o usar una búsqueda simple.
-                // Truco simple: Usaremos una query si no es ID directo, 
-                // pero por ahora probemos búsqueda directa sanitizando.
-                
-                // Opción A: Simular éxito directo si no hay base de QRs aun
-                // window.location.href = `monto.html?nombre=QR%20Detectado`;
-
-                // Opción B: Búsqueda Real (Requiere que hayas creado la colección 'codigos_qr')
-                // Para evitar errores con caracteres raros en el ID, limpiamos un poco
+                // Limpieza básica por si las dudas
                 const qrId = qrCodeData.replace(/[^a-zA-Z0-9]/g, ""); 
                 
-                // NOTA: Como aún no llenamos la base de QRs, por ahora redirigirá
-                // con un nombre genérico o el que tú definas.
-                
-                // Simulación de éxito:
+                // Simulación de éxito
                 setTimeout(() => {
-                    // Si quisieras pasar datos reales:
-                    // window.location.href = `monto.html?nombre=${encodeURIComponent("Tienda QR")}`;
-                    
-                    // Por ahora mandamos sin nombre para que monto.html lo maneje
                     window.location.href = `monto.html?qr_data=${encodeURIComponent(qrCodeData)}`;
                 }, 1000);
 
@@ -241,9 +264,10 @@
                 console.error(error);
                 alert("Error al procesar el QR.");
                 loader.classList.remove('show');
+                escaneando = true; // Reiniciamos si hubo un error
+                requestAnimationFrame(escanearVideo);
             }
         }
     </script>
-
 </body>
 </html>

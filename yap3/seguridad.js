@@ -1,18 +1,19 @@
-// seguridad.js - MODO VELOCIDAD EXTREMA (VIGILANCIA SOLO EN EDITAR_DATOS Y PIN)
+// seguridad.js - MODO VELOCIDAD Y PERSISTENCIA
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { doc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 1. DEFINIMOS LAS PUERTAS PRINCIPALES (Corregido el error de tipeo)
+// 1. DEFINIMOS LAS PUERTAS PRINCIPALES
 const paginaActual = window.location.pathname;
 const esPuertaPrincipal = paginaActual.includes("editar_datos.html") || paginaActual.includes("login_pin.html");
+const esIndex = paginaActual.includes("index.html") || paginaActual === "/" || paginaActual.endsWith("/");
 
-// 2. REVISIÓN ULTRA-RÁPIDA PARA PÁGINAS SECUNDARIAS
+// Ocultar cuerpo solo en puertas principales para evitar destellos
 if (esPuertaPrincipal) {
-    // Solo en las puertas principales ocultamos la pantalla para consultar a Firebase
     document.body.style.opacity = "0";
 }
 
+// Estilos de los modales de seguridad
 const style = document.createElement('style');
 style.textContent = `
     .seguridad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
@@ -28,27 +29,41 @@ document.head.appendChild(style);
 
 let vigilanteActivo = null;
 
-window.expulsarUsuario = function() { 
+// EXPULSIÓN DEFINITIVA (Ahora sí cierra sesión en Firebase)
+window.expulsarUsuario = async function() { 
     localStorage.removeItem("pase_vip_activo");
+    localStorage.removeItem("sesion_iniciada");
+    localStorage.removeItem("sesion_token_yape");
+    try {
+        await signOut(auth);
+    } catch(e) { console.error("Error cerrando sesión:", e); }
     window.location.href = "index.html"; 
 };
 
-onAuthStateChanged(auth, (user) => {
+// VIGILANTE PRINCIPAL
+onAuthStateChanged(auth, async (user) => {
+    // Si NO hay usuario y NO estamos en el index, pa' fuera
     if (!user) {
-        if(!paginaActual.includes("index.html") && paginaActual !== "/" && !paginaActual.endsWith("/")) {
-             window.expulsarUsuario();
-        }
+        if (!esIndex) window.expulsarUsuario();
         return;
     }
 
-    // Si NO estamos en editar_datos o login_pin, cortamos aquí para velocidad total
+    // --- REGLA ESPECIAL PARA EL INDEX ---
+    // Si el usuario ya está logueado y su pase está activo, lo sacamos del index y lo mandamos al inicio de la app.
+    if (esIndex && localStorage.getItem("pase_vip_activo") === "true") {
+        window.location.href = "inicio.html"; // O login_pin.html, según prefieras
+        return;
+    }
+
+    // Si NO estamos en una puerta principal, dejamos que navegue rápido (usa la validación de localStorage de cada HTML)
     if (!esPuertaPrincipal) return;
 
-    // --- SOLO SE EJECUTA EN EDITAR_DATOS.HTML O LOGIN_PIN.HTML ---
+    // --- LÓGICA DE PUERTAS PRINCIPALES (Vigilancia Estricta) ---
     const miTicket = localStorage.getItem("sesion_token_yape");
     
     try {
         const userRef = doc(db, "clientes", user.email);
+        
         vigilanteActivo = onSnapshot(userRef, (userSnap) => {
             if (!userSnap.exists()) {
                 window.expulsarUsuario();
@@ -57,7 +72,7 @@ onAuthStateChanged(auth, (user) => {
 
             const userData = userSnap.data();
 
-            // 1. Filtro Anti-Clonación
+            // 1. Filtro Anti-Clonación (Multidispositivo)
             if (userData.sesion_token && userData.sesion_token !== miTicket) {
                 document.body.innerHTML = `
                     <div class="seguridad-overlay">
@@ -70,13 +85,11 @@ onAuthStateChanged(auth, (user) => {
                     </div>
                 `;
                 document.body.style.opacity = "1";
-                localStorage.removeItem("pase_vip_activo"); 
-                signOut(auth);
                 if (vigilanteActivo) vigilanteActivo(); 
                 return; 
             }
 
-            // 2. Filtro de Estado
+            // 2. Filtro de Estado (Activo vs Inactivo)
             if (userData.estado === "activo") {
                 localStorage.setItem("pase_vip_activo", "true");
                 document.body.style.opacity = "1";
@@ -98,6 +111,7 @@ onAuthStateChanged(auth, (user) => {
             }
         });
     } catch (error) {
+        console.error("Error en seguridad:", error);
         window.expulsarUsuario();
     }
 });

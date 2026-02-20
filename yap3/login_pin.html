@@ -354,7 +354,7 @@
                     
                     // Esperar 2 segundos antes de redirigir
                     setTimeout(() => {
-                        sessionStorage.setItem('sesion_iniciada', 'true');
+                        localStorage.setItem('sesion_iniciada', 'true');
                         window.location.href = 'inicio.html';
                     }, 2000);
                 }
