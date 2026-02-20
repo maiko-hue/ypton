@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script type="module" src="seguridad.js"></script>
     <script>
     if (!sessionStorage.getItem('sesion_iniciada')) {
         window.location.href = 'index.html';
@@ -15,67 +16,92 @@
 
     <style>
         :root {
-            --bg-color: #121212; --card-color: #1E1E1E; --text-primary: #ffffff;
-            --text-secondary: #aaaaaa; --accent-purple: #7c4dff; --accent-teal: #00BFA5;
+            /* Colores Oficiales Yape */
+            --bg-color: #f4f5f7;
+            --card-color: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --accent-purple: #742284;
+            --accent-teal: #00BFA5;
+            --border-color: #e0e0e0;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-primary); }
-        .container { max-width: 480px; margin: 0 auto; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; }
+        .container { max-width: 480px; margin: 0 auto; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; background-color: var(--bg-color); }
         
-        .header { display: flex; align-items: center; margin-bottom: 30px; padding-top: 10px; }
-        .back-icon { font-size: 20px; color: var(--text-secondary); padding: 10px; margin-left: -10px; cursor: pointer; }
-        .header-title { font-size: 18px; font-weight: 600; margin-left: 10px; }
+        /* --- Header Estilo Yape --- */
+        .header-container { 
+            margin: -20px -20px 20px -20px; 
+            padding: 20px; 
+            background-color: var(--accent-purple); 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .back-icon { font-size: 20px; color: white; padding: 10px; cursor: pointer; transition: 0.2s; }
+        .back-icon:active { opacity: 0.7; }
+        .header-title { font-size: 18px; font-weight: 600; margin-left: 10px; color: white; }
 
+        /* --- Zona de Subida de Imagen --- */
         .upload-area {
-            background-color: var(--card-color); border: 2px dashed #444; border-radius: 16px;
+            background-color: var(--card-color); border: 2px dashed #b0b0b0; border-radius: 16px;
             height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center;
             margin-bottom: 25px; cursor: pointer; position: relative; overflow: hidden;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
-        .upload-area:hover { border-color: var(--accent-purple); }
+        .upload-area:hover { border-color: var(--accent-purple); background-color: rgba(116, 34, 132, 0.02); }
         
-        .upload-icon { font-size: 40px; color: #555; margin-bottom: 10px; }
-        .upload-text { font-size: 14px; color: var(--text-secondary); }
+        .upload-icon { font-size: 40px; color: var(--accent-purple); margin-bottom: 10px; opacity: 0.8;}
+        .upload-text { font-size: 14px; color: var(--text-secondary); font-weight: 500;}
         
         #previewImg {
-            width: 100%; height: 100%; object-fit: contain; position: absolute; top:0; left:0; display: none; background: #000;
+            width: 100%; height: 100%; object-fit: contain; position: absolute; top:0; left:0; display: none; background: transparent;
         }
 
+        /* --- Formulario --- */
         .form-group { margin-bottom: 25px; }
-        .label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-bottom: 10px; display: block; }
+        .label { font-size: 13px; color: var(--accent-purple); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; display: block; letter-spacing: 0.5px; }
         
         .input-card {
-            background-color: var(--card-color); border-radius: 16px; padding: 20px;
-            border: 1px solid #333; display: flex; align-items: center;
+            background-color: var(--card-color); border-radius: 12px; padding: 16px 20px;
+            border: 1px solid var(--border-color); display: flex; align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: all 0.3s ease;
         }
+        .input-card:focus-within { border-color: var(--accent-teal); box-shadow: 0 2px 8px rgba(0, 191, 165, 0.2); }
+        
         .input-field {
-            background: transparent; border: none; color: white; width: 100%;
-            font-size: 18px; font-weight: 500; outline: none; font-family: inherit;
+            background: transparent; border: none; color: var(--text-primary); width: 100%;
+            font-size: 16px; font-weight: 500; outline: none; font-family: inherit;
         }
-        /* Estilo especial para el Select para que se vea bien en oscuro */
+        .input-field::placeholder { color: #999; font-weight: 400; }
+        
+        /* Select ajustado al nuevo tema */
         select.input-field {
             -webkit-appearance: none; appearance: none; background-color: transparent;
         }
         select.input-field option {
-            background-color: var(--card-color); color: white;
+            background-color: var(--card-color); color: var(--text-primary);
         }
 
-        .input-icon { color: var(--accent-teal); font-size: 20px; margin-right: 15px; }
+        .input-icon { color: var(--accent-purple); font-size: 20px; margin-right: 15px; width: 24px; text-align: center; opacity: 0.9; }
 
+        /* --- Botón Guardar Yape --- */
         .btn-save {
-            margin-top: auto; background: linear-gradient(135deg, #00BFA5, #00897b);
-            color: white; padding: 16px; border-radius: 14px; border: none; width: 100%;
-            font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3);
+            margin-top: auto; background-color: var(--accent-teal);
+            color: white; padding: 18px; border-radius: 30px; border: none; width: 100%;
+            font-size: 17px; font-weight: 700; cursor: pointer; margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3); transition: transform 0.1s, background-color 0.2s;
         }
-        .btn-save:active { transform: scale(0.98); }
+        .btn-save:active { transform: scale(0.97); background-color: #00a892; }
 
         /* --- ESTILOS DE TU ANIMACIÓN (PACMAN) --- */
         .custom-loader-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9999;
+            background: rgba(0,0,0,0.85); z-index: 9999;
             display: none; justify-content: center; align-items: center;
-            flex-direction: column;
+            flex-direction: column; backdrop-filter: blur(4px);
         }
 
         .loader { width: 8em; height: 8em; }
@@ -111,28 +137,17 @@
 
         /* --- NOTIFICACIÓN PERSONALIZADA (TOAST) --- */
         .toast {
-            visibility: hidden;
-            min-width: 250px;
-            margin-left: -125px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 50px;
-            padding: 16px;
-            position: fixed;
-            z-index: 10000;
-            left: 50%;
-            bottom: 30px;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            opacity: 0;
+            visibility: hidden; min-width: 250px; margin-left: -125px;
+            background-color: #333; color: #fff; text-align: center;
+            border-radius: 50px; padding: 16px; position: fixed;
+            z-index: 10000; left: 50%; bottom: 30px; font-size: 14px; font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); opacity: 0;
             transition: opacity 0.3s, bottom 0.3s;
         }
 
         .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-        .toast.success { background-color: var(--accent-teal); }
-        .toast.error { background-color: #ff5252; }
+        .toast.success { background-color: var(--accent-teal); color: white; }
+        .toast.error { background-color: #ff5252; color: white; }
 
     </style>
 </head>
@@ -175,7 +190,7 @@
     <div id="toast" class="toast">Mensaje aquí</div>
 
     <div class="container">
-        <div class="header">
+        <div class="header-container">
             <i class="fa-solid fa-arrow-left back-icon" onclick="window.location.href='opciones.html'"></i>
             <span class="header-title">Nuevo QR</span>
         </div>

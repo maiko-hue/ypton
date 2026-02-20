@@ -2,370 +2,256 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Yape - Inicio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bienvenido a Yape</title>
+    
+    <link rel="manifest" href="manifest.json">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --brand-purple: #742284;
+            --brand-purple: #742385;
+            --brand-dark: #511973;
             --brand-teal: #00BFA5;
-            --keypad-bg: #e5e5e5;
-            --main-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            outline: none;
-            user-select: none;
-        }
-
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
         body {
             margin: 0;
-            padding: 0;
-            font-family: var(--main-font);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--brand-purple);
+            background-image: linear-gradient(135deg, #742385 0%, #511973 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             color: white;
-            height: 100dvh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- PANTALLA DE CARGA (SPLASH) --- */
-        #splashScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--brand-purple);
-            z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #splashScreen img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* --- PANTALLA DE LOGIN --- */
-        #loginScreen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            justify-content: space-between;
-            background-color: var(--brand-purple);
-        }
-
-        .login-header {
-            display: flex;
-            justify-content: flex-end;
             padding: 20px;
-            padding-top: 40px; 
+            overflow: hidden;
+            position: relative;
         }
 
-        .help-pill {
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
+        .logo-container { margin-bottom: 40px; text-align: center; }
+
+        .logo-img {
+            width: 120px; height: 120px; object-fit: contain;
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
-        .qr-section {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
+        .welcome-text { font-size: 24px; font-weight: 700; margin-bottom: 10px; text-align: center; }
+
+        .sub-text {
+            font-size: 15px; opacity: 0.8; margin-bottom: 40px;
+            text-align: center; max-width: 300px; line-height: 1.4;
         }
 
-        .qr-image {
-            width: 150px;
-            height: 150px;
-            background-color: white;
-            padding: 10px;
-            border-radius: 12px;
-        }
-        
-        .qr-image img {
+        /* --- BOTONES --- */
+        .btn-container {
             width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* Panel Inferior */
-        .bottom-panel {
-            background-color: white;
-            border-top-left-radius: 25px;
-            border-top-right-radius: 25px;
-            padding: 30px 20px 40px 20px;
-            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 45vh; 
-        }
-
-        .login-title {
-            color: #742284;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 25px;
-        }
-
-        /* Bolitas */
-        .dots-container {
-            display: flex;
             gap: 15px;
-            margin-bottom: 30px;
-            height: 20px;
-            align-items: center;
+            max-width: 320px;
         }
 
-        .dot {
-            width: 12px;
-            height: 12px;
-            background-color: #ccc;
-            border-radius: 50%;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .btn-google {
+            background-color: white; color: #333;
+            width: 100%; padding: 15px;
+            border-radius: 12px; border: none;
+            font-size: 16px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            text-decoration: none;
         }
 
-        .dot.active {
-            background-color: #999;
-            transform: scale(1.6);
-        }
-
-        /* Teclado */
-        .keypad {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-            max-width: 350px; 
-        }
-
-        .key {
-            background-color: var(--keypad-bg);
-            height: 55px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
-            cursor: pointer;
-            transition: background-color 0.1s;
-        }
-
-        .key:active {
-            background-color: #d1d1d1;
-        }
-
-        .key-icon {
-            font-size: 20px;
-            color: var(--brand-purple);
+        .btn-access {
+            background-color: rgba(255, 255, 255, 0.15); 
+            color: white;
+            width: 100%; padding: 15px;
+            border-radius: 12px; 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 16px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
         }
         
-        /* Imagen GIF del QR en el teclado */
-        .key-img-qr {
-            width: 70px;
-            height: 70px;
-            object-fit: contain;
+        .btn-google:active, .btn-access:active { transform: scale(0.97); }
+        .btn-access:hover { background-color: rgba(255, 255, 255, 0.25); }
+
+        .google-icon { width: 24px; height: 24px; }
+
+        /* --- FOOTER --- */
+        .footer-links {
+            position: absolute; bottom: 30px;
+            font-size: 13px; opacity: 0.8;
+            text-align: center; width: 100%;
+            display: flex; justify-content: center; gap: 20px;
+        }
+        
+        .footer-link { color: white; text-decoration: none; cursor: pointer; border-bottom: 1px solid transparent; }
+        .footer-link:hover { border-bottom: 1px solid white; }
+
+        /* --- MODAL TÉRMINOS --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 2000;
+            display: none; justify-content: center; align-items: center;
+            padding: 20px; backdrop-filter: blur(5px);
         }
 
-        .forgot-pass {
-            color: var(--brand-teal);
-            font-weight: 700;
-            font-size: 14px;
-            text-decoration: none;
-            margin-top: 10px;
-        }
-
-        /* --- LOADER OVERLAY --- */
-        .loader-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
-            background-color: rgba(0,0,0,0.6); z-index: 3000;
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
-        .loader-overlay.show { opacity: 1; pointer-events: all; }
-
-        .loader-card {
-            background: white; 
-            width: 273px; 
-            height: 130px; 
-            border-radius: 12px; 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
+        .modal-card {
+            background: white; color: #333;
+            width: 100%; max-width: 340px;
+            border-radius: 20px; padding: 25px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-            padding: 0;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .custom-spinner {
-            width: 38px; height: 38px;
-            border: 4px solid #e0e0e0;
-            border-top: 4px solid var(--brand-teal);
-            border-radius: 50%;
-            animation: spin 1s linear infinite; 
-            margin-bottom: 15px; 
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; color: var(--brand-purple); }
+        
+        .modal-body {
+            font-size: 14px; line-height: 1.5; color: #555; margin-bottom: 20px; text-align: left;
+        }
+        
+        .warning-text { color: #d32f2f; font-weight: 700; margin-top: 10px; display: block; border: 1px solid #ffcdd2; background: #ffebee; padding: 10px; border-radius: 8px; }
+        
+        .dev-credits { font-size: 12px; color: #888; margin-top: 15px; font-weight: 600; display: block; }
+
+        .btn-telegram {
+            background-color: #229ED9; color: white;
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
+            font-weight: 600; font-size: 15px; cursor: pointer;
+            margin-bottom: 10px; text-decoration: none; display: block;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .loader-text { 
-            font-size: 16px; 
-            font-weight: 700; 
-            color: #333333 !important; 
-            line-height: 1.2; 
-            white-space: nowrap; /* Asegura una sola línea */
+        .btn-close {
+            background: #eee; color: #333;
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
+            font-weight: 600; cursor: pointer;
         }
-
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div id="pantallaInstalacion" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #742284; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; font-family: 'Inter', sans-serif;">
+        <img src="img/favicon.png" alt="Logo" style="width: 100px; margin-bottom: 20px; border-radius: 20px;">
+        <h2 style="font-size: 22px; margin-bottom: 10px;">Instala la aplicación para continuar</h2>
+        <p style="font-size: 14px; color: #e0e0e0; margin-bottom: 30px; max-width: 80%;">Para una experiencia segura y rápida, debes añadir Yape a tu pantalla de inicio.</p>
         
-        <div id="splashScreen">
-            <img src="img/logo_splash.png" alt="Cargando Yape...">
-        </div>
-
-        <div id="loginScreen">
-            <div class="login-header">
-                <div class="help-pill">
-                    <i class="fa-solid fa-headset"></i> Ayuda
-                </div>
-            </div>
-
-            <div class="qr-section">
-                <div class="qr-image">
-                    <img src="img/qr_login.png" alt="QR Login">
-                </div>
-            </div>
-
-            <div class="bottom-panel">
-                <div class="login-title">Ingresa tu clave</div>
-
-                <div class="dots-container">
-                    <div class="dot" id="dot1"></div>
-                    <div class="dot" id="dot2"></div>
-                    <div class="dot" id="dot3"></div>
-                    <div class="dot" id="dot4"></div>
-                    <div class="dot" id="dot5"></div>
-                    <div class="dot" id="dot6"></div>
-                </div>
-
-                <div class="keypad">
-                    <div class="key" onclick="pressNum(9)">9</div>
-                    <div class="key" onclick="pressNum(1)">1</div>
-                    <div class="key" onclick="pressNum(5)">5</div>
-                    <div class="key" onclick="pressNum(7)">7</div>
-                    <div class="key" onclick="pressNum(4)">4</div>
-                    <div class="key" onclick="pressNum(0)">0</div>
-                    <div class="key" onclick="pressNum(6)">6</div>
-                    <div class="key" onclick="pressNum(3)">3</div>
-                    <div class="key" onclick="pressNum(2)">2</div>
-                    
-                    <div class="key" style="background: transparent;">
-                        <img src="img/loginanim1.gif" alt="QR" class="key-img-qr">
-                    </div>
-                    
-                    <div class="key" onclick="pressNum(8)">8</div>
-                    <div class="key" onclick="deleteNum()" style="background: transparent;">
-                        <i class="fa-solid fa-delete-left" style="color: #888;"></i>
-                    </div>
-                </div>
-
-                <a href="#" class="forgot-pass">¿OLVIDASTE TU CLAVE?</a>
-            </div>
-        </div>
-
+        <button id="btnInstalarApp" style="background-color: white; color: #742284; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+            <i class="fa-solid fa-download"></i> Agregar pantalla inicio
+        </button>
     </div>
 
-    <div class="loader-overlay" id="loaderModal">
-        <div class="loader-card">
-            <div class="custom-spinner"></div>
-            <div class="loader-text">Validando datos...</div>
+    <div class="logo-container">
+        <img src="img/AnimationYape.gif" alt="Logo" class="logo-img">
+    </div>
+
+    <div class="welcome-text">Te damos la bienvenida</div>
+    <div class="sub-text">Únete a la comunidad de más de 10 millones de yaperos.</div>
+
+    <div class="btn-container">
+        <button class="btn-google" onclick="iniciarSesion()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="G" class="google-icon">
+            Continuar con Google
+        </button>
+
+        <a href="https://t.me/MaikolEsleiter" class="btn-access">
+            <i class="fa-brands fa-telegram" style="font-size: 20px;"></i>
+            Obtén acceso
+        </a>
+    </div>
+
+    <div class="footer-links">
+        <span class="footer-link" onclick="openModal()">Términos y Condiciones</span>
+        <a href="https://t.me/MaikolEsleiter" class="footer-link">Centro de Ayuda</a>
+    </div>
+
+    <div class="modal-overlay" id="termsModal">
+        <div class="modal-card">
+            <div class="modal-title">Términos y Condiciones</div>
+            <div class="modal-body">
+                <strong>Lee atentamente esto:</strong><br><br>
+                El personal de administración no se hace responsable del mal uso de la app. No hay devoluciones ni cargos a enfrentar.<br>
+                
+                <span class="warning-text">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    NO TOLERAMOS el uso de varios dispositivos enlazados. Si compartes acceso, tu cuenta quedará BANEADA DE FORMA PERMANENTE.
+                </span>
+                <br>
+                Tendrás que comprar otro acceso para remediar eso. Avisados están.
+                
+                <span class="dev-credits">Desarrollador/Dev: @MaikolEsleiter</span>
+            </div>
+
+            <a href="https://t.me/appsreborn" class="btn-telegram">
+                <i class="fa-brands fa-telegram"></i> Grupo Oficial
+            </a>
+            
+            <button class="btn-close" onclick="closeModal()">Entendido</button>
         </div>
     </div>
 
     <script>
-        // --- 1. LÓGICA DEL SPLASH SCREEN ---
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('splashScreen').style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'flex';
-            }, 3000); 
-        });
+        const pantallaInstalacion = document.getElementById('pantallaInstalacion');
+        const btnInstalar = document.getElementById('btnInstalarApp');
+        let promptDiferido;
 
-        // --- 2. LÓGICA DEL PIN ---
-        let currentPin = "";
-        const maxDigits = 6;
-        const dots = [
-            document.getElementById('dot1'),
-            document.getElementById('dot2'),
-            document.getElementById('dot3'),
-            document.getElementById('dot4'),
-            document.getElementById('dot5'),
-            document.getElementById('dot6')
-        ];
+        // 1. REGISTRAR EL DESCARGADOR (Service Worker)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW fallo:', err));
+        }
 
-        function updateDots() {
-            for (let i = 0; i < maxDigits; i++) {
-                if (i < currentPin.length) {
-                    dots[i].classList.add('active');
-                } else {
-                    dots[i].classList.remove('active');
+        // 2. VERIFICAR SI YA ESTÁ INSTALADA
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            pantallaInstalacion.style.display = 'none';
+        } else {
+            // 3. SI NO ESTÁ INSTALADA, PREPARAMOS EL BOTÓN
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault(); 
+                promptDiferido = e; 
+                btnInstalar.style.display = 'block'; 
+            });
+
+            // 4. AL HACER CLIC EN "AGREGAR PANTALLA INICIO"
+            btnInstalar.addEventListener('click', async () => {
+                if (promptDiferido) {
+                    promptDiferido.prompt(); 
+                    const { outcome } = await promptDiferido.userChoice;
+                    if (outcome === 'accepted') {
+                        promptDiferido = null;
+                    }
                 }
-            }
+            });
+
+            // 5. CUANDO SE INSTALA CORRECTAMENTE, QUITAMOS EL BLOQUEO
+            window.addEventListener('appinstalled', () => {
+                pantallaInstalacion.style.display = 'none';
+            });
         }
 
-        function pressNum(num) {
-            if (currentPin.length < maxDigits) {
-                currentPin += num;
-                updateDots();
+        // Lógica del Modal de Términos
+        const modal = document.getElementById('termsModal');
+        function openModal() { modal.style.display = 'flex'; }
+        function closeModal() { modal.style.display = 'none'; }
+        window.onclick = function(event) { if (event.target == modal) closeModal(); }
+    </script>
 
-                if (currentPin.length === maxDigits) {
-                    // Mostrar loader inmediatamente al completar
-                    document.getElementById('loaderModal').classList.add('show');
-                    
-                    // Esperar 2 segundos antes de redirigir
-                    setTimeout(() => {
-                        sessionStorage.setItem('sesion_iniciada', 'true');
-                        window.location.href = 'inicio.html';
-                    }, 2000);
-                }
-            }
-        }
-
-        function deleteNum() {
-            if (currentPin.length > 0) {
-                currentPin = currentPin.slice(0, -1);
-                updateDots();
-            }
-        }
+    <script type="module" src="firebase.js"></script>
+    
+    <script type="module">
+        import { verificarSiYaEntro } from "./firebase.js"; 
+        if(window.verificarSiYaEntro) window.verificarSiYaEntro();
     </script>
 </body>
 </html>

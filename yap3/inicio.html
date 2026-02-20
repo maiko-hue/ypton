@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script type="module" src="seguridad.js"></script>
     <script>
     if (!sessionStorage.getItem('sesion_iniciada')) {
         window.location.href = 'index.html';
@@ -55,7 +56,7 @@
         }
 
         .user-profile { display: flex; align-items: center; cursor: pointer; max-width: 65%; }
-        .profile-img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+        .profile-img { width: 24px; height: 25px; border-radius: 50%; object-fit: cover; margin-right: 8px; }
         .user-name { font-weight: 500; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .header-actions { display: flex; align-items: center; }
         .badge-gratis { background-color: #FFC107; color: #333; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-right: 12px; }

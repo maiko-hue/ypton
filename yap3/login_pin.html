@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script type="module" src="seguridad.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Yape - Inicio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-purple: #742284;
+            --brand-teal: #00BFA5;
+            --keypad-bg: #e5e5e5;
+            --main-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--main-font);
+            background-color: var(--brand-purple);
+            color: white;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- PANTALLA DE CARGA (SPLASH) --- */
+        #splashScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--brand-purple);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #splashScreen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- PANTALLA DE LOGIN --- */
+        #loginScreen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            background-color: var(--brand-purple);
+        }
+
+        .login-header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px;
+            padding-top: 40px; 
+        }
+
+        .help-pill {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .qr-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .qr-image {
+            width: 150px;
+            height: 150px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 12px;
+        }
+        
+        .qr-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Panel Inferior */
+        .bottom-panel {
+            background-color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            padding: 30px 20px 40px 20px;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 45vh; 
+        }
+
+        .login-title {
+            color: #742284;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        /* Bolitas */
+        .dots-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            height: 20px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #ccc;
+            border-radius: 50%;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dot.active {
+            background-color: #999;
+            transform: scale(1.6);
+        }
+
+        /* Teclado */
+        .keypad {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            max-width: 350px; 
+        }
+
+        .key {
+            background-color: var(--keypad-bg);
+            height: 55px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+
+        .key:active {
+            background-color: #d1d1d1;
+        }
+
+        .key-icon {
+            font-size: 20px;
+            color: var(--brand-purple);
+        }
+        
+        /* Imagen GIF del QR en el teclado */
+        .key-img-qr {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        .forgot-pass {
+            color: var(--brand-teal);
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        /* --- LOADER OVERLAY --- */
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background-color: rgba(0,0,0,0.6); z-index: 3000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .loader-overlay.show { opacity: 1; pointer-events: all; }
+
+        .loader-card {
+            background: white; 
+            width: 273px; 
+            height: 130px; 
+            border-radius: 12px; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            padding: 0;
+        }
+
+        .custom-spinner {
+            width: 38px; height: 38px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid var(--brand-teal);
+            border-radius: 50%;
+            animation: spin 1s linear infinite; 
+            margin-bottom: 15px; 
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .loader-text { 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: #333333 !important; 
+            line-height: 1.2; 
+            white-space: nowrap; /* Asegura una sola línea */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="splashScreen">
+            <img src="img/logo_splash.png" alt="Cargando Yape...">
+        </div>
+
+        <div id="loginScreen">
+            <div class="login-header">
+                <div class="help-pill">
+                    <i class="fa-solid fa-headset"></i> Ayuda
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-image">
+                    <img src="img/qr_login.png" alt="QR Login">
+                </div>
+            </div>
+
+            <div class="bottom-panel">
+                <div class="login-title">Ingresa tu clave</div>
+
+                <div class="dots-container">
+                    <div class="dot" id="dot1"></div>
+                    <div class="dot" id="dot2"></div>
+                    <div class="dot" id="dot3"></div>
+                    <div class="dot" id="dot4"></div>
+                    <div class="dot" id="dot5"></div>
+                    <div class="dot" id="dot6"></div>
+                </div>
+
+                <div class="keypad">
+                    <div class="key" onclick="pressNum(9)">9</div>
+                    <div class="key" onclick="pressNum(1)">1</div>
+                    <div class="key" onclick="pressNum(5)">5</div>
+                    <div class="key" onclick="pressNum(7)">7</div>
+                    <div class="key" onclick="pressNum(4)">4</div>
+                    <div class="key" onclick="pressNum(0)">0</div>
+                    <div class="key" onclick="pressNum(6)">6</div>
+                    <div class="key" onclick="pressNum(3)">3</div>
+                    <div class="key" onclick="pressNum(2)">2</div>
+                    
+                    <div class="key" style="background: transparent;">
+                        <img src="img/loginanim1.gif" alt="QR" class="key-img-qr">
+                    </div>
+                    
+                    <div class="key" onclick="pressNum(8)">8</div>
+                    <div class="key" onclick="deleteNum()" style="background: transparent;">
+                        <i class="fa-solid fa-delete-left" style="color: #888;"></i>
+                    </div>
+                </div>
+
+                <a href="#" class="forgot-pass">¿OLVIDASTE TU CLAVE?</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="loader-overlay" id="loaderModal">
+        <div class="loader-card">
+            <div class="custom-spinner"></div>
+            <div class="loader-text">Validando datos...</div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DEL SPLASH SCREEN ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splashScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+            }, 3000); 
+        });
+
+        // --- 2. LÓGICA DEL PIN ---
+        let currentPin = "";
+        const maxDigits = 6;
+        const dots = [
+            document.getElementById('dot1'),
+            document.getElementById('dot2'),
+            document.getElementById('dot3'),
+            document.getElementById('dot4'),
+            document.getElementById('dot5'),
+            document.getElementById('dot6')
+        ];
+
+        function updateDots() {
+            for (let i = 0; i < maxDigits; i++) {
+                if (i < currentPin.length) {
+                    dots[i].classList.add('active');
+                } else {
+                    dots[i].classList.remove('active');
+                }
+            }
+        }
+
+        function pressNum(num) {
+            if (currentPin.length < maxDigits) {
+                currentPin += num;
+                updateDots();
+
+                if (currentPin.length === maxDigits) {
+                    // Mostrar loader inmediatamente al completar
+                    document.getElementById('loaderModal').classList.add('show');
+                    
+                    // Esperar 2 segundos antes de redirigir
+                    setTimeout(() => {
+                        sessionStorage.setItem('sesion_iniciada', 'true');
+                        window.location.href = 'inicio.html';
+                    }, 2000);
+                }
+            }
+        }
+
+        function deleteNum() {
+            if (currentPin.length > 0) {
+                currentPin = currentPin.slice(0, -1);
+                updateDots();
+            }
+        }
+    </script>
+    <script type="module">
+    import { auth, db } from "./firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // EL GUARDIA DE SEGURIDAD
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            // Si no hay usuario, mándalo a registrarse
+            window.location.href = "index.html";
+            return;
+        }
+
+        // Si hay usuario, revisamos si Maikol ya lo ACTIVÓ
+        const userRef = doc(db, "clientes", user.email);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+            if (userData.estado !== "activo") {
+                // Si no ha pagado (está inactivo), mándalo a una pantalla de aviso
+                alert("Tu cuenta aún no está activa. Contacta a Maikol para comprar acceso.");
+                window.location.href = "index.html";
+            }
+        }
+    });
+</script>
+</body>
+</html>
