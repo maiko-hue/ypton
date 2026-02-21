@@ -45,6 +45,115 @@
             overflow: hidden;
             position: relative;
         }
+
+        /* --- CSS RESTAURADO --- */
+        .logo-container { margin-bottom: 40px; text-align: center; }
+
+        .logo-img {
+            width: 120px; height: 120px; object-fit: contain;
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .welcome-text { font-size: 24px; font-weight: 700; margin-bottom: 10px; text-align: center; }
+
+        .sub-text {
+            font-size: 15px; opacity: 0.8; margin-bottom: 40px;
+            text-align: center; max-width: 300px; line-height: 1.4;
+        }
+
+        /* --- BOTONES --- */
+        .btn-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            max-width: 320px;
+        }
+
+        .btn-google {
+            background-color: white; color: #333;
+            width: 100%; padding: 15px;
+            border-radius: 12px; border: none;
+            font-size: 16px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-access {
+            background-color: rgba(255, 255, 255, 0.15); 
+            color: white;
+            width: 100%; padding: 15px;
+            border-radius: 12px; 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 16px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-google:active, .btn-access:active { transform: scale(0.97); }
+        .btn-access:hover { background-color: rgba(255, 255, 255, 0.25); }
+
+        .google-icon { width: 24px; height: 24px; }
+
+        /* --- FOOTER --- */
+        .footer-links {
+            position: absolute; bottom: 30px;
+            font-size: 13px; opacity: 0.8;
+            text-align: center; width: 100%;
+            display: flex; justify-content: center; gap: 20px;
+        }
+        
+        .footer-link { color: white; text-decoration: none; cursor: pointer; border-bottom: 1px solid transparent; }
+        .footer-link:hover { border-bottom: 1px solid white; }
+
+        /* --- MODAL TÉRMINOS --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 2000;
+            display: none; justify-content: center; align-items: center;
+            padding: 20px; backdrop-filter: blur(5px);
+        }
+
+        .modal-card {
+            background: white; color: #333;
+            width: 100%; max-width: 340px;
+            border-radius: 20px; padding: 25px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; color: var(--brand-purple); }
+        
+        .modal-body {
+            font-size: 14px; line-height: 1.5; color: #555; margin-bottom: 20px; text-align: left;
+        }
+        
+        .warning-text { color: #d32f2f; font-weight: 700; margin-top: 10px; display: block; border: 1px solid #ffcdd2; background: #ffebee; padding: 10px; border-radius: 8px; }
+        
+        .dev-credits { font-size: 12px; color: #888; margin-top: 15px; font-weight: 600; display: block; }
+
+        .btn-telegram {
+            background-color: #229ED9; color: white;
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
+            font-weight: 600; font-size: 15px; cursor: pointer;
+            margin-bottom: 10px; text-decoration: none; display: block;
+        }
+
+        .btn-close {
+            background: #eee; color: #333;
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
+            font-weight: 600; cursor: pointer;
+        }
     </style>
 </head>
 <body>
