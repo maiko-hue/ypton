@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bienvenido a Yape</title>
     
+    <script>
+        if (localStorage.getItem('sesion_iniciada') === 'true') {
+            window.location.replace('inicio.html');
+        }
+    </script>
+    
     <link rel="manifest" href="/manifest.json">
-    
     <meta name="theme-color" content="#742284">
-    
     <link rel="apple-touch-icon" href="/img/favicon.png">
 
     <script>
