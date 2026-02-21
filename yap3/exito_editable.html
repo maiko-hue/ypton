@@ -93,7 +93,7 @@
 
     <div class="container">
         <div class="header">
-            <img src="img/AnimationYape.gif" alt="Yape" class="logo-header-img">
+            <img src="img/animationyape.gif" alt="Yape" class="logo-header-img">
             <a href="inicio.html" class="close-btn"><i class="fa-solid fa-xmark"></i></a>
         </div>
 
@@ -177,7 +177,7 @@
     </div>
 
     <script>
-        // --- 1. ANIMACIÓN ---
+        // --- 1. ANIMACIÓN DEL CONFETI (Con Pre-cargador Anti-Lag) ---
         window.addEventListener('load', () => {
             const imgElement = document.getElementById('burst-image');
             const frameNames = [
@@ -185,27 +185,43 @@
                 'download5.png', 'download6.png', 'download7.png', 'download8.png', 'download9.png',
                 'download10.png', 'download11.png', 'download13.png', 'download14.png' 
             ];
-            const preloadedImages = [];
-            frameNames.forEach(name => {
+            
+            let imagenesCargadas = 0;
+            const imagenesEnMemoria = [];
+
+            // 1. Obligamos al celular a descargar todas las fotos en secreto
+            frameNames.forEach((name, index) => {
                 const img = new Image();
+                img.onload = () => {
+                    imagenesCargadas++;
+                    // 2. Solo cuando las 14 fotos están listas, disparamos el confeti
+                    if (imagenesCargadas === frameNames.length) {
+                        playSequence();
+                    }
+                };
+                img.onerror = () => {
+                    // Si alguna foto falla, seguimos para no trabar la app
+                    imagenesCargadas++;
+                    if (imagenesCargadas === frameNames.length) playSequence();
+                };
                 img.src = 'img/' + name;
-                preloadedImages.push(img);
+                imagenesEnMemoria[index] = img;
             });
 
             function playSequence() {
                 imgElement.style.display = 'block';
                 let currentFrame = 0;
                 const interval = setInterval(() => {
-                    if (currentFrame >= frameNames.length) {
-                        clearInterval(interval);
+                    if (currentFrame >= frameNames.length) { 
+                        clearInterval(interval); 
                         imgElement.style.display = 'none'; 
-                        return;
+                        return; 
                     }
-                    imgElement.src = 'img/' + frameNames[currentFrame];
+                    // Usamos las fotos que ya están descargadas en la memoria
+                    imgElement.src = imagenesEnMemoria[currentFrame].src;
                     currentFrame++;
                 }, 80);
             }
-            setTimeout(playSequence, 200);
         });
 
         // --- 2. LÓGICA DE DATOS ---
