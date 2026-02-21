@@ -357,8 +357,7 @@
             height: 100%;
             background-color: #f7f9fc; 
             z-index: 5000;
-            transform: translateY(100%); /* Oculto abajo */
-            /* Animación más lenta (0.6s) */
+            transform: translateY(100%); 
             transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             display: flex;
             flex-direction: column;
@@ -368,7 +367,7 @@
         }
 
         .full-menu-overlay.show {
-            transform: translateY(0); /* Visible */
+            transform: translateY(0); 
         }
 
         .menu-handle-container {
@@ -421,21 +420,154 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
         }
         
-        /* Imágenes cuadradas o con bordes redondeados dentro del círculo */
         .menu-icon-rounded {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Para que las JPG se vean bien */
-            border-radius: 10px; /* Si la imagen es cuadrada */
+            object-fit: cover; 
+            border-radius: 10px; 
         }
 
+        /* =========================================
+           NUEVOS ESTILOS DEL PANEL DE PERFIL
+           ========================================= */
+        .perfil-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100dvh;
+            background-color: white;
+            z-index: 2000; /* Por encima de inicio, pero debajo del loader */
+            transform: translateX(-100%); /* Oculto completamente a la derecha */
+            transition: transform 1s ease-in-out; /* ANIMACIÓN DE 2 SEGUNDOS EXACTOS */
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .perfil-panel.show {
+            transform: translateX(0); /* Se desliza a la pantalla central */
+        }
+
+        .perfil-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px; 
+            background-color: white;
+            flex-shrink: 0;
+        }
+        
+        .perfil-header-left { display: flex; align-items: center; }
+        
+        .perfil-back-icon { 
+            font-size: 22px; 
+            color: #000; 
+            cursor: pointer; 
+            stroke-width: 20px; 
+        }
+        
+        .perfil-title-header {
+            font-size: 26px;
+            font-weight: 700;
+            color: #2d0d42; 
+            padding: 0 24px 10px 24px;
+            flex-shrink: 0;
+        }
+        
+        .perfil-help-btn {
+            background: #f3f4f6;
+            border-radius: 25px;
+            padding: 8px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .perfil-section-title {
+            padding: 25px 24px 15px 24px;
+            font-weight: 800; 
+            font-size: 17px;
+            color: #000;
+            letter-spacing: -0.3px;
+            flex-shrink: 0;
+        }
+        
+        .perfil-menu-list { list-style: none; padding: 0; margin: 0; flex-shrink: 0; }
+        
+        .perfil-menu-item {
+            padding: 18px 24px; 
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0; 
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+
+        .perfil-menu-item:active { background-color: #f5f5f5; }
+        
+        .perfil-menu-icon-img {
+            width: 24px;
+            height: 24px;
+            margin-right: 18px; 
+            object-fit: contain;
+        }
+        
+        .perfil-menu-text {
+            flex: 1;
+            font-size: 18px;
+            font-weight: 500; 
+            color: #0f0f0f; 
+            letter-spacing: 0.1px;
+        }
+
+        .perfil-footer-section {
+            background-color: #f2f4f6;
+            padding: 30px 24px 50px 24px;
+            margin-top: auto;
+            border-top: 1px solid #e0e0e0; 
+            flex-shrink: 0;
+        }
+
+        .perfil-version-info {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        .perfil-version-info strong { font-weight: 700; color: #444; }
+
+        .perfil-footer-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            cursor: pointer;
+        }
+        
+        .perfil-footer-icon-img {
+            width: 22px;
+            height: 22px;
+            margin-right: 18px;
+            opacity: 0.6; 
+            filter: grayscale(100%);
+        }
+        
+        .perfil-footer-menu-text {
+            font-size: 15px;
+            color: #555;
+            font-weight: 400;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         
         <div class="header">
-            <div class="user-profile" onclick="window.location.href='perfil.html'">
+            <div class="user-profile" onclick="abrirPerfil()">
                 <img src="img/iconoperfil.png" alt="Perfil" class="profile-img" onerror="this.src='https://via.placeholder.com/30/ffffff/742284?text=U'">
                 <span class="user-name" id="mainUserName">Hola, </span>
             </div>
@@ -530,6 +662,87 @@
         </div>
     </div>
 
+    <div id="pantalla-perfil" class="perfil-panel">
+        <div class="perfil-header">
+            <div class="perfil-header-left">
+                <i class="fa-solid fa-arrow-left perfil-back-icon" onclick="cerrarPerfil()"></i>
+            </div>
+            <div class="perfil-help-btn">
+                <i class="fa-solid fa-headset"></i> Ayuda
+            </div>
+        </div>
+        
+        <div class="perfil-title-header">Mi Perfil</div>
+
+        <div class="perfil-section-title">Mi cuenta</div>
+        <ul class="perfil-menu-list">
+            <li class="perfil-menu-item" onclick="window.location.href='opciones.html'">
+                <img src="img/mp-datos-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Mis datos</div>
+            </li>
+            <li class="perfil-menu-item">
+                <img src="img/mp-qr-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Mi QR</div>
+            </li>
+            <li class="perfil-menu-item">
+                <img src="img/mp-direcciones-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Mis direcciones</div>
+            </li>
+            <li class="perfil-menu-item">
+                <img src="img/mp-eliminar-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Eliminar mi cuenta</div>
+            </li>
+        </ul>
+
+        <div class="perfil-section-title">Ajustes</div>
+        <ul class="perfil-menu-list">
+            <li class="perfil-menu-item">
+                <img src="img/mp-biometria-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Biometría digital</div>
+            </li>
+            <li class="perfil-menu-item">
+                <img src="img/mp-compras-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Compras por internet y POS</div>
+            </li>
+            <li class="perfil-menu-item">
+                <img src="img/mp-informacion-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Confirmación de yapeo alto</div>
+            </li>
+            <li class="perfil-menu-item">
+                <img src="img/mp-limites-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Límites Transaccionales</div>
+            </li>
+            <li class="perfil-menu-item" style="border-bottom: none;"> 
+                <img src="img/mp-notificaciones-icon.svg" class="perfil-menu-icon-img" alt="">
+                <div class="perfil-menu-text">Notificaciones por yapeo</div>
+            </li>
+        </ul>
+
+        <div class="perfil-footer-section">
+            <div class="perfil-version-info">
+                Versión Yape: 3.41.0<br>
+                Tipo de Cuenta: Yape con BCP<br>
+                BANCO DE CRÉDITO DEL PERÚ<br>
+                <strong>RUC: 20100047218</strong>
+            </div>
+
+            <div class="perfil-footer-menu-item">
+                <img src="img/terminos-icon.svg" class="perfil-footer-icon-img" alt="">
+                <span class="perfil-footer-menu-text">Términos y Condiciones</span>
+            </div>
+            
+            <div class="perfil-footer-menu-item">
+                <img src="img/politica-icon.svg" class="perfil-footer-icon-img" alt="">
+                <span class="perfil-footer-menu-text">Política de privacidad</span>
+            </div>
+            
+            <div class="perfil-footer-menu-item">
+                <img src="img/cerrar-cuenta-icon.svg" class="perfil-footer-icon-img" alt="">
+                <span class="perfil-footer-menu-text">Cerrar sesión</span>
+            </div>
+        </div>
+    </div>
+
     <div id="fullMenuOverlay" class="full-menu-overlay">
         <div class="menu-handle-container" id="menuHandle">
             <div class="menu-handle"></div>
@@ -593,6 +806,17 @@
     </div>
 
     <script>
+        // --- 0. FUNCIONES DE APERTURA DEL PERFIL (NUEVO) ---
+        function abrirPerfil() {
+            // Desliza el perfil hacia la izquierda (entra a pantalla)
+            document.getElementById('pantalla-perfil').classList.add('show');
+        }
+
+        function cerrarPerfil() {
+            // Desliza el perfil hacia la derecha (sale de pantalla)
+            document.getElementById('pantalla-perfil').classList.remove('show');
+        }
+
         // --- 1. LÓGICA DE MOVIMIENTOS Y MODO BORRAR ---
         let isDeleteMode = false;
         
@@ -614,7 +838,6 @@
             let movimientos = JSON.parse(localStorage.getItem('yape_movements')) || [];
             movementsListContainer.innerHTML = '';
 
-            // MODIFICACIÓN: Agregado .slice(0, 7) para limitar los movimientos mostrados a 7
             movimientos.slice(0, 7).forEach((mov, index) => {
                 const item = document.createElement('div');
                 item.className = 'movement-item';
@@ -626,11 +849,8 @@
                         localStorage.setItem('yape_movements', JSON.stringify(movimientos));
                         renderMovements();
                     } else {
-                        // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
-                        // Verificamos si el 'numero' guardado NO es numérico (ej: "Plin", "Bim", "BBVA").
-                        // Si no es numérico, significa que es un QR externo.
                         let rawNum = mov.numero || "999";
-                        let isQr = isNaN(rawNum.replace(/\s/g, '')); // true si es texto, false si son números
+                        let isQr = isNaN(rawNum.replace(/\s/g, '')); 
 
                         const url = `exito.html?monto=${mov.monto}&nombre=${encodeURIComponent(mov.nombre)}&fecha=${encodeURIComponent(mov.fechaSolo || '')}&hora=${encodeURIComponent(mov.horaSolo || '')}&numero=${encodeURIComponent(rawNum)}&operacion=${mov.operacion || '00000000'}&codigo=${mov.codigo || '000'}&mensaje=${encodeURIComponent(mov.mensaje || '')}&destino=${encodeURIComponent(mov.destino || 'Yape')}&tipo=${mov.tipo || 'gasto'}&es_qr=${isQr}`;
                         window.location.href = url;
@@ -673,13 +893,10 @@
             const savedName = localStorage.getItem('yape_name');
             let savedBalance = localStorage.getItem('yape_balance');
             
-            // --- NUEVO: Inicializar billetera si está vacía ---
-            // Esto es necesario para que las otras páginas tengan de dónde restar
             if (!savedBalance) {
-                savedBalance = "1200.00"; // Valor inicial por defecto
+                savedBalance = "1200.00"; 
                 localStorage.setItem('yape_balance', savedBalance);
             }
-            // --------------------------------------------------
 
             if (savedName) document.getElementById('mainUserName').textContent = "Hola, " + savedName;
             
@@ -819,7 +1036,6 @@
 
         menuHandle.addEventListener('touchstart', (e) => {
             startY = e.touches[0].clientY;
-            // Quitamos la transición durante el arrastre para que siga el dedo
             fullMenuOverlay.style.transition = 'none';
         }, {passive: true});
 
@@ -827,7 +1043,6 @@
             const currentY = e.touches[0].clientY;
             const diff = currentY - startY;
 
-            // Si arrastramos hacia abajo (diff positivo)
             if (diff > 0) {
                 fullMenuOverlay.style.transform = `translateY(${diff}px)`;
                 currentTranslate = diff;
@@ -835,16 +1050,12 @@
         }, {passive: true});
 
         menuHandle.addEventListener('touchend', () => {
-            // Restauramos la transición
             fullMenuOverlay.style.transition = 'transform 0.4s ease-out';
 
-            // Si se bajó más de 100px, cerramos el menú
             if (currentTranslate > 100) {
                 fullMenuOverlay.classList.remove('show');
-                // Limpiamos el estilo inline para que la clase CSS tome el control
                 setTimeout(() => { fullMenuOverlay.style.transform = ''; }, 400);
             } else {
-                // Si no, regresa a su lugar (abierto)
                 fullMenuOverlay.style.transform = 'translateY(0)';
             }
             currentTranslate = 0;
