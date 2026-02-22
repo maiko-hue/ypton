@@ -106,6 +106,19 @@
 
         .google-icon { width: 24px; height: 24px; }
 
+        /* NUEVO: Estilo para el botón Omitir en Yape */
+        .btn-omitir {
+            background: transparent;
+            color: white;
+            border: none;
+            margin-top: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+
         /* --- FOOTER --- */
         .footer-links {
             position: absolute; bottom: 30px;
@@ -170,6 +183,8 @@
         <button id="btnInstalarApp" style="background-color: white; color: #742284; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
             <i class="fa-solid fa-download"></i> Agregar pantalla inicio
         </button>
+
+        <button id="btnOmitir" class="btn-omitir">Omitir</button>
     </div>
 
     <div class="logo-container">
@@ -224,7 +239,13 @@
     <script>
         const pantallaInstalacion = document.getElementById('pantallaInstalacion');
         const btnInstalar = document.getElementById('btnInstalarApp');
+        const btnOmitir = document.getElementById('btnOmitir');
         let promptDiferido;
+
+        // NUEVO: Lógica para el botón Omitir
+        btnOmitir.addEventListener('click', () => {
+            pantallaInstalacion.style.display = 'none';
+        });
 
         // 2. VERIFICAR SI YA ESTÁ INSTALADA
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
