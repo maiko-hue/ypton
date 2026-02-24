@@ -82,6 +82,11 @@
 
             <div class="other-options-title">Otras opciones</div>
 
+            <div class="btn-cyan" onclick="forzarActualizacion()">
+                <div class="btn-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+                <div>Actualizar App</div>
+            </div>
+
             <a href="https://t.me/MaikolEsleiter" target="_blank" class="btn-cyan">
                 <div class="btn-icon"><i class="fa-solid fa-headset"></i></div>
                 <div>Contactar soporte</div>
@@ -93,5 +98,35 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function forzarActualizacion() {
+            // 1. Mostrar que está cargando cambiando el texto del botón
+            event.currentTarget.querySelector('div:nth-child(2)').innerText = "Actualizando...";
+            
+            // 2. Borrar la caché guardada del Service Worker
+            if ('caches' in window) {
+                caches.keys().then((names) => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            // 3. Desregistrar el Service Worker actual
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                        registration.unregister();
+                    }
+                });
+            }
+            
+            // 4. Forzar la recarga de la página desde el servidor después de medio segundo
+            setTimeout(() => {
+                window.location.reload(true);
+            }, 500);
+        }
+    </script>
 </body>
 </html>
