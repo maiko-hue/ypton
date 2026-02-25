@@ -10,6 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Yapeo Servicio Exitoso</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         :root {
             --brand-purple: #742284;
@@ -256,7 +259,7 @@
         <div class="success-card">
             <div class="card-header-row">
                 <div class="title">¡Yapeaste el servicio!</div>
-                <button class="share-btn">
+                <button class="share-btn" onclick="compartirVoucher()">
                     <img src="img/compartiricon.png" alt="Share" class="icon-share"> 
                     Compartir
                 </button>
@@ -371,6 +374,61 @@
         document.getElementById('timeText').textContent = timeStr;
 
         document.getElementById('opNumber').textContent = Math.floor(10000000 + Math.random() * 90000000).toString().padStart(8, '0');
+
+        // --- 3. LÓGICA DE COMPARTIR VOUCHER (NUEVO) ---
+        function prepararParaFoto(esParaFoto) {
+            const shareBtn = document.querySelector('.share-btn');
+            const closeBtn = document.querySelector('.close-btn');
+            const btnNewService = document.querySelector('.btn-new-service');
+            
+            if (esParaFoto) {
+                // Ocultamos la X y el botón Compartir sutilmente
+                if(shareBtn) shareBtn.style.visibility = 'hidden';
+                if(closeBtn) closeBtn.style.visibility = 'hidden';
+                // Ocultamos el botón grande inferior por completo
+                if(btnNewService) btnNewService.style.display = 'none';
+            } else {
+                if(shareBtn) shareBtn.style.visibility = 'visible';
+                if(closeBtn) closeBtn.style.visibility = 'visible';
+                if(btnNewService) btnNewService.style.display = 'flex';
+            }
+        }
+
+        function compartirVoucher() {
+            prepararParaFoto(true);
+
+            setTimeout(() => {
+                html2canvas(document.body, { 
+                    backgroundColor: '#742284', // Se captura con el fondo morado original
+                    scale: 2 
+                }).then(canvas => {
+                    canvas.toBlob(blob => {
+                        let nombreParaArchivo = document.getElementById('companyName').textContent.replace(/[^a-zA-Z0-9]/g, "_");
+                        const file = new File([blob], `Yape_Servicio_${nombreParaArchivo}.png`, { type: 'image/png' });
+                        
+                        // Compartir nativo
+                        if (navigator.share) {
+                            navigator.share({
+                                title: `Pago de Servicio a ${nombreParaArchivo}`,
+                                files: [file]
+                            }).then(() => {
+                                prepararParaFoto(false);
+                            }).catch(err => {
+                                console.log('Error al compartir:', err);
+                                prepararParaFoto(false);
+                            });
+                        } else {
+                            // Descargar si no tiene función de compartir
+                            const link = document.createElement('a');
+                            link.download = `Yape_Servicio_${nombreParaArchivo}.png`;
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                            prepararParaFoto(false);
+                        }
+                    });
+                });
+            }, 150); // Tiempo para que se aplique el ocultamiento
+        }
     </script>
 </body>
 </html>

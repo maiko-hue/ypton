@@ -10,6 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Yapeo Exitoso</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         :root {
             --brand-purple: #742284;
@@ -105,7 +108,7 @@
             
             <div class="card-header">
                 <div class="yapeaste-title">¡Yapeaste!</div>
-                <button class="share-btn">
+                <button class="share-btn" onclick="compartirVoucher()">
                     <img src="img/compartiricon.png" alt="Share" class="icon-share"> 
                     Compartir
                 </button>
@@ -189,18 +192,15 @@
             let imagenesCargadas = 0;
             const imagenesEnMemoria = [];
 
-            // 1. Obligamos al celular a descargar todas las fotos en secreto
             frameNames.forEach((name, index) => {
                 const img = new Image();
                 img.onload = () => {
                     imagenesCargadas++;
-                    // 2. Solo cuando las 14 fotos están listas, disparamos el confeti
                     if (imagenesCargadas === frameNames.length) {
                         playSequence();
                     }
                 };
                 img.onerror = () => {
-                    // Si alguna foto falla, seguimos para no trabar la app
                     imagenesCargadas++;
                     if (imagenesCargadas === frameNames.length) playSequence();
                 };
@@ -217,7 +217,6 @@
                         imgElement.style.display = 'none'; 
                         return; 
                     }
-                    // Usamos las fotos que ya están descargadas en la memoria
                     imgElement.src = imagenesEnMemoria[currentFrame].src;
                     currentFrame++;
                 }, 80);
@@ -242,9 +241,6 @@
         // --- LÓGICA DE NOMBRE ---
         let nombreMostrado = nombreRaw;
         
-        // Solo censuramos si censurarParam NO es "false".
-        // Si no viene nada, asumimos true (por defecto del editable viejo), 
-        // pero editable.html siempre manda true/false ahora.
         if (censurarParam !== 'false') {
             const partesNombre = nombreRaw.split(" ");
             if (partesNombre.length > 1) {
@@ -267,7 +263,6 @@
         let dateStr, timeStr;
 
         if (fechaParam && horaParam) {
-            // Viene de input manual (ej: 2025-12-30 y 14:30)
             const [y, m, d] = fechaParam.split('-');
             const dateObj = new Date(y, m - 1, d); 
             const optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
@@ -280,7 +275,6 @@
             hour = hour ? hour : 12;
             timeStr = `${hour.toString().padStart(2, '0')}:${min} ${ampm}`;
         } else {
-            // Automático
             const now = new Date();
             const optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
             const optionsTime = { hour: '2-digit', minute: '2-digit', hour12: true };
@@ -288,7 +282,6 @@
             timeStr = now.toLocaleTimeString('en-US', optionsTime).toLowerCase().replace('pm', 'p. m.').replace('am', 'a. m.');
         }
         
-        // Poner punto al mes si falta
         if (!dateStr.endsWith('.')) {
             const parts = dateStr.split(' ');
             if(parts.length >= 2 && !parts[1].includes('.')) {
@@ -316,7 +309,7 @@
         }
         document.getElementById('opNumber').textContent = finalOpNum;
 
-        // CÓDIGO SEGURIDAD (Usar últimos 3 de operación)
+        // CÓDIGO SEGURIDAD 
         const secContainer = document.getElementById('securityCodeContainer');
         secContainer.innerHTML = '';
         const last3Digits = finalOpNum.slice(-3).split('');
@@ -351,6 +344,60 @@
         const ads = ['anuncio_final.png', 'anuncio_final1.png', 'anuncio_final2.png'];
         const randomAdIndex = Math.floor(Math.random() * ads.length);
         document.getElementById('randomAdImage').src = 'img/' + ads[randomAdIndex];
+
+        // --- 3. LÓGICA DE COMPARTIR VOUCHER (NUEVO) ---
+        function prepararParaFoto(esParaFoto) {
+            const shareBtn = document.querySelector('.share-btn');
+            const closeBtn = document.querySelector('.close-btn');
+            const actionButtons = document.querySelector('.action-buttons');
+            const bottomSection = document.querySelector('.bottom-section');
+            
+            if (esParaFoto) {
+                if(shareBtn) shareBtn.style.visibility = 'hidden';
+                if(closeBtn) closeBtn.style.visibility = 'hidden';
+                if(actionButtons) actionButtons.style.display = 'none';
+                if(bottomSection) bottomSection.style.display = 'none';
+            } else {
+                if(shareBtn) shareBtn.style.visibility = 'visible';
+                if(closeBtn) closeBtn.style.visibility = 'visible';
+                if(actionButtons) actionButtons.style.display = 'flex';
+                if(bottomSection) bottomSection.style.display = 'flex';
+            }
+        }
+
+        function compartirVoucher() {
+            prepararParaFoto(true);
+
+            setTimeout(() => {
+                html2canvas(document.body, { 
+                    backgroundColor: '#742284', 
+                    scale: 2 
+                }).then(canvas => {
+                    canvas.toBlob(blob => {
+                        let nombreParaArchivo = document.getElementById('finalName').textContent.replace(/[^a-zA-Z0-9]/g, "_");
+                        const file = new File([blob], `Yape_Editable_${nombreParaArchivo}.png`, { type: 'image/png' });
+                        
+                        if (navigator.share) {
+                            navigator.share({
+                                title: `Yapeo a ${nombreParaArchivo}`,
+                                files: [file]
+                            }).then(() => {
+                                prepararParaFoto(false);
+                            }).catch(err => {
+                                console.log('Error al compartir:', err);
+                                prepararParaFoto(false);
+                            });
+                        } else {
+                            const link = document.createElement('a');
+                            link.download = `Yape_Editable_${nombreParaArchivo}.png`;
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                            prepararParaFoto(false);
+                        }
+                    });
+                });
+            }, 150); 
+        }
 
     </script>
 </body>
