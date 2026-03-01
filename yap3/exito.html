@@ -221,16 +221,19 @@
         // RECIBIMOS LOS DATOS CRUCIALES
         const destinoParam = decodeURIComponent(params.get('destino') || "Yape");
         const esQrParam = params.get('es_qr') === "true"; // Viene como string "true"
+        const mostrarCelularParam = params.get('mostrar_celular'); // NUEVO PARAMETRO
 
         // 1. Mostrar Monto y Destino
         document.getElementById('finalAmount').textContent = montoFormateado;
         document.getElementById('finalDestino').textContent = destinoParam;
 
-        // 2. Lógica de Ocultar Celular (Si es QR)
-        if (esQrParam) {
+        // 2. Lógica de Mostrar/Ocultar Celular CORREGIDA
+        if (esQrParam || mostrarCelularParam === "false") {
+            // Si es QR o si NO marcó la casilla, desaparece por completo la fila
             document.getElementById('labelCelular').style.display = 'none';
             document.getElementById('finalNumber').style.display = 'none';
         } else {
+            // Si marcó la casilla ("true") o si es Yape normal (null), mostramos asteriscos
             const lastThree = numeroParam.slice(-3);
             document.getElementById('finalNumber').textContent = `*** *** ${lastThree}`;
         }
