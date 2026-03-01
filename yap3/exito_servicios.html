@@ -56,7 +56,7 @@
         }
 
         .logo-header-img {
-            height: 65px; 
+            height: 80px; /* TAMAÑO AUMENTADO */
             object-fit: contain;
             display: block;
         }
@@ -125,7 +125,7 @@
         }
 
         .amount {
-            font-size: 50px;
+            font-size: 50px; /* TAMAÑO MANTENIDO EN 50px COMO PEDISTE */
             font-weight: 600;
             color: #333;
             margin-bottom: 5px;
@@ -136,7 +136,7 @@
             margin-top: 10px;
         }
         .amount span {
-            font-size: 30px;
+            font-size: 25px; /* SÍMBOLO S/ A 25px COMO PEDISTE */
             font-weight: 600;
             margin-right: 4px;
             margin-top: 8px;
@@ -200,6 +200,17 @@
             word-break: break-word; 
         }
 
+        /* --- Estilo de Cajas de Código (Aunque no estén visibles, se ajustan por si acaso) --- */
+        .code-box { 
+            background: #f5f5f5; 
+            padding: 2px 7px; 
+            border-radius: 6px; 
+            font-weight: 700; 
+            color: #333; 
+            font-size: 18px; /* TAMAÑO AUMENTADO */
+            letter-spacing: 1px; 
+        } 
+
         /* --- Botón Inferior --- */
         .btn-new-service {
             background-color: var(--brand-teal);
@@ -221,7 +232,7 @@
 
         .btn-new-service i { margin-right: 10px; font-size: 22px; }
         
-        /* NUEVO: Contenedor animación */
+        /* Contenedor animación */
         #burst-container {
             position: fixed;
             top: 0;
@@ -248,7 +259,9 @@
 
     <div class="container">
         <div class="header">
-            <img src="img/animationyape.gif" alt="Yape" class="logo-header-img">
+            <img src="img/animationyape.gif" alt="Yape" class="logo-header-img" id="logoGif">
+            <img src="img/LogoYape.svg" alt="Yape" class="logo-header-img" id="logoStatic" style="display: none;">
+
             <a href="inicio.html" class="close-btn"><i class="fa-solid fa-xmark"></i></a>
         </div>
 
@@ -272,12 +285,12 @@
             <div class="company-name" id="companyName">Empresa</div>
 
             <div class="date-time-container">
-                <img src="img/fechaicon.png" alt="Fecha" class="icon-datetime">
+                <img src="img/fecha-icon.svg" alt="Fecha" class="icon-datetime">
                 <span id="dateText">-- ---. ----</span>
                 
                 <span class="dt-separator">|</span>
                 
-                <img src="img/hora-icon.png" alt="Hora" class="icon-datetime">
+                <img src="img/hora-icon.svg" alt="Hora" class="icon-datetime">
                 <span id="timeText">--:--</span>
             </div>
 
@@ -305,7 +318,7 @@
         </div>
 
         <a href="servicios.html" class="btn-new-service">
-            <i class="fa-solid fa-receipt"></i> Yapear otro servicio
+            <img src="img/iconservv.svg" alt="Servicio" style="margin-right: 10px; width: 22px; height: 22px; filter: brightness(0) invert(1);"> Yapear otro servicio 
         </a>
 
     </div>
@@ -375,11 +388,15 @@
 
         document.getElementById('opNumber').textContent = Math.floor(10000000 + Math.random() * 90000000).toString().padStart(8, '0');
 
-        // --- 3. LÓGICA DE COMPARTIR VOUCHER (NUEVO) ---
+        // --- 3. LÓGICA DE COMPARTIR VOUCHER (ACTUALIZADA CON LOGO) ---
         function prepararParaFoto(esParaFoto) {
             const shareBtn = document.querySelector('.share-btn');
             const closeBtn = document.querySelector('.close-btn');
             const btnNewService = document.querySelector('.btn-new-service');
+            
+            // Elementos del Logo
+            const logoGif = document.getElementById('logoGif');
+            const logoStatic = document.getElementById('logoStatic');
             
             if (esParaFoto) {
                 // Ocultamos la X y el botón Compartir sutilmente
@@ -387,10 +404,18 @@
                 if(closeBtn) closeBtn.style.visibility = 'hidden';
                 // Ocultamos el botón grande inferior por completo
                 if(btnNewService) btnNewService.style.display = 'none';
+                
+                // Cambiamos el GIF por la imagen estática
+                if(logoGif) logoGif.style.display = 'none';
+                if(logoStatic) logoStatic.style.display = 'block';
             } else {
                 if(shareBtn) shareBtn.style.visibility = 'visible';
                 if(closeBtn) closeBtn.style.visibility = 'visible';
                 if(btnNewService) btnNewService.style.display = 'flex';
+                
+                // Devolvemos el GIF y ocultamos la estática
+                if(logoGif) logoGif.style.display = 'block';
+                if(logoStatic) logoStatic.style.display = 'none';
             }
         }
 
