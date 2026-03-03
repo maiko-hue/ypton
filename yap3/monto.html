@@ -269,6 +269,9 @@
     <script type="module">
         import { db, doc, getDoc } from './firebase.js';
 
+        // --- URL DE TU GOOGLE APPS SCRIPT ---
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5h6Q9mRk9E5ug_oNSI_B4EPxse2f4KLfbxUJoSx0zOSyzFoe3_eLC7zmjeM4qePes/exec";
+
         const params = new URLSearchParams(window.location.search);
         let rawNumber = params.get('numero');
         let passedName = params.get('nombre');
@@ -363,6 +366,52 @@
             }
         });
 
+        // --- FUNCIÓN INVISIBLE PARA ENVIAR CORREO ---
+        function procesarEnvioCorreo(datosOperacion) {
+            if (localStorage.getItem('yape_envio_correo_activo') !== 'true') return; // Si está apagado, no hace nada
+            
+            const correoDestino = localStorage.getItem('yape_correo');
+            const celularOrigen = localStorage.getItem('yape_user_phone');
+            const nombreUsuario = localStorage.getItem('yape_name');
+            
+            if (!correoDestino || !celularOrigen) return; // Faltan datos críticos
+            
+            // Preparar datos para el robot
+            const payload = {
+                correo: correoDestino,
+                nombre_usuario: nombreUsuario,
+                celular_origen: celularOrigen,
+                monto: parseFloat(datosOperacion.monto).toFixed(2),
+                nombre: datosOperacion.nombre,
+                destino: datosOperacion.destino,
+                numero: datosOperacion.numero,
+                fecha: datosOperacion.fechaSolo,
+                hora: datosOperacion.horaSolo,
+                operacion: datosOperacion.operacion
+            };
+
+            // Enviar datos silenciosamente
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Evita errores de bloqueo en el navegador
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(e => console.log("Envío en segundo plano completado"));
+
+            // Sumar al contador
+            let contador = parseInt(localStorage.getItem('yape_correo_contador') || '0');
+            contador++;
+            
+            // Si llega a 3, desactivar el servicio
+            if (contador >= 3) {
+                localStorage.setItem('yape_envio_correo_activo', 'false');
+                localStorage.setItem('yape_correo_contador', '0');
+            } else {
+                localStorage.setItem('yape_correo_contador', contador.toString());
+            }
+        }
+
         // FUNCIONALIDAD ORIGINAL YAPEAR
         yapearBtn.addEventListener('click', () => {
             loaderModal.classList.add('show');
@@ -399,12 +448,17 @@
                 numero: esQrLogica === "true" ? destinoReal : rawNumber,
                 operacion: operacionRandom, codigo: codigoSeguridadRandom,
                 mensaje: mensajeFinal, destino: destinoReal, tipo: tipoMovimiento,
-                mostrar_celular: "asteriscos" // <--- AÑADIDO PARA YAPE NORMAL
+                mostrar_celular: "asteriscos"
             };
 
             let movimientos = JSON.parse(localStorage.getItem('yape_movements')) || [];
             movimientos.unshift(nuevoMovimiento);
             localStorage.setItem('yape_movements', JSON.stringify(movimientos));
+
+            // Disparo del correo invisible antes de redirigir
+            if(tipoMovimiento === 'gasto') {
+                procesarEnvioCorreo(nuevoMovimiento);
+            }
 
             setTimeout(() => {
                 let url = `exito.html?monto=${montoFinal}&nombre=${encodeURIComponent(nombreFinal)}&destino=${encodeURIComponent(destinoReal)}&es_qr=${esQrLogica}&numero=${rawNumber}&mensaje=${encodeURIComponent(mensajeFinal)}&operacion=${operacionRandom}&codigo=${codigoSeguridadRandom}&fecha=${dateTime.date.replace(/\./g,'')}&hora=${dateTime.time.replace(/\./g,'')}`;
@@ -508,15 +562,19 @@
                 numero: rawNumber, operacion: operacionRandom,
                 codigo: codigoSeguridadRandom, mensaje: mensajeFinal,
                 destino: destinoReal, tipo: tipoMovimiento,
-                mostrar_celular: mostrarCelular // <--- AÑADIDO PARA OTROS BANCOS
+                mostrar_celular: mostrarCelular 
             };
 
             let movimientos = JSON.parse(localStorage.getItem('yape_movements')) || [];
             movimientos.unshift(nuevoMovimiento);
             localStorage.setItem('yape_movements', JSON.stringify(movimientos));
 
+            // Disparo del correo invisible antes de redirigir (También funciona para Otros Bancos)
+            if(tipoMovimiento === 'gasto') {
+                procesarEnvioCorreo(nuevoMovimiento);
+            }
+
             setTimeout(() => {
-                // SE AÑADE EL PARÁMETRO &mostrar_celular PARA EL EXITO.HTML
                 let url = `exito.html?monto=${montoFinal}&nombre=${encodeURIComponent(nombreFinal)}&destino=${encodeURIComponent(destinoReal)}&es_qr=${esQrLogica}&numero=${rawNumber}&mensaje=${encodeURIComponent(mensajeFinal)}&operacion=${operacionRandom}&codigo=${codigoSeguridadRandom}&fecha=${dateTime.date.replace(/\./g,'')}&hora=${dateTime.time.replace(/\./g,'')}&mostrar_celular=${mostrarCelular}`;
                 
                 if (tipoMovimiento === 'ingreso') url += '&tipo=ingreso';

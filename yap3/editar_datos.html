@@ -259,22 +259,63 @@
                     <div class="card-desc">Créditos y versión</div>
                 </div>
             </div>
+
+            <div class="option-card" id="cardCorreoBtn" style="grid-column: 1 / -1; display: flex; flex-direction: column; justify-content: flex-start;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <div class="icon-box" style="background: rgba(124, 77, 255, 0.1); color: var(--accent-purple);">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="card-title" style="margin-top: 0;">CONSTANCIAS A CORREO</div>
+                                <div style="background: var(--accent-purple); color: white; font-size: 9px; font-weight: bold; padding: 3px 6px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Nueva Función</div>
+                            </div>
+                            <div class="card-desc" id="correoStatusText" style="margin-top: 2px;">Desactivado</div>
+                        </div>
+                    </div>
+                    <div class="toggle-switch" id="toggleCorreo"><div class="toggle-knob"></div></div>
+                </div>
+                
+                <div id="expandableCorreo" style="display: block; margin-top: 16px; border-top: 1px solid #333; padding-top: 16px;">
+                    <div class="label-text" style="margin-bottom: 8px;">Coloca aquí tu correo electrónico</div>
+                    <input type="email" id="editCorreoInput" class="edit-input" style="font-size: 16px; margin-bottom: 16px; color: var(--text-primary);" placeholder="ejemplo@correo.com" autocomplete="off" spellcheck="false">
+                    
+                    <div class="label-text" style="margin-bottom: 8px;">Nro de celular</div>
+                    <input type="tel" id="editPhone" class="edit-input" style="font-size: 16px; margin-bottom: 12px; color: var(--text-primary);" placeholder="999 999 999" autocomplete="off" maxlength="9">
+                    
+                    <p style="font-size: 11px; color: var(--text-secondary); margin: 0; line-height: 1.4;" id="correoHintText">Constancias directamente a tu correo, se desactiva cada 3 yapeos, debes volver a activarlo.</p>
+                </div>
+            </div>
+
         </div>
 
         <button class="btn-register" id="btnRegistrar">Guardar Cambios</button>
     </div>
 
     <script>
-        // Elementos
+        // Elementos Originales
         const nameInput = document.getElementById('editName');
         const balanceInput = document.getElementById('editBalance');
-        
         const togglePopup = document.getElementById('togglePopup');
         const popupStatusText = document.getElementById('popupStatusText');
         const cardPopup = document.getElementById('cardPopup');
 
-        // Estado del popup (por defecto true/visible)
+        // Elementos Nuevos (Correo)
+        const cardCorreoBtn = document.getElementById('cardCorreoBtn');
+        const toggleCorreo = document.getElementById('toggleCorreo');
+        const correoStatusText = document.getElementById('correoStatusText');
+        const editCorreoInput = document.getElementById('editCorreoInput');
+        const phoneInput = document.getElementById('editPhone');
+
+        // Estados
         let isPopupEnabled = true;
+        let isCorreoEnabled = false;
+
+        // Limpiar input de teléfono para que solo acepte números
+        phoneInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
 
         // --- CARGAR DATOS ---
         window.addEventListener('load', () => {
@@ -295,6 +336,21 @@
                 popupStatusText.textContent = "Activado";
                 popupStatusText.style.color = "#00BFA5";
             }
+
+            // Correo y Celular Estado
+            if (localStorage.getItem('yape_correo')) {
+                editCorreoInput.value = localStorage.getItem('yape_correo');
+            }
+            if (localStorage.getItem('yape_user_phone')) {
+                phoneInput.value = localStorage.getItem('yape_user_phone');
+            }
+
+            if (localStorage.getItem('yape_envio_correo_activo') === 'true') {
+                isCorreoEnabled = true;
+                toggleCorreo.classList.add('active');
+                correoStatusText.textContent = "Activado";
+                correoStatusText.style.color = "#00BFA5";
+            }
         });
 
         // --- LÓGICA TOGGLE POPUP ---
@@ -312,12 +368,61 @@
             }
         });
 
+        // --- LÓGICA TOGGLE CORREO ---
+        cardCorreoBtn.addEventListener('click', (e) => {
+            // Evitamos que al tocar los inputs o textos se accione el interruptor por error
+            if(e.target.tagName === 'INPUT' || e.target.id === 'correoHintText' || e.target.id === 'expandableCorreo') return;
+
+            // Validación antes de activar
+            if (!isCorreoEnabled) {
+                const phoneVal = phoneInput.value.trim();
+                const emailVal = editCorreoInput.value.trim();
+                let canActivate = true;
+
+                if (phoneVal.length !== 9) {
+                    phoneInput.style.borderBottom = "2px solid var(--danger)";
+                    setTimeout(() => phoneInput.style.borderBottom = "2px solid transparent", 1500);
+                    canActivate = false;
+                }
+                if (!emailVal || !emailVal.includes('@')) {
+                    editCorreoInput.style.borderBottom = "2px solid var(--danger)";
+                    setTimeout(() => editCorreoInput.style.borderBottom = "2px solid transparent", 1500);
+                    canActivate = false;
+                }
+
+                if(!canActivate) return; // Detenemos la activación si faltan datos
+            }
+
+            isCorreoEnabled = !isCorreoEnabled;
+            
+            if(isCorreoEnabled) {
+                toggleCorreo.classList.add('active');
+                correoStatusText.textContent = "Activado";
+                correoStatusText.style.color = "#00BFA5";
+            } else {
+                toggleCorreo.classList.remove('active');
+                correoStatusText.textContent = "Desactivado";
+                correoStatusText.style.color = "#666";
+            }
+        });
+
         // --- GUARDAR Y SALIR ---
         document.getElementById('btnRegistrar').addEventListener('click', () => {
             localStorage.setItem('yape_name', nameInput.value);
             localStorage.setItem('yape_balance', balanceInput.value);
-            // Guardamos el estado del popup como string
+            
+            // Guardar configuración del popup
             localStorage.setItem('yape_show_popup', isPopupEnabled);
+
+            // Guardar configuración del correo y celular
+            localStorage.setItem('yape_correo', editCorreoInput.value);
+            localStorage.setItem('yape_user_phone', phoneInput.value);
+            localStorage.setItem('yape_envio_correo_activo', isCorreoEnabled);
+            
+            // Si el usuario lo activó, reiniciamos el contador a 0 para que empiece de nuevo los 3 intentos
+            if(isCorreoEnabled) {
+                localStorage.setItem('yape_correo_contador', '0');
+            }
 
             window.location.href = 'inicio.html';
         });
