@@ -515,28 +515,29 @@
         #pantalla-yapear .nc-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
         #pantalla-yapear .nc-icon img { width: 28px; height: 28px; object-fit: contain; }
         #pantalla-yapear .nc-footer-msg { color: #999; font-size: 13px; border-top: 1px solid #f0f0f0; padding-top: 15px; text-align: center; }
-#splash-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100dvh;
-    background-color: rgba(0, 0, 0, 0.5); /* Sombra de fondo */
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.4s ease;
-}
-#splash-card {
-    background-color: white; /* Cuadrito blanco */
-    width: 260px;
-    height: 120px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100dvh;
+            background-color: rgba(0, 0, 0, 0.5); /* Sombra de fondo */
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.4s ease;
+        }
+        #splash-card {
+            background-color: white; /* Cuadrito blanco */
+            width: 260px;
+            height: 120px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         
         /* Hacemos el spinner un poquito más grande solo para esta pantalla */
         #splash-screen .custom-spinner {
@@ -544,9 +545,80 @@
             height: 50px; 
             border-width: 5px;
         }
+
+        /* --- NUEVO: ESTILOS DE LA NOTIFICACIÓN FALSA --- */
+        .fake-notification {
+            position: fixed;
+            top: -150px; /* Oculta arriba por defecto */
+            left: 4%;
+            width: 92%;
+            background-color: white;
+            border-radius: 24px; /* Bordes muy redondeados como Android 13+ */
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            display: flex;
+            padding: 14px 16px;
+            z-index: 99999;
+            transition: top 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            align-items: center;
+            pointer-events: none; /* Que no interrumpa si el usuario toca la pantalla */
+        }
+
+        .fake-notification.show {
+            top: 15px; /* Baja a la pantalla */
+        }
+
+        .notif-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-right: 14px;
+        }
+
+        .notif-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .notif-title {
+            font-weight: 700;
+            color: #111;
+            font-size: 15px;
+        }
+
+        .notif-time {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .notif-text {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.3;
+        }
     </style>
 </head>
 <body>
+
+    <div id="fake-notification" class="fake-notification">
+        <img src="img/icon-96x96.png" class="notif-icon" alt="Yape">
+        <div class="notif-content">
+            <div class="notif-header">
+                <span class="notif-title">Confirmación de pago</span>
+                <span class="notif-time">Ahora</span>
+            </div>
+            <div class="notif-text" id="notif-msg">¡Yape! ... te envio un pago por S/...</div>
+        </div>
+    </div>
+
 <div id="splash-screen">
     <div id="splash-card">
         <div class="custom-spinner"></div>
@@ -574,7 +646,9 @@
                     <div class="grid-item" onclick="window.location.href='servicios.html'"><div class="icon-circle"><img src="img/icono2.png" alt=""></div><span class="grid-label">Yapear servicios</span></div>
                     <div class="grid-item"><div class="icon-circle" style="padding:0; overflow:hidden;"><img src="img/descarga.gif" alt="" style="width:100%; height:100%; object-fit:cover;"></div><span class="grid-label">Promos</span></div>
                     <div class="grid-item"><div class="icon-circle"><img src="img/icono4.png" alt=""></div><span class="grid-label">Código aprobación</span></div>
-                    <div class="grid-item"><div class="icon-circle"><img src="img/icono5.png" alt=""></div><span class="grid-label">Créditos</span></div>
+                    
+                    <div class="grid-item" onclick="generarPagoFalso()"><div class="icon-circle"><img src="img/icono5.png" alt=""></div><span class="grid-label">Créditos</span></div>
+                    
                     <div class="grid-item"><div class="icon-circle"><img src="img/icono6.png" alt=""></div><span class="grid-label">Tienda</span></div>
                     <div class="grid-item"><div class="icon-circle"><img src="img/icono7.png" alt=""></div><span class="grid-label">Dólares</span></div>
                     <div class="grid-item"><div class="icon-circle"><img src="img/icono8.png" alt=""></div><span class="grid-label">Remesas</span></div>
@@ -616,7 +690,7 @@
                 <div class="card-block" id="balanceCard">
                     <div class="card-header-toggle">
                         <div class="action-left">
-                            <img src="img/ojo_abierto.png" id="balanceIcon" class="action-icon-img" alt="Ojo">
+                            <img src="img/ojo-abierto-icon.svg" id="balanceIcon" class="action-icon-img" alt="Ojo">
                             <span class="action-text" id="balanceText">Mostrar saldo</span>
                         </div>
                         <span class="balance-amount" id="balanceAmount">S/ 1,200.00</span>
@@ -822,7 +896,7 @@
 
             <div class="menu-section-title">Finanzas</div>
             <div class="menu-grid">
-                <div class="grid-item"><div class="icon-circle"><img src="img/icono5.png" alt=""></div><span class="grid-label">Créditos</span></div>
+                <div class="grid-item" onclick="generarPagoFalso()"><div class="icon-circle"><img src="img/icono5.png" alt=""></div><span class="grid-label">Créditos</span></div>
                 
                 <div class="grid-item"><div class="icon-circle"><img src="img/seguros-icon.svg" alt=""></div><span class="grid-label">Seguros</span></div>
                 
@@ -1012,6 +1086,9 @@
         renderMovements();
 
         // --- 3. INICIALIZACIÓN GENERAL ---
+        // Se hace global para poder acceder desde la notificación falsa
+        let isBalanceVisible = false; 
+
         window.addEventListener('load', () => {
             // Ocultar la pantalla de carga después de 1.5 segundos
             setTimeout(() => {
@@ -1062,13 +1139,21 @@
         const balanceIcon = document.getElementById('balanceIcon');
         const balanceText = document.getElementById('balanceText');
         const balanceAmount = document.getElementById('balanceAmount');
-        let isBalanceVisible = false;
 
-        balanceCard.addEventListener('click', () => {
+            balanceCard.addEventListener('click', () => {
             isBalanceVisible = !isBalanceVisible;
             if (isBalanceVisible) {
                 balanceText.textContent = "Ocultar saldo";
                 balanceIcon.src = 'img/ojo_cerrado.png'; 
+                
+                // --- NUEVO: Leer y formatear el saldo actualizado desde la memoria ---
+                let saldoFresco = localStorage.getItem('yape_balance') || "1200.00";
+                let numeroFresco = parseFloat(saldoFresco.replace(/,/g, ''));
+                if (!isNaN(numeroFresco)) {
+                    balanceAmount.textContent = "S/ " + numeroFresco.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                // ----------------------------------------------------------------------
+                
                 balanceAmount.style.display = 'block';
             } else {
                 balanceText.textContent = "Mostrar saldo";
@@ -1188,6 +1273,102 @@
             }
             currentTranslate = 0;
         });
+
+        // --- 6. MAGIA DEL FALSO PAGO PUSH (NUEVO) ---
+        let isNotifying = false;
+
+        function generarPagoFalso() {
+            if (isNotifying) return; // Evita spam si presionan varias veces
+            isNotifying = true;
+
+            // Listas para crear un nombre creíble
+            const nombres = ["Juan", "Maria", "Carlos", "Ana", "Luis", "Jorge", "Lucia", "Diego", "Valeria", "Maikol", "Jose", "Cristian", "Armando", "Pedro", "Sofia"];
+            const apellidos = ["Perez", "Garcia", "Torres", "Rojas", "Flores", "Sanchez", "Diaz", "Chavez", "Gomez", "Huaman", "Crisanto", "Gonzales", "Ramirez"];
+            
+            const nRandom = nombres[Math.floor(Math.random() * nombres.length)];
+            const aRandom = apellidos[Math.floor(Math.random() * apellidos.length)];
+            const nombreCompleto = nRandom + " " + aRandom;
+
+            // Generar Monto (100.00 a 500.00)
+            const montoRandom = (Math.random() * (500 - 100) + 100).toFixed(2);
+
+            // Cerrar menú inferior si estaba abierto
+            fullMenuOverlay.classList.remove('show');
+            setTimeout(() => { fullMenuOverlay.style.transform = ''; }, 400);
+
+            // 1. Mostrar Notificación Visual
+            const notifText = document.getElementById('notif-msg');
+            notifText.innerText = `¡Yape! ${nombreCompleto} te envio un pago por S/ ${montoRandom}`;
+            
+            const notifBanner = document.getElementById('fake-notification');
+            notifBanner.classList.add('show');
+            
+            // Reproducir sonido
+            const sound = new Audio('img/ysnid.mp3');
+            sound.play().catch(e => console.log("Navegador bloqueó el audio", e));
+
+            // Esconder la notificación tras 4 segundos
+            setTimeout(() => {
+                notifBanner.classList.remove('show');
+                isNotifying = false;
+            }, 4000);
+
+            // 2. Afectar el Saldo
+            let savedBalance = localStorage.getItem('yape_balance') || "1200.00";
+            let cleanBalance = parseFloat(savedBalance.replace(/,/g, ''));
+            if(isNaN(cleanBalance)) cleanBalance = 0;
+            
+            let newBalance = cleanBalance + parseFloat(montoRandom);
+            let formattedNewBalance = newBalance.toFixed(2);
+            localStorage.setItem('yape_balance', formattedNewBalance);
+
+            // Reflejar en pantalla si el ojo está abierto
+            if (isBalanceVisible) {
+                document.getElementById('balanceAmount').textContent = "S/ " + newBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            // 3. Afectar el Historial y preparar el Voucher
+            let movimientos = JSON.parse(localStorage.getItem('yape_movements')) || [];
+            
+            // Helper para obtener fecha y hora real del celular
+            const now = new Date();
+            const mesesStr = ["ene.", "feb.", "mar.", "abr.", "may.", "jun.", "jul.", "ago.", "sep.", "oct.", "nov.", "dic."];
+            const mesFormat = mesesStr[now.getMonth()];
+            
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'p. m.' : 'a. m.';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            
+            const fechaLarga = `${now.getDate()} ${mesFormat} ${now.getFullYear()}`;
+            const horaString = `${hours < 10 ? '0'+hours : hours}:${minutes} ${ampm}`;
+            const fechaCorta = `${now.getDate()} ${mesFormat}`;
+
+            const numeroCelularRandom = "9" + Math.floor(10000000 + Math.random() * 90000000);
+            const numOpRandom = Math.floor(10000000 + Math.random() * 90000000).toString();
+            const codigoRandom = numOpRandom.slice(-3);
+
+            let nuevoIngreso = {
+                monto: montoRandom,
+                nombre: nombreCompleto,
+                fecha: `${fechaLarga} - ${horaString}`,
+                fechaSolo: fechaLarga,
+                horaSolo: horaString,
+                tipo: 'ingreso',
+                numero: numeroCelularRandom,
+                operacion: numOpRandom,
+                codigo: codigoRandom,
+                destino: 'Yape',
+                mostrar_celular: 'asteriscos',
+                mensaje: ''
+            };
+
+            movimientos.unshift(nuevoIngreso);
+            localStorage.setItem('yape_movements', JSON.stringify(movimientos));
+            renderMovements(); // Vuelve a dibujar la lista
+        }
 
     </script>
 </body>
