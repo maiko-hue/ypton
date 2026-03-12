@@ -134,7 +134,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="yapear.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i> Yapear a</a>
+            <a href="inicio.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i> Yapear a</a>
             <a href="inicio.html" class="close-btn"><i class="fa-solid fa-xmark"></i></a>
         </div>
         <div class="content">
@@ -276,6 +276,12 @@
         let rawNumber = params.get('numero');
         let passedName = params.get('nombre');
         let qrData = params.get('qr_data');
+        
+        // --- NUEVAS VARIABLES DE DESTINO PARA REPETIR PAGO ---
+        let passedDestino = params.get('destino') || "Yape"; 
+        
+        // Esta variable se usará en el botón Yapear normal
+        let destinoActual = passedDestino; 
 
         const maskedNumberEl = document.getElementById('maskedNumber');
         const nameInput = document.getElementById('recipientName');
@@ -310,9 +316,17 @@
             
             if (!rawNumber) rawNumber = "999999999";
             const lastThree = rawNumber.slice(-3);
-            maskedNumberEl.textContent = `*** *** ${lastThree}`;
+            
+            // --- LÓGICA DE VISUALIZACIÓN SEGÚN DESTINO ---
+            if (passedDestino === "Yape") {
+                maskedNumberEl.textContent = `*** *** ${lastThree}`;
+                maskedNumberEl.style.display = "block"; 
+            } else {
+                maskedNumberEl.textContent = passedDestino; // Mostramos Plin, BCP, etc en vez de asteriscos.
+                maskedNumberEl.style.display = "block";
+            }
 
-            if (passedName) {
+            if (passedName && passedName !== "null" && passedName !== "undefined") {
                 displayLoadedName(decodeURIComponent(passedName));
             } else {
                 try {
@@ -423,8 +437,12 @@
             const operacionRandom = Math.floor(10000000 + Math.random() * 90000000).toString();
             const codigoSeguridadRandom = Math.floor(100 + Math.random() * 900).toString();
 
-            let destinoReal = "Yape";
+            // --- LÓGICA MODIFICADA PARA REPETIR PAGO A OTRO BANCO ---
+            // Si destinoActual NO es Yape, significa que estamos repitiendo un pago a Plin, BCP, etc.
+            let destinoReal = destinoActual; 
             let esQrLogica = "false";
+            
+            // Si el destino es Yape y hay QR, toma el valor del QR.
             if (qrData) {
                 destinoReal = maskedNumberEl.textContent;
                 esQrLogica = "true";
@@ -448,7 +466,8 @@
                 numero: esQrLogica === "true" ? destinoReal : rawNumber,
                 operacion: operacionRandom, codigo: codigoSeguridadRandom,
                 mensaje: mensajeFinal, destino: destinoReal, tipo: tipoMovimiento,
-                mostrar_celular: "asteriscos"
+                // Respetamos la lógica: Si es otro banco y lo repetimos, pasamos 'false' en mostrar_celular para que exito.html lo entienda
+                mostrar_celular: destinoReal === "Yape" ? "asteriscos" : "false" 
             };
 
             let movimientos = JSON.parse(localStorage.getItem('yape_movements')) || [];
@@ -461,7 +480,8 @@
             }
 
             setTimeout(() => {
-                let url = `exito.html?monto=${montoFinal}&nombre=${encodeURIComponent(nombreFinal)}&destino=${encodeURIComponent(destinoReal)}&es_qr=${esQrLogica}&numero=${rawNumber}&mensaje=${encodeURIComponent(mensajeFinal)}&operacion=${operacionRandom}&codigo=${codigoSeguridadRandom}&fecha=${dateTime.date.replace(/\./g,'')}&hora=${dateTime.time.replace(/\./g,'')}`;
+                // Pasamos mostrar_celular false si es otro banco para que exito.html no muestre la fila del celular
+                let url = `exito.html?monto=${montoFinal}&nombre=${encodeURIComponent(nombreFinal)}&destino=${encodeURIComponent(destinoReal)}&es_qr=${esQrLogica}&numero=${rawNumber}&mensaje=${encodeURIComponent(mensajeFinal)}&operacion=${operacionRandom}&codigo=${codigoSeguridadRandom}&fecha=${dateTime.date.replace(/\./g,'')}&hora=${dateTime.time.replace(/\./g,'')}&mostrar_celular=${destinoReal === "Yape" ? "asteriscos" : "false"}`;
                 if (tipoMovimiento === 'ingreso') url += '&tipo=ingreso';
                 window.location.href = url;
             }, 3000);

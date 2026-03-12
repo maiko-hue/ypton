@@ -143,7 +143,7 @@
         </div>
 
         <div class="action-buttons">
-            <a href="yapear.html" class="btn-new-yape">
+            <a href="#" id="btnNuevoYapeo" class="btn-new-yape">
                 <i class="fa-regular fa-paper-plane"></i> Nuevo Yapeo
             </a>
             <div class="help-link">
@@ -298,6 +298,17 @@
             msgBubble.style.display = "flex";
         } else {
             msgBubble.style.display = "none";
+        }
+
+        // --- LÓGICA PARA REPETIR PAGO (NUEVO YAPEO) ---
+        const btnNuevoYapeo = document.getElementById('btnNuevoYapeo');
+        if (btnNuevoYapeo) {
+            btnNuevoYapeo.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Construimos la URL de monto.html inyectándole todos los datos de esta operación
+                const urlRepetir = `monto.html?numero=${numeroParam}&nombre=${encodeURIComponent(nombreRaw)}&destino=${encodeURIComponent(destinoParam)}&es_qr=${esQrParam}&mostrar_celular=${mostrarCelularParam}`;
+                window.location.href = urlRepetir;
+            });
         }
 
         // --- NUEVA LISTA DE ANUNCIOS ---
