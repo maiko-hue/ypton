@@ -481,7 +481,8 @@
 
             setTimeout(() => {
                 // Pasamos mostrar_celular false si es otro banco para que exito.html no muestre la fila del celular
-                let url = `exito.html?monto=${montoFinal}&nombre=${encodeURIComponent(nombreFinal)}&destino=${encodeURIComponent(destinoReal)}&es_qr=${esQrLogica}&numero=${rawNumber}&mensaje=${encodeURIComponent(mensajeFinal)}&operacion=${operacionRandom}&codigo=${codigoSeguridadRandom}&fecha=${dateTime.date.replace(/\./g,'')}&hora=${dateTime.time.replace(/\./g,'')}&mostrar_celular=${destinoReal === "Yape" ? "asteriscos" : "false"}`;
+                // ¡AQUÍ ESTÁ LA MAGIA!: Agregamos &recien_yapeado=true
+                let url = `exito.html?monto=${montoFinal}&nombre=${encodeURIComponent(nombreFinal)}&destino=${encodeURIComponent(destinoReal)}&es_qr=${esQrLogica}&numero=${rawNumber}&mensaje=${encodeURIComponent(mensajeFinal)}&operacion=${operacionRandom}&codigo=${codigoSeguridadRandom}&fecha=${dateTime.date.replace(/\./g,'')}&hora=${dateTime.time.replace(/\./g,'')}&mostrar_celular=${destinoReal === "Yape" ? "asteriscos" : "false"}&recien_yapeado=true`;
                 if (tipoMovimiento === 'ingreso') url += '&tipo=ingreso';
                 window.location.href = url;
             }, 3000);
@@ -595,7 +596,8 @@
             }
 
             setTimeout(() => {
-                let url = `exito.html?monto=${montoFinal}&nombre=${encodeURIComponent(nombreFinal)}&destino=${encodeURIComponent(destinoReal)}&es_qr=${esQrLogica}&numero=${rawNumber}&mensaje=${encodeURIComponent(mensajeFinal)}&operacion=${operacionRandom}&codigo=${codigoSeguridadRandom}&fecha=${dateTime.date.replace(/\./g,'')}&hora=${dateTime.time.replace(/\./g,'')}&mostrar_celular=${mostrarCelular}`;
+                // ¡AQUÍ ESTÁ LA MAGIA!: Agregamos &recien_yapeado=true
+                let url = `exito.html?monto=${montoFinal}&nombre=${encodeURIComponent(nombreFinal)}&destino=${encodeURIComponent(destinoReal)}&es_qr=${esQrLogica}&numero=${rawNumber}&mensaje=${encodeURIComponent(mensajeFinal)}&operacion=${operacionRandom}&codigo=${codigoSeguridadRandom}&fecha=${dateTime.date.replace(/\./g,'')}&hora=${dateTime.time.replace(/\./g,'')}&mostrar_celular=${mostrarCelular}&recien_yapeado=true`;
                 
                 if (tipoMovimiento === 'ingreso') url += '&tipo=ingreso';
                 window.location.href = url;

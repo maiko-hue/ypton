@@ -142,7 +142,7 @@
             </div>
         </div>
 
-        <div class="action-buttons">
+        <div class="action-buttons" id="actionButtonsContainer">
             <a href="#" id="btnNuevoYapeo" class="btn-new-yape">
                 <i class="fa-regular fa-paper-plane"></i> Nuevo Yapeo
             </a>
@@ -222,6 +222,12 @@
         const destinoParam = decodeURIComponent(params.get('destino') || "Yape");
         const esQrParam = params.get('es_qr') === "true"; // Viene como string "true"
         const mostrarCelularParam = params.get('mostrar_celular'); // NUEVO PARAMETRO
+        
+        // --- LÓGICA PARA OCULTAR BOTONES SI ACABA DE YAPEAR ---
+        const recienYapeado = params.get('recien_yapeado');
+        if (recienYapeado === "true") {
+            document.getElementById('actionButtonsContainer').style.display = 'none';
+        }
 
         // 1. Mostrar Monto y Destino
         document.getElementById('finalAmount').textContent = montoFormateado;
