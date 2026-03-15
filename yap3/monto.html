@@ -342,7 +342,7 @@
                         
                         if (botActivo) {
                             try {
-                                const response = await fetch(`http://116.203.222.62:8000/buscar/${rawNumber}`);
+                                const response = await fetch(`/api/bot/${rawNumber}`);
                                 const data = await response.json();
 
                                 if (data.status === 'success' && data.nombre) {
