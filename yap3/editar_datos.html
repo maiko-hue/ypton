@@ -260,6 +260,19 @@
                 </div>
             </div>
 
+            <div class="option-card" id="cardBotBtn">
+                <div class="card-header-row">
+                    <div class="icon-box" style="background: rgba(255, 152, 0, 0.1); color: #FF9800;">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="toggle-switch" id="toggleBot"><div class="toggle-knob"></div></div>
+                </div>
+                <div>
+                    <div class="card-title">BÚSQUEDA BOT</div>
+                    <div class="card-desc" id="botStatusText">Desactivado</div>
+                </div>
+            </div>
+
             <div class="option-card" id="cardCorreoBtn" style="grid-column: 1 / -1; display: flex; flex-direction: column; justify-content: flex-start;">
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div style="display: flex; gap: 12px; align-items: center;">
@@ -301,6 +314,11 @@
         const popupStatusText = document.getElementById('popupStatusText');
         const cardPopup = document.getElementById('cardPopup');
 
+        // Elementos Nuevos (Bot)
+        const cardBotBtn = document.getElementById('cardBotBtn');
+        const toggleBot = document.getElementById('toggleBot');
+        const botStatusText = document.getElementById('botStatusText');
+
         // Elementos Nuevos (Correo)
         const cardCorreoBtn = document.getElementById('cardCorreoBtn');
         const toggleCorreo = document.getElementById('toggleCorreo');
@@ -311,6 +329,7 @@
         // Estados
         let isPopupEnabled = true;
         let isCorreoEnabled = false;
+        let isBotEnabled = false; // Estado inicial del Bot
 
         // Limpiar input de teléfono para que solo acepte números
         phoneInput.addEventListener('input', function(e) {
@@ -335,6 +354,14 @@
                 togglePopup.classList.add('active');
                 popupStatusText.textContent = "Activado";
                 popupStatusText.style.color = "#00BFA5";
+            }
+
+            // Bot Telegram Estado
+            if (localStorage.getItem('yape_bot_telegram_activo') === 'true') {
+                isBotEnabled = true;
+                toggleBot.classList.add('active');
+                botStatusText.textContent = "Activado";
+                botStatusText.style.color = "#00BFA5";
             }
 
             // Correo y Celular Estado
@@ -365,6 +392,21 @@
                 togglePopup.classList.remove('active');
                 popupStatusText.textContent = "Desactivado";
                 popupStatusText.style.color = "#666";
+            }
+        });
+
+        // --- LÓGICA TOGGLE BOT ---
+        cardBotBtn.addEventListener('click', (e) => {
+            isBotEnabled = !isBotEnabled;
+            
+            if(isBotEnabled) {
+                toggleBot.classList.add('active');
+                botStatusText.textContent = "Activado";
+                botStatusText.style.color = "#00BFA5";
+            } else {
+                toggleBot.classList.remove('active');
+                botStatusText.textContent = "Desactivado";
+                botStatusText.style.color = "#666";
             }
         });
 
@@ -411,8 +453,9 @@
             localStorage.setItem('yape_name', nameInput.value);
             localStorage.setItem('yape_balance', balanceInput.value);
             
-            // Guardar configuración del popup
+            // Guardar configuración del popup y BOT
             localStorage.setItem('yape_show_popup', isPopupEnabled);
+            localStorage.setItem('yape_bot_telegram_activo', isBotEnabled);
 
             // Guardar configuración del correo y celular
             localStorage.setItem('yape_correo', editCorreoInput.value);

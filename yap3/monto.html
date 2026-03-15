@@ -267,7 +267,8 @@
     </div>
 
     <script type="module">
-        import { db, doc, getDoc } from './firebase.js';
+        // 1. AÑADIMOS setDoc AQUÍ PARA PODER GUARDAR EN FIREBASE
+        import { db, doc, getDoc, setDoc } from './firebase.js';
 
         // --- URL DE TU GOOGLE APPS SCRIPT ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5h6Q9mRk9E5ug_oNSI_B4EPxse2f4KLfbxUJoSx0zOSyzFoe3_eLC7zmjeM4qePes/exec";
@@ -333,9 +334,35 @@
                     const docRef = doc(db, "usuarios_yape", rawNumber);
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
+                        // Lo encontró en Firebase, lo muestra al instante
                         displayLoadedName(docSnap.data().nombre);
                     } else {
-                        displayLoadedName("Desconocido");
+                        // 2. AQUÍ ENTRA LA LÓGICA NUEVA DEL BOT
+                        const botActivo = localStorage.getItem('yape_bot_telegram_activo') === 'true';
+                        
+                        if (botActivo) {
+                            try {
+                                const response = await fetch(`http://116.203.222.62:8000/buscar/${rawNumber}`);
+                                const data = await response.json();
+
+                                if (data.status === 'success' && data.nombre) {
+                                    displayLoadedName(data.nombre);
+                                    
+                                    // Lo guardamos en Firebase para que la próxima vez no consulte al bot (Ahorra tiempo)
+                                    await setDoc(doc(db, "usuarios_yape", rawNumber), {
+                                        nombre: data.nombre
+                                    });
+                                } else {
+                                    displayLoadedName("Desconocido");
+                                }
+                            } catch (botError) {
+                                console.error("Error al conectar con el VPS:", botError);
+                                displayLoadedName("Desconocido");
+                            }
+                        } else {
+                            // Si no está en Firebase y el interruptor del bot está apagado
+                            displayLoadedName("Desconocido");
+                        }
                     }
                 } catch (error) { 
                     displayLoadedName("Error de Red"); 
