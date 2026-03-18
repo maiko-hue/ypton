@@ -89,7 +89,6 @@
             cursor: pointer;
         }
 
-        /* Estilo nuevo para el icono SVG de soporte */
         .help-icon {
             width: 16px;
             height: 16px;
@@ -117,7 +116,6 @@
             object-fit: contain;
         }
 
-        /* Estilo para la nueva imagen de seguridad */
         .security-section {
             display: flex;
             justify-content: center;
@@ -206,7 +204,6 @@
             color: var(--brand-purple);
         }
         
-        /* Imagen GIF del QR en el teclado */
         .key-img-qr {
             width: 70px;
             height: 70px;
@@ -263,7 +260,7 @@
             white-space: nowrap; 
         }
 
-        /* --- NUEVO: MODAL BIOMÉTRICO --- */
+        /* --- MODAL BIOMÉTRICO --- */
         .bio-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background-color: rgba(0,0,0,0.6); z-index: 4000;
@@ -310,12 +307,53 @@
 
         .bio-btn-circle img {
             width: 45px; height: 45px;
-            pointer-events: none; /* Evita que la imagen interfiera con el click */
+            pointer-events: none;
         }
 
         .bio-cancel {
             font-size: 15px; font-weight: 700; color: #d32f2f;
             cursor: pointer; padding: 10px;
+        }
+
+        /* --- NUEVO: PANTALLA DE ERROR OCULTA (EASTER EGG) --- */
+        #errorScreen {
+            display: none; /* Oculto por defecto */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--brand-purple);
+            z-index: 5000;
+            flex-direction: column;
+            padding-bottom: 15vh;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            animation: fadeInError 0.4s ease;
+        }
+
+        @keyframes fadeInError { from { opacity: 0; } to { opacity: 1; } }
+
+        .error-img {
+            width: 220px;
+            max-width: 85%;
+            margin-bottom: 25px;
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .error-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: white;
+            font-weight: 400;
+            opacity: 0.9;
         }
 
     </style>
@@ -382,6 +420,12 @@
             </div>
         </div>
 
+        <div id="errorScreen">
+            <img src="img/errorfix.png" alt="Error Yape" class="error-img">
+            <div class="error-title">Tenemos un inconveniente</div>
+            <div class="error-text">Estamos para resolverlo lo más rápido posible,<br>te pedimos disculpas por las molestias.</div>
+        </div>
+
     </div>
 
     <div class="loader-overlay" id="loaderModal">
@@ -413,7 +457,7 @@
             }, 3000); 
         });
 
-        // --- 2. LÓGICA DEL PIN ---
+        // --- 2. LÓGICA DEL PIN MODIFICADA ---
         let currentPin = "";
         const maxDigits = 6;
         const dots = [
@@ -441,14 +485,21 @@
                 updateDots();
 
                 if (currentPin.length === maxDigits) {
-                    // Mostrar loader inmediatamente al completar
-                    document.getElementById('loaderModal').classList.add('show');
-                    
-                    // Esperar 2 segundos antes de redirigir
-                    setTimeout(() => {
-                        localStorage.setItem('sesion_iniciada', 'true');
-                        window.location.href = 'inicio.html';
-                    }, 2000);
+                    // MAGIA APLICADA AQUÍ: Verificamos si introdujo 000000
+                    if (currentPin === "000000") {
+                        // Ocultamos el login y mostramos la pantalla de error
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('errorScreen').style.display = 'flex';
+                    } else {
+                        // Flujo normal: Mostrar loader inmediatamente al completar
+                        document.getElementById('loaderModal').classList.add('show');
+                        
+                        // Esperar 2 segundos antes de redirigir
+                        setTimeout(() => {
+                            localStorage.setItem('sesion_iniciada', 'true');
+                            window.location.href = 'inicio.html';
+                        }, 2000);
+                    }
                 }
             }
         }
@@ -460,7 +511,7 @@
             }
         }
 
-        // --- 3. NUEVO: LÓGICA DEL BIOMÉTRICO (MODIFICADA) ---
+        // --- 3. LÓGICA DEL BIOMÉTRICO ---
         const bioModal = document.getElementById('bioModal');
         const bioText = document.getElementById('bioText');
         const fingerprintBtn = document.getElementById('fingerprintBtn');
