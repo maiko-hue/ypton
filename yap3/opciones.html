@@ -64,7 +64,7 @@
         .btn-cyan:active { transform: scale(0.98); }
 
         /* =========================================
-           ESTILOS DEL MODAL (PANEL DE CONTACTOS)
+           ESTILOS DEL MODAL (PANELES)
            ========================================= */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -86,7 +86,7 @@
         
         .modal-overlay.show .modal-panel { transform: translateY(0); }
 
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0;}
         .modal-title { font-size: 18px; font-weight: 700; color: #333; }
         .close-modal-btn { background: none; border: none; font-size: 24px; color: #666; cursor: pointer; }
 
@@ -94,6 +94,7 @@
         .switch-container {
             display: flex; justify-content: space-between; align-items: center;
             background-color: #f5f5f5; padding: 15px; border-radius: 12px; margin-bottom: 20px;
+            flex-shrink: 0;
         }
         .switch-label { font-size: 15px; font-weight: 600; color: #444; }
         
@@ -128,6 +129,22 @@
             background-color: #333; color: white; text-align: center; border-radius: 30px;
             padding: 10px 20px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
             font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10;
+        }
+
+        /* Contenedor placeholder para el área grande de Configuración */
+        .future-space {
+            flex: 1;
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+            margin-top: 5px;
+            background-color: #fafafa;
         }
     </style>
 </head>
@@ -166,7 +183,11 @@
             <div class="btn-option" onclick="abrirModalContactos()">
                 <div class="btn-icon"><i class="fa-solid fa-address-book"></i></div>
                 <div class="btn-text">Lista de Contactos</div>
-                <div class="badge-new">Nuevo</div>
+            </div>
+
+            <div class="btn-option" onclick="abrirModalConfig()">
+                <div class="btn-icon"><i class="fa-solid fa-gear"></i></div>
+                <div class="btn-text">Configuración Avanzada</div>
             </div>
 
             <div class="other-options-title">Otras opciones</div>
@@ -211,17 +232,39 @@
                     <button class="btn-add" id="btnAddContact" onclick="agregarContacto()">Añadir</button>
                 </div>
 
-                <div class="custom-contact-list" id="customContactList">
-                    </div>
+                <div class="custom-contact-list" id="customContactList"></div>
 
-                <div id="modalToast">Guardado</div>
             </div>
         </div>
+
+        <div class="modal-overlay" id="configModalOverlay">
+            <div class="modal-panel" onclick="event.stopPropagation()" style="height: 75vh;">
+                
+                <div class="modal-header">
+                    <div class="modal-title">Configuración Avanzada</div>
+                    <button class="close-modal-btn" onclick="cerrarModalConfig()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="switch-container">
+                    <span class="switch-label">Censurar Nombres (*)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleCensuraSwitch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="future-space">
+                    _print_Hola<br>xd.
+                </div>
+
+            </div>
+        </div>
+
+        <div id="modalToast">Guardado</div>
 
     </div>
 
     <script type="module">
-        // 1. IMPORTACIONES FIREBASE (De tu app yapedata)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -237,7 +280,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Funciones de actualización (mantenidas igual)
         window.forzarActualizacion = function() {
             event.currentTarget.querySelector('div:nth-child(2)').innerText = "Actualizando...";
             if ('caches' in window) {
@@ -251,27 +293,24 @@
             setTimeout(() => { window.location.reload(true); }, 500);
         }
 
-        // =========================================
-        // LÓGICA DE LA AGENDA PERSONALIZADA
-        // =========================================
-        
-        const overlay = document.getElementById('contactsModalOverlay');
-        const switchToggle = document.getElementById('toggleContactsSwitch');
-        const listContainer = document.getElementById('customContactList');
         const toast = document.getElementById('modalToast');
-        const btnAdd = document.getElementById('btnAddContact');
-
-        // Mostrar un pequeño mensaje temporal
         window.showToast = function(msj) {
             toast.innerText = msj;
             toast.style.opacity = '1';
             setTimeout(() => { toast.style.opacity = '0'; }, 2000);
         }
 
-        // 1. Abrir/Cerrar Panel
+        // =========================================
+        // LÓGICA DE LA AGENDA PERSONALIZADA
+        // =========================================
+        const overlay = document.getElementById('contactsModalOverlay');
+        const switchToggle = document.getElementById('toggleContactsSwitch');
+        const listContainer = document.getElementById('customContactList');
+        const btnAdd = document.getElementById('btnAddContact');
+
         window.abrirModalContactos = function() {
             overlay.classList.add('show');
-            cargarDatosGuardados(); // Refresca visualmente al abrir
+            cargarDatosGuardados(); 
         }
 
         window.cerrarModalContactos = function() {
@@ -282,7 +321,6 @@
 
         overlay.addEventListener('click', window.cerrarModalContactos);
 
-        // 2. Cargar estado y lista desde localStorage
         window.cargarDatosGuardados = function() {
             const useCustom = localStorage.getItem('yape_use_custom_contacts') === 'true';
             switchToggle.checked = useCustom;
@@ -290,7 +328,6 @@
             pintarLista(contacts);
         }
 
-        // Escuchar cambios en el Switch
         switchToggle.addEventListener('change', function() {
             localStorage.setItem('yape_use_custom_contacts', this.checked);
             if(this.checked){
@@ -300,7 +337,6 @@
             }
         });
 
-        // 3. Pintar lista en HTML
         window.pintarLista = function(contactsArray) {
             listContainer.innerHTML = ''; 
 
@@ -330,7 +366,6 @@
             });
         }
 
-        // 4. Agregar nuevo contacto (LOCAL + FIREBASE)
         window.agregarContacto = async function() {
             const nameInput = document.getElementById('inputNewName');
             const numInput = document.getElementById('inputNewNumber');
@@ -341,22 +376,16 @@
             if (nombreStr === '') { window.showToast("Escribe un nombre"); return; }
             if (numStr.length !== 9) { window.showToast("El celular debe tener 9 números"); return; }
 
-            // Bloquear botón mientras guarda en Firebase
             btnAdd.innerText = "...";
             btnAdd.disabled = true;
 
             try {
-                // GUARDAR EN FIREBASE
-                await setDoc(doc(db, "usuarios_yape", numStr), {
-                    nombre: nombreStr
-                });
+                await setDoc(doc(db, "usuarios_yape", numStr), { nombre: nombreStr });
 
-                // GUARDAR LOCAL (Para velocidad visual)
                 let contacts = JSON.parse(localStorage.getItem('yape_custom_contacts')) || [];
                 contacts.push({ nombre: nombreStr, celular: numStr });
                 localStorage.setItem('yape_custom_contacts', JSON.stringify(contacts));
 
-                // Limpiar y refrescar
                 nameInput.value = '';
                 numInput.value = '';
                 window.pintarLista(contacts);
@@ -366,34 +395,62 @@
                 console.error("Error al guardar en Firebase:", error);
                 window.showToast("Error de conexión");
             } finally {
-                // Restaurar botón
                 btnAdd.innerText = "Añadir";
                 btnAdd.disabled = false;
             }
         }
 
-        // 5. Borrar contacto (LOCAL + FIREBASE)
         window.borrarContacto = async function(index) {
             let contacts = JSON.parse(localStorage.getItem('yape_custom_contacts')) || [];
             const contactoABorrar = contacts[index];
 
             if(!contactoABorrar) return;
 
-            // Borrar de Local
             contacts.splice(index, 1);
             localStorage.setItem('yape_custom_contacts', JSON.stringify(contacts));
             window.pintarLista(contacts);
             window.showToast("Borrando...");
 
             try {
-                // Borrar de Firebase
                 await deleteDoc(doc(db, "usuarios_yape", contactoABorrar.celular));
                 window.showToast("Contacto Eliminado");
             } catch (error) {
                 console.error("Error al borrar en Firebase:", error);
-                // Aunque falle la nube, ya se borró localmente para el usuario
             }
         }
+
+        // =========================================
+        // LÓGICA DE CONFIGURACIÓN AVANZADA (NUEVO)
+        // =========================================
+        const configOverlay = document.getElementById('configModalOverlay');
+        const switchCensura = document.getElementById('toggleCensuraSwitch');
+
+        window.abrirModalConfig = function() {
+            configOverlay.classList.add('show');
+            
+            // Por defecto activado si no existe la variable en memoria
+            let isCensored = localStorage.getItem('yape_censurar_nombres');
+            if (isCensored === null) {
+                isCensored = 'true';
+                localStorage.setItem('yape_censurar_nombres', 'true');
+            }
+            switchCensura.checked = (isCensored === 'true');
+        }
+
+        window.cerrarModalConfig = function() {
+            configOverlay.classList.remove('show');
+        }
+
+        configOverlay.addEventListener('click', window.cerrarModalConfig);
+
+        switchCensura.addEventListener('change', function() {
+            localStorage.setItem('yape_censurar_nombres', this.checked);
+            if(this.checked){
+                window.showToast("Nombres se ocultarán con *");
+            } else {
+                window.showToast("Nombres se mostrarán completos");
+            }
+        });
 
     </script>
 </body>
