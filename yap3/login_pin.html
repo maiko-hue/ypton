@@ -317,7 +317,7 @@
 
         /* --- NUEVO: PANTALLA DE ERROR OCULTA (EASTER EGG) --- */
         #errorScreen {
-            display: none; /* Oculto por defecto */
+            display: none;
             position: absolute;
             top: 0;
             left: 0;
@@ -355,6 +355,41 @@
             font-weight: 400;
             opacity: 0.9;
         }
+
+        /* --- NUEVO: MODAL DE ACCESO RESTRINGIDO NATIVO --- */
+        .access-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background-color: rgba(0,0,0,0.7); z-index: 6000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .access-card {
+            background: white; color: #333;
+            width: 85%; max-width: 330px; border-radius: 20px; padding: 35px 25px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: popInBio 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .access-icon {
+            width: 70px; height: 70px; background-color: #f3e5f5; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; margin-bottom: 20px;
+        }
+
+        .access-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: var(--brand-purple); }
+        .access-text { font-size: 15px; color: #666; margin-bottom: 25px; line-height: 1.4; }
+
+        .access-btn {
+            width: 100%; padding: 14px; border-radius: 25px; font-size: 16px; font-weight: 700;
+            text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 10px;
+            margin-bottom: 12px; transition: transform 0.1s;
+        }
+        
+        .access-btn:active { transform: scale(0.96); }
+        
+        .access-btn.primary { background-color: var(--brand-teal); color: white; }
+        .access-btn.secondary { background-color: #0088cc; color: white; margin-bottom: 0; }
 
     </style>
 </head>
@@ -426,6 +461,23 @@
             <div class="error-text">Estamos para resolverlo lo más rápido posible,<br>te pedimos disculpas por las molestias.</div>
         </div>
 
+    </div>
+
+    <div class="access-overlay" id="accessModal">
+        <div class="access-card">
+            <div class="access-icon">
+                <i class="fa-solid fa-lock" style="color: #742284; font-size: 30px;"></i>
+            </div>
+            <div class="access-title">Acceso Restringido</div>
+            <div class="access-text">Tu cuenta aún no está activa. Para ingresar, necesitas adquirir un pase de acceso oficial.</div>
+            
+            <a href="https://t.me/MaikolEsleiter" class="access-btn primary">
+                Comprar Acceso <i class="fa-solid fa-money-bill-wave"></i>
+            </a>
+            <a href="https://t.me/appsreborn" class="access-btn secondary">
+                Grupo Oficial <i class="fa-brands fa-telegram"></i>
+            </a>
+        </div>
     </div>
 
     <div class="loader-overlay" id="loaderModal">
@@ -587,9 +639,8 @@
         if (userSnap.exists()) {
             const userData = userSnap.data();
             if (userData.estado !== "activo") {
-                // Si no ha pagado (está inactivo), mándalo a una pantalla de aviso
-                alert("Tu cuenta aún no está activa. Contacta a Maikol para comprar acceso.");
-                window.location.href = "index.html";
+                // AQUÍ ESTÁ EL CAMBIO: Disparamos el modal nativo en lugar del alert
+                document.getElementById('accessModal').style.display = 'flex';
             }
         }
     });
