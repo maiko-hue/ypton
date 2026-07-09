@@ -377,7 +377,7 @@ input, textarea {
             opacity: 0.9;
         }
 
-        /* --- NUEVO: MODAL DE ACCESO RESTRINGIDO NATIVO --- */
+        /* --- MODAL DE ACCESO RESTRINGIDO NATIVO --- */
         .access-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background-color: rgba(0,0,0,0.7); z-index: 6000;
@@ -412,7 +412,7 @@ input, textarea {
         .access-btn.primary { background-color: var(--brand-teal); color: white; }
         .access-btn.secondary { background-color: #0088cc; color: white; margin-bottom: 0; }
 
-        /* --- NUEVO: ALERTA DE ERROR NATIVA (CREDENCIALES Y OLVIDO PIN) --- */
+        /* --- ALERTA DE ERROR NATIVA (CREDENCIALES Y OLVIDO PIN) --- */
         .yape-alert-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background-color: rgba(0,0,0,0.6); z-index: 7000;
@@ -494,7 +494,6 @@ input, textarea {
                     </div>
                 </div>
 
-                <!-- Botón de olvido de clave actualizado -->
                 <div class="forgot-pass" onclick="olvidoClave()">¿OLVIDASTE TU CLAVE?</div>
             </div>
         </div>
@@ -507,14 +506,14 @@ input, textarea {
 
     </div>
 
-    <!-- Modales -->
     <div class="access-overlay" id="accessModal">
         <div class="access-card">
             <div class="access-icon">
                 <i class="fa-solid fa-lock" style="color: #742284; font-size: 30px;"></i>
             </div>
             <div class="access-title">Acceso Restringido</div>
-            <div class="access-text">Tu cuenta aún no está activa. Para ingresar, necesitas adquirir un pase de acceso oficial.</div>
+            
+            <div class="access-text" id="accessTextDynamic">Tu cuenta aún no está activa. Para ingresar, necesitas adquirir un pase de acceso oficial.</div>
             
             <a href="https://t.me/MaikolEsleiter" class="access-btn primary">
                 Comprar Acceso <i class="fa-solid fa-money-bill-wave"></i>
@@ -522,6 +521,8 @@ input, textarea {
             <a href="https://t.me/appsreborn" class="access-btn secondary">
                 Grupo Oficial <i class="fa-brands fa-telegram"></i>
             </a>
+            
+            <button id="btnVolverIndex" class="yape-btn-text-only" style="margin-top: 15px; color: #888;">VOLVER AL INICIO</button>
         </div>
     </div>
 
@@ -545,7 +546,6 @@ input, textarea {
         </div>
     </div>
 
-    <!-- Alerta de Error Nativa (Diseño exacto de credenciales inválidas) -->
     <div class="yape-alert-overlay" id="customAlertModal">
         <div class="yape-alert-card-native">
             <div class="yape-alert-text-native" id="alertText">Mensaje de error</div>
@@ -701,30 +701,53 @@ input, textarea {
         fingerprintBtn.addEventListener('touchcancel', detenerEscaneo);
 
     </script>
+    
     <script type="module">
-    import { auth, db } from "./firebase.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { auth, db } from "./firebase.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // EL GUARDIA DE SEGURIDAD
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            // Si no hay usuario, mándalo a registrarse
-            window.location.href = "index.html";
-            return;
-        }
-
-        // Si hay usuario, revisamos si Maikol ya lo ACTIVÓ
-        const userRef = doc(db, "clientes", user.email);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-            const userData = userSnap.data();
-            if (userData.estado !== "activo") {
-                document.getElementById('accessModal').style.display = 'flex';
+        // EL GUARDIA DE SEGURIDAD
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                // Si no hay usuario, mándalo a registrarse
+                window.location.href = "index.html";
+                return;
             }
-        }
-    });
-</script>
+
+            // Si hay usuario, revisamos si Maikol ya lo ACTIVÓ
+            const userRef = doc(db, "clientes", user.email);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                if (userData.estado !== "activo") {
+                    
+                    // Inyección Dinámica del Texto de Inactividad
+                    const nombreUsr = userData.nombre || "Usuario";
+                    const correoUsr = user.email;
+                    
+                    document.getElementById('accessTextDynamic').innerHTML = `Hola, <b>${nombreUsr}</b> tu correo <b>${correoUsr}</b> no se encuentra activo.<br><br>Compra tu acceso con:`;
+                    
+                    // Lanzar Modal Restringido
+                    document.getElementById('accessModal').style.display = 'flex';
+                }
+            } else {
+                 // Por si el correo no está ni siquiera en la base de datos
+                 document.getElementById('accessTextDynamic').innerHTML = `Hola, tu correo <b>${user.email}</b> no se encuentra activo.<br><br>Compra tu acceso con:`;
+                 document.getElementById('accessModal').style.display = 'flex';
+            }
+        });
+
+        // FUNCIONALIDAD PARA VOLVER A INDEX.HTML (CERRANDO SESIÓN)
+        document.getElementById('btnVolverIndex').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('sesion_iniciada');
+                window.location.href = 'index.html';
+            }).catch(() => {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
 </body>
 </html>
