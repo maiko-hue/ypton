@@ -353,7 +353,7 @@ input, textarea {
             </div>
         </div>
 
-        <!-- ================= MODALES CUSTOM (REEMPLAZAN ALERTS) ================= -->
+        <!-- ================= MODALES CUSTOM ================= -->
         
         <!-- Modal Pregunta Inicial -->
         <div class="modal-overlay" id="customConfirmModal" style="z-index: 7000; align-items: center;">
@@ -380,7 +380,7 @@ input, textarea {
             </div>
         </div>
 
-        <!-- Alerta de Error Nativa (Diseño exacto de tu captura) -->
+        <!-- Alerta de Error Nativa -->
         <div class="modal-overlay" id="customAlertModal" style="z-index: 7000; align-items: center;">
             <div class="yape-alert-card-native">
                 <div class="yape-alert-text-native" id="alertText">Mensaje de error</div>
@@ -390,13 +390,26 @@ input, textarea {
             </div>
         </div>
 
+        <!-- Modal Sesión Múltiple (Seguridad) -->
+        <div class="modal-overlay" id="multiDeviceModal" style="z-index: 8000; align-items: center;">
+            <div class="yape-alert-card-native" style="align-items: center; text-align: center; border-radius: 16px;">
+                <div style="width: 60px; height: 60px; background-color: #f3e5f5; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #742284; font-size: 28px;"></i>
+                </div>
+                <div style="font-size: 18px; font-weight: 700; color: #742284; margin-bottom: 12px;">Sesión Cerrada</div>
+                <div class="yape-alert-text-native" style="text-align: center; margin-bottom: 25px;">Por tu seguridad, hemos cerrado tu sesión porque detectamos un acceso desde otro dispositivo.</div>
+                <button style="background: #00BFA5; color: white; border: none; padding: 14px; width: 100%; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer;" onclick="cerrarSesionMulti()">ENTENDIDO</button>
+            </div>
+        </div>
+
         <div id="modalToast">Guardado</div>
 
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHDXn-R6jgd4fBkgW4KzFp6p6Ym_yqQoI",
@@ -409,6 +422,7 @@ input, textarea {
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
         window.forzarActualizacion = function() {
             event.currentTarget.querySelector('div:nth-child(2)').innerText = "Actualizando...";
@@ -428,6 +442,39 @@ input, textarea {
             toast.innerText = msj;
             toast.style.opacity = '1';
             setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        }
+
+        // =========================================
+        // GUARDIA DE SEGURIDAD (SESIÓN ÚNICA)
+        // =========================================
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userRef = doc(db, "clientes", user.email);
+                onSnapshot(userRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        const localToken = localStorage.getItem('sesion_token');
+                        const dbToken = userData.sesion_token;
+
+                        // Si existe token local, y en la BD cambió, botamos al usuario.
+                        if (dbToken && localToken && dbToken !== localToken) {
+                            // Borramos inmediatamente la sesión para que no la evada actualizando
+                            localStorage.removeItem('sesion_iniciada');
+                            document.getElementById('multiDeviceModal').style.display = 'flex';
+                        }
+                    }
+                });
+            }
+        });
+
+        window.cerrarSesionMulti = function() {
+            signOut(auth).then(() => {
+                localStorage.removeItem('sesion_iniciada');
+                localStorage.removeItem('sesion_token'); // Limpiamos por completo
+                window.location.href = 'index.html';
+            }).catch(() => {
+                window.location.href = 'index.html';
+            });
         }
 
         // =========================================
