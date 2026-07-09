@@ -78,14 +78,39 @@
             flex-shrink: 0;
             position: relative; 
             z-index: 10;
+            gap: 12px;
         }
 
-        .user-profile { display: flex; align-items: center; cursor: pointer; max-width: 65%; }
-        .profile-img { width: 24px; height: 25px; border-radius: 50%; object-fit: cover; margin-right: 8px; }
-        .user-name { font-weight: 500; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .header-actions { display: flex; align-items: center; }
-        .badge-gratis { background-color: #FFC107; color: #333; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-right: 12px; }
-        .header-icon-img { width: 24px; height: 24px; margin-left: 12px; cursor: pointer; object-fit: contain; }
+        /* NUEVOS ESTILOS DE LA BARRA SUPERIOR */
+        .icon-bg-circle {
+            background-color: #9438AD;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .user-profile { display: flex; align-items: center; cursor: pointer; }
+        .user-profile .icon-bg-circle .profile-img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; margin: 0; }
+        
+        .header-search-bar {
+            background-color: #9438AD;
+            border-radius: 20px;
+            flex: 1;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            cursor: pointer;
+        }
+        .search-bar-icon { width: 16px; height: 16px; margin-right: 10px; }
+        .search-bar-text { color: #EAD2F3; font-size: 15px; font-weight: 500; opacity: 0.9; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .header-actions .icon-bg-circle .header-icon-img { width: 24px; height: 24px; margin: 0; object-fit: contain; }
 
         /* --- SCROLL PRINCIPAL --- */
         .main-scroll {
@@ -265,6 +290,32 @@
             font-weight: 700; 
             color: #333; 
             display: none; 
+        }
+
+        /* SPINNER DE CARGA DEL SALDO */
+        .balance-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid #790699;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        /* SKELETON CARGA DEL HISTORIAL */
+        .skeleton-block {
+            background-color: #e2e5e7;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .skeleton-block::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            animation: shimmer 1.5s infinite;
         }
         
         .chevron { color: #666; font-size: 18px; transition: transform 0.3s ease; }
@@ -647,13 +698,23 @@
         
         <div class="header">
             <div class="user-profile" onclick="abrirPerfil()">
-                <img src="img/iconoperfil.png" alt="Perfil" class="profile-img" onerror="this.src='https://via.placeholder.com/30/ffffff/742284?text=U'">
-                <span class="user-name" id="mainUserName">Hola, </span>
+                <div class="icon-bg-circle">
+                    <img src="img/person.svg" alt="Perfil" class="profile-img" onerror="this.src='https://via.placeholder.com/30/ffffff/742284?text=U'">
+                </div>
             </div>
+            
+            <div class="header-search-bar" onclick="abrirYapear()">
+                <img src="icons/lupanueva.svg" alt="Buscar" class="search-bar-icon" onerror="this.src='img/lupanueva.svg'">
+                <span class="search-bar-text">Buscar en Yape</span>
+            </div>
+
             <div class="header-actions">
-                <div class="badge-gratis">Gratis</div>
-                <img src="img/soporte-icon.svg" alt="Soporte" class="header-icon-img">
-                <img src="img/campana-icon.svg" alt="Campana" class="header-icon-img" id="btnCampana">
+                <div class="icon-bg-circle">
+                    <img src="img/headphones.svg" alt="Soporte" class="header-icon-img">
+                </div>
+                <div class="icon-bg-circle" id="btnCampana">
+                    <img src="img/bell.svg" alt="Campana" class="header-icon-img">
+                </div>
             </div>
         </div>
 
@@ -713,6 +774,7 @@
                             <span class="action-text" id="balanceText">Mostrar saldo</span>
                         </div>
                         <span class="balance-amount" id="balanceAmount">S/ 1,200.00</span>
+                        <div class="balance-spinner" id="balanceSpinner"></div>
                     </div>
                 </div>
                 
@@ -723,6 +785,31 @@
                             <span class="action-text" id="moveText">Mostrar movimientos</span>
                         </div>
                         <i class="fa-solid fa-chevron-down chevron" id="moveIcon"></i>
+                    </div>
+
+                    <div id="movementsSkeleton" class="movements-list">
+                        <!-- Items falsos de esqueleto (Skeleton) -->
+                        <div class="movement-item" style="pointer-events: none; border-bottom: 1px solid #f0f0f0;">
+                            <div class="mov-info" style="flex: 1; padding-right: 15px;">
+                                <div class="skeleton-block" style="width: 70%; height: 16px; margin-bottom: 6px;"></div>
+                                <div class="skeleton-block" style="width: 45%; height: 12px;"></div>
+                            </div>
+                            <div class="skeleton-block" style="width: 75px; height: 16px;"></div>
+                        </div>
+                        <div class="movement-item" style="pointer-events: none; border-bottom: 1px solid #f0f0f0;">
+                            <div class="mov-info" style="flex: 1; padding-right: 15px;">
+                                <div class="skeleton-block" style="width: 55%; height: 16px; margin-bottom: 6px;"></div>
+                                <div class="skeleton-block" style="width: 35%; height: 12px;"></div>
+                            </div>
+                            <div class="skeleton-block" style="width: 60px; height: 16px;"></div>
+                        </div>
+                        <div class="movement-item" style="pointer-events: none; border-bottom: none;">
+                            <div class="mov-info" style="flex: 1; padding-right: 15px;">
+                                <div class="skeleton-block" style="width: 80%; height: 16px; margin-bottom: 6px;"></div>
+                                <div class="skeleton-block" style="width: 50%; height: 12px;"></div>
+                            </div>
+                            <div class="skeleton-block" style="width: 85px; height: 16px;"></div>
+                        </div>
                     </div>
 
                     <div id="movementsList" class="movements-list"></div>
@@ -1088,8 +1175,8 @@
                     } else {
                         let rawNum = mov.numero || "999";
                         let isQr = isNaN(rawNum.replace(/\s/g, '')); 
-                        let mostrarCelular = mov.mostrar_celular || "asteriscos"; // <-- AÑADIDO
-                        const url = `exito.html?monto=${mov.monto}&nombre=${encodeURIComponent(mov.nombre)}&fecha=${encodeURIComponent(mov.fechaSolo || '')}&hora=${encodeURIComponent(mov.horaSolo || '')}&numero=${encodeURIComponent(rawNum)}&operacion=${mov.operacion || '00000000'}&codigo=${mov.codigo || '000'}&mensaje=${encodeURIComponent(mov.mensaje || '')}&destino=${encodeURIComponent(mov.destino || 'Yape')}&tipo=${mov.tipo || 'gasto'}&es_qr=${isQr}&mostrar_celular=${mostrarCelular}`; // <-- AÑADIDO
+                        let mostrarCelular = mov.mostrar_celular || "asteriscos"; 
+                        const url = `exito.html?monto=${mov.monto}&nombre=${encodeURIComponent(mov.nombre)}&fecha=${encodeURIComponent(mov.fechaSolo || '')}&hora=${encodeURIComponent(mov.horaSolo || '')}&numero=${encodeURIComponent(rawNum)}&operacion=${mov.operacion || '00000000'}&codigo=${mov.codigo || '000'}&mensaje=${encodeURIComponent(mov.mensaje || '')}&destino=${encodeURIComponent(mov.destino || 'Yape')}&tipo=${mov.tipo || 'gasto'}&es_qr=${isQr}&mostrar_celular=${mostrarCelular}`;
                         window.location.href = url;
                     }
                 };
@@ -1107,7 +1194,6 @@
                     nombreMostrado = `${partes[0]} ${partes[1].substring(0, 3)}*`;
                 }
 
-                // --- Lógica añadida para Mostrar "Destino - Nombre*" ---
                 let destinoHistorial = mov.destino || "Yape";
                 if (destinoHistorial !== "Yape") {
                     nombreMostrado = `${destinoHistorial} - ${nombreMostrado}`;
@@ -1132,7 +1218,6 @@
         renderMovements();
 
         // --- 3. INICIALIZACIÓN GENERAL ---
-        // Se hace global para poder acceder desde la notificación falsa
         let isBalanceVisible = false; 
 
         window.addEventListener('load', () => {
@@ -1140,19 +1225,16 @@
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if(splash) {
-                    splash.style.opacity = '0'; // Comienza a desvanecerse
-                    setTimeout(() => splash.style.display = 'none', 400); // Lo quita por completo para que puedas dar clics
+                    splash.style.opacity = '0'; 
+                    setTimeout(() => splash.style.display = 'none', 400); 
                 }
-            }, 1500); // Puedes cambiar este 1500 (1.5 seg) por el tiempo que quieras
-            const savedName = localStorage.getItem('yape_name');
-            let savedBalance = localStorage.getItem('yape_balance');
+            }, 1500); 
             
+            let savedBalance = localStorage.getItem('yape_balance');
             if (!savedBalance) {
                 savedBalance = "1200.00"; 
                 localStorage.setItem('yape_balance', savedBalance);
             }
-
-            if (savedName) document.getElementById('mainUserName').textContent = "Hola, " + savedName;
             
             if (savedBalance) {
                 const cleanBalance = savedBalance.replace(/,/g, '');
@@ -1178,53 +1260,85 @@
         const btnCampana = document.getElementById('btnCampana');
         btnCampana.addEventListener('click', () => { loaderModal.classList.add('show'); });
         
-        // Evitamos que al dar click dentro del loader, se cierre de golpe
         loaderModal.addEventListener('click', () => { loaderModal.classList.remove('show'); });
 
         const balanceCard = document.getElementById('balanceCard');
         const balanceIcon = document.getElementById('balanceIcon');
         const balanceText = document.getElementById('balanceText');
         const balanceAmount = document.getElementById('balanceAmount');
+        const balanceSpinner = document.getElementById('balanceSpinner');
+        let isBalanceLoading = false;
 
-            balanceCard.addEventListener('click', () => {
+        balanceCard.addEventListener('click', () => {
+            if (isBalanceLoading) return; // Bloquea si ya está cargando el spinner
+            
             isBalanceVisible = !isBalanceVisible;
             if (isBalanceVisible) {
                 balanceText.textContent = "Ocultar saldo";
                 balanceIcon.src = 'img/ojo_cerrado.png'; 
                 
-                // --- NUEVO: Leer y formatear el saldo actualizado desde la memoria ---
-                let saldoFresco = localStorage.getItem('yape_balance') || "1200.00";
-                let numeroFresco = parseFloat(saldoFresco.replace(/,/g, ''));
-                if (!isNaN(numeroFresco)) {
-                    balanceAmount.textContent = "S/ " + numeroFresco.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                }
-                // ----------------------------------------------------------------------
+                // Mostrar spinner y ocultar texto
+                balanceAmount.style.display = 'none';
+                balanceSpinner.style.display = 'block';
+                isBalanceLoading = true;
                 
-                balanceAmount.style.display = 'block';
+                setTimeout(() => {
+                    isBalanceLoading = false;
+                    balanceSpinner.style.display = 'none';
+                    
+                    if (isBalanceVisible) { 
+                        let saldoFresco = localStorage.getItem('yape_balance') || "1200.00";
+                        let numeroFresco = parseFloat(saldoFresco.replace(/,/g, ''));
+                        if (!isNaN(numeroFresco)) {
+                            balanceAmount.textContent = "S/ " + numeroFresco.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        }
+                        balanceAmount.style.display = 'block';
+                    }
+                }, 3000);
+                
             } else {
                 balanceText.textContent = "Mostrar saldo";
-                balanceIcon.src = 'img/ojo_abierto.png';
+                balanceIcon.src = 'img/ojo_abierto.webp';
                 balanceAmount.style.display = 'none';
+                balanceSpinner.style.display = 'none'; // Por precaución
             }
         });
 
         const movementsToggle = document.getElementById('movementsToggle');
         const moveText = document.getElementById('moveText');
         const moveIcon = document.getElementById('moveIcon');
+        const movementsSkeleton = document.getElementById('movementsSkeleton');
         let isMovementsVisible = false;
+        let isMovementsLoading = false;
 
         movementsToggle.addEventListener('click', () => {
+            if (isMovementsLoading) return; // Bloquea clics múltiples
+            
             isMovementsVisible = !isMovementsVisible;
             if (isMovementsVisible) {
-                movementsListContainer.style.display = 'block';
                 moveText.textContent = "Ocultar movimientos";
                 moveIcon.classList.remove('fa-chevron-down');
                 moveIcon.classList.add('fa-chevron-up');
-            } else {
+                
+                // Mostrar skeleton, ocultar lista
                 movementsListContainer.style.display = 'none';
+                movementsSkeleton.style.display = 'block';
+                isMovementsLoading = true;
+                
+                setTimeout(() => {
+                    isMovementsLoading = false;
+                    if (isMovementsVisible) {
+                        movementsSkeleton.style.display = 'none';
+                        movementsListContainer.style.display = 'block';
+                    }
+                }, 2000);
+                
+            } else {
                 moveText.textContent = "Mostrar movimientos";
                 moveIcon.classList.remove('fa-chevron-up');
                 moveIcon.classList.add('fa-chevron-down');
+                movementsListContainer.style.display = 'none';
+                movementsSkeleton.style.display = 'none';
             }
         });
 
@@ -1368,8 +1482,8 @@
             let formattedNewBalance = newBalance.toFixed(2);
             localStorage.setItem('yape_balance', formattedNewBalance);
 
-            // Reflejar en pantalla si el ojo está abierto
-            if (isBalanceVisible) {
+            // Reflejar en pantalla si el ojo está abierto y la animación no está corriendo
+            if (isBalanceVisible && !isBalanceLoading) {
                 document.getElementById('balanceAmount').textContent = "S/ " + newBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
 
@@ -1413,7 +1527,7 @@
 
             movimientos.unshift(nuevoIngreso);
             localStorage.setItem('yape_movements', JSON.stringify(movimientos));
-            renderMovements(); // Vuelve a dibujar la lista
+            renderMovements(); 
         }
 
     </script>
