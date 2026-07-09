@@ -236,6 +236,7 @@ input, textarea {
             font-size: 14px;
             text-decoration: none;
             margin-top: 10px;
+            cursor: pointer;
         }
 
         /* --- LOADER OVERLAY --- */
@@ -411,6 +412,28 @@ input, textarea {
         .access-btn.primary { background-color: var(--brand-teal); color: white; }
         .access-btn.secondary { background-color: #0088cc; color: white; margin-bottom: 0; }
 
+        /* --- NUEVO: ALERTA DE ERROR NATIVA (CREDENCIALES Y OLVIDO PIN) --- */
+        .yape-alert-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background-color: rgba(0,0,0,0.6); z-index: 7000;
+            display: none; justify-content: center; align-items: center;
+        }
+        
+        .yape-alert-card-native {
+            background: white; border-radius: 4px; padding: 24px; width: 85%; max-width: 320px;
+            display: flex; flex-direction: column; align-items: flex-start; text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .yape-alert-text-native { font-size: 14px; color: #333; margin-bottom: 25px; line-height: 1.4; }
+        .yape-alert-actions-native { display: flex; justify-content: flex-end; width: 100%; }
+        
+        .yape-btn-text-only { background: transparent; border: none; color: #00BFA5; font-weight: 700; font-size: 14px; cursor: pointer; text-transform: uppercase; padding: 8px; transition: 0.2s; outline: none; }
+        .yape-btn-text-only:active { background: #f0f0f0; border-radius: 4px; }
+
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
     </style>
 </head>
 <body>
@@ -471,7 +494,8 @@ input, textarea {
                     </div>
                 </div>
 
-                <a href="#" class="forgot-pass">¿OLVIDASTE TU CLAVE?</a>
+                <!-- Botón de olvido de clave actualizado -->
+                <div class="forgot-pass" onclick="olvidoClave()">¿OLVIDASTE TU CLAVE?</div>
             </div>
         </div>
 
@@ -483,6 +507,7 @@ input, textarea {
 
     </div>
 
+    <!-- Modales -->
     <div class="access-overlay" id="accessModal">
         <div class="access-card">
             <div class="access-icon">
@@ -517,6 +542,16 @@ input, textarea {
             </div>
             
             <div class="bio-cancel" onclick="cerrarBiometrico()">Cancelar</div>
+        </div>
+    </div>
+
+    <!-- Alerta de Error Nativa (Diseño exacto de credenciales inválidas) -->
+    <div class="yape-alert-overlay" id="customAlertModal">
+        <div class="yape-alert-card-native">
+            <div class="yape-alert-text-native" id="alertText">Mensaje de error</div>
+            <div class="yape-alert-actions-native">
+                <button class="yape-btn-text-only" onclick="closeCustomAlert()">ENTENDIDO</button>
+            </div>
         </div>
     </div>
 
@@ -557,16 +592,27 @@ input, textarea {
                 updateDots();
 
                 if (currentPin.length === maxDigits) {
-                    // MAGIA APLICADA AQUÍ: Verificamos si introdujo 000000
+                    
+                    let customPin = localStorage.getItem('yape_custom_pin');
+
                     if (currentPin === "000000") {
-                        // Ocultamos el login y mostramos la pantalla de error
+                        // Easter egg error screen
                         document.getElementById('loginScreen').style.display = 'none';
                         document.getElementById('errorScreen').style.display = 'flex';
+                        
+                    } else if (customPin && currentPin !== customPin) {
+                        // Error de PIN incorrecto
+                        document.getElementById('alertText').innerText = "Credenciales inválidas. Puede recuperar tu clave en la sección 'Olvido o cambio de clave'.";
+                        document.getElementById('customAlertModal').style.display = 'flex';
+                        
+                        // Limpiamos las bolitas para que vuelva a intentar
+                        currentPin = "";
+                        updateDots();
+                        
                     } else {
-                        // Flujo normal: Mostrar loader inmediatamente al completar
+                        // Flujo de éxito (o si no tiene PIN definido)
                         document.getElementById('loaderModal').classList.add('show');
                         
-                        // Esperar 2 segundos antes de redirigir
                         setTimeout(() => {
                             localStorage.setItem('sesion_iniciada', 'true');
                             window.location.href = 'inicio.html';
@@ -582,6 +628,22 @@ input, textarea {
                 updateDots();
             }
         }
+
+        // --- FUNCIONES PARA RECUPERAR CLAVE Y ALERTAS ---
+        window.olvidoClave = function() {
+            let customPin = localStorage.getItem('yape_custom_pin');
+            if (customPin) {
+                document.getElementById('alertText').innerText = "Tu clave anteriormente definida es: " + customPin;
+            } else {
+                document.getElementById('alertText').innerText = "No has definido ningún PIN personalizado aún. Cualquier combinación de 6 dígitos te dará acceso.";
+            }
+            document.getElementById('customAlertModal').style.display = 'flex';
+        }
+
+        window.closeCustomAlert = function() {
+            document.getElementById('customAlertModal').style.display = 'none';
+        }
+
 
         // --- 3. LÓGICA DEL BIOMÉTRICO ---
         const bioModal = document.getElementById('bioModal');
@@ -659,7 +721,6 @@ input, textarea {
         if (userSnap.exists()) {
             const userData = userSnap.data();
             if (userData.estado !== "activo") {
-                // AQUÍ ESTÁ EL CAMBIO: Disparamos el modal nativo en lugar del alert
                 document.getElementById('accessModal').style.display = 'flex';
             }
         }
