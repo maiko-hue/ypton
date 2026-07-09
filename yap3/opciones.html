@@ -390,14 +390,14 @@ input, textarea {
             </div>
         </div>
 
-        <!-- Modal Sesión Múltiple (Seguridad) -->
+        <!-- Modal Sesión Múltiple / Inactividad (Seguridad) -->
         <div class="modal-overlay" id="multiDeviceModal" style="z-index: 8000; align-items: center;">
             <div class="yape-alert-card-native" style="align-items: center; text-align: center; border-radius: 16px;">
                 <div style="width: 60px; height: 60px; background-color: #f3e5f5; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
                     <i class="fa-solid fa-triangle-exclamation" style="color: #742284; font-size: 28px;"></i>
                 </div>
-                <div style="font-size: 18px; font-weight: 700; color: #742284; margin-bottom: 12px;">Sesión Cerrada</div>
-                <div class="yape-alert-text-native" style="text-align: center; margin-bottom: 25px;">Por tu seguridad, hemos cerrado tu sesión porque detectamos un acceso desde otro dispositivo.</div>
+                <div id="multiDeviceTitle" style="font-size: 18px; font-weight: 700; color: #742284; margin-bottom: 12px;">Sesión Cerrada</div>
+                <div id="multiDeviceText" class="yape-alert-text-native" style="text-align: center; margin-bottom: 25px;">Por tu seguridad, hemos cerrado tu sesión porque detectamos un acceso desde otro dispositivo.</div>
                 <button style="background: #00BFA5; color: white; border: none; padding: 14px; width: 100%; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer;" onclick="cerrarSesionMulti()">ENTENDIDO</button>
             </div>
         </div>
@@ -445,7 +445,7 @@ input, textarea {
         }
 
         // =========================================
-        // GUARDIA DE SEGURIDAD (SESIÓN ÚNICA)
+        // GUARDIA DE SEGURIDAD (SESIÓN ÚNICA Y ESTADO ACTIVO)
         // =========================================
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -453,14 +453,25 @@ input, textarea {
                 onSnapshot(userRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        const localToken = localStorage.getItem('sesion_token');
+                        const localToken = localStorage.getItem('sesion_token_yape');
                         const dbToken = userData.sesion_token;
 
-                        // Si existe token local, y en la BD cambió, botamos al usuario.
+                        // 1. Filtro Anti-Clonación (Sesión Múltiple)
                         if (dbToken && localToken && dbToken !== localToken) {
-                            // Borramos inmediatamente la sesión para que no la evada actualizando
                             localStorage.removeItem('sesion_iniciada');
+                            document.getElementById('multiDeviceTitle').innerText = "Sesión Cerrada";
+                            document.getElementById('multiDeviceText').innerText = "Por tu seguridad, hemos cerrado tu sesión porque detectamos un acceso desde otro dispositivo.";
                             document.getElementById('multiDeviceModal').style.display = 'flex';
+                            return; 
+                        }
+
+                        // 2. Filtro de Cuenta Activa
+                        if (userData.estado !== "activo") {
+                            localStorage.removeItem('sesion_iniciada');
+                            document.getElementById('multiDeviceTitle').innerText = "Acceso Restringido";
+                            document.getElementById('multiDeviceText').innerHTML = `Hola <b>${userData.nombre || user.email}</b>, tu acceso se encuentra <b>inactivo</b>.`;
+                            document.getElementById('multiDeviceModal').style.display = 'flex';
+                            return;
                         }
                     }
                 });
@@ -470,7 +481,7 @@ input, textarea {
         window.cerrarSesionMulti = function() {
             signOut(auth).then(() => {
                 localStorage.removeItem('sesion_iniciada');
-                localStorage.removeItem('sesion_token'); // Limpiamos por completo
+                localStorage.removeItem('sesion_token_yape'); 
                 window.location.href = 'index.html';
             }).catch(() => {
                 window.location.href = 'index.html';

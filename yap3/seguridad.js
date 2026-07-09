@@ -3,9 +3,9 @@ import { auth, db } from "./firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { doc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 1. DEFINIMOS LAS PUERTAS PRINCIPALES
+// 1. DEFINIMOS LAS PUERTAS PRINCIPALES (SE AÑADIÓ OPCIONES.HTML)
 const paginaActual = window.location.pathname;
-const esPuertaPrincipal = paginaActual.includes("editar_datos.html") || paginaActual.includes("login_pin.html");
+const esPuertaPrincipal = paginaActual.includes("editar_datos.html") || paginaActual.includes("login_pin.html") || paginaActual.includes("opciones.html");
 const esIndex = paginaActual.includes("index.html") || paginaActual === "/" || paginaActual.endsWith("/");
 
 // Ocultar cuerpo solo en puertas principales para evitar destellos
