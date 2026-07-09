@@ -15,6 +15,50 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- NUEVOS ESTILOS SOLO PARA EL PANEL YAPEAR -->
+    <style>
+        .nuevo-numero-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid #f0f0f0; cursor: pointer;
+        }
+        .nuevo-numero-row:active { background-color: #fafafa; }
+        .nn-left { display: flex; align-items: center; gap: 15px; }
+        .nn-icon { width: 20px; height: 20px; object-fit: contain; }
+        .nn-text { font-size: 15.5px; font-weight: 700; color: #333; }
+        .nn-arrow { color: #888; font-size: 16px; }
+
+        .section-title-yapear {
+            font-size: 16.5px; font-weight: 800; color: #111;
+            padding: 20px 20px 12px 20px;
+        }
+
+        .frecuentes-scroll {
+            display: flex; overflow-x: auto; padding: 0 20px; gap: 18px;
+            scrollbar-width: none; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px;
+        }
+        .frecuentes-scroll::-webkit-scrollbar { display: none; }
+        
+        .frecuente-item {
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            min-width: 65px;
+        }
+        .frecuente-item:active { opacity: 0.7; }
+        
+        .frecuente-circle {
+            width: 52px; height: 52px; background-color: #f0f0f0; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: #742284; font-weight: 700; font-size: 18px; letter-spacing: 1px;
+            margin-bottom: 8px; border: 1px solid #e0e0e0;
+        }
+        .frecuente-name {
+            font-size: 13px; font-weight: 600; color: #333; text-align: center;
+            line-height: 1.1; margin-bottom: 3px;
+        }
+        .frecuente-num {
+            font-size: 11px; color: #888; text-align: center; font-weight: 500;
+        }
+    </style>
 </head>
 <body>
 
@@ -251,6 +295,7 @@
         </div>
     </div>
 
+    <!-- --- PANEL YAPEAR MODIFICADO --- -->
     <div id="pantalla-yapear">
         <div class="top-bar">
             <div class="close-btn" onclick="cerrarYapear()">
@@ -259,21 +304,40 @@
             <div class="page-title">Yapear a</div>
         </div>
 
-        <div class="tabs">
-            <div class="tab active">Contactos</div>
-            <div class="tab" onclick="window.location.href='editable.html'">Yapeos pendientes</div>
-        </div>
-
         <div class="search-section">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="tel" id="searchInput" class="search-input" placeholder="Ingresa el celular o busca contacto" autocomplete="off" maxlength="9">
+                <input type="tel" id="searchInput" class="search-input" placeholder="Busca el celular o contacto" autocomplete="off" maxlength="9">
             </div>
         </div>
 
-        <div class="contact-list" id="contactList">
+        <!-- CONTENEDOR PRINCIPAL QUE SE OCULTA AL BUSCAR -->
+        <div id="mainYapearContent">
+            
+            <!-- Fila Nuevo Número -->
+            <div class="nuevo-numero-row" onclick="document.getElementById('searchInput').focus()">
+                <div class="nn-left">
+                    <img src="icons/fonoicon.svg" class="nn-icon" alt="" onerror="this.src='img/fonoicon.svg'">
+                    <span class="nn-text">Nuevo número</span>
+                </div>
+                <i class="fa-solid fa-chevron-right nn-arrow"></i>
             </div>
 
+            <!-- Frecuentes -->
+            <div class="section-title-yapear">Yaperos frecuentes</div>
+            <div class="frecuentes-scroll" id="frecuentesList">
+                <!-- Se inyecta por JS -->
+            </div>
+
+            <!-- Todos los contactos -->
+            <div class="section-title-yapear">Todos tus contactos</div>
+            <div class="contact-list" id="contactList" style="padding-top: 0; padding-bottom: 20px;">
+                <!-- Se inyecta por JS -->
+            </div>
+
+        </div>
+
+        <!-- CARTA DE RESULTADO DE BÚSQUEDA -->
         <div class="new-contact-container" id="newContactResult">
             <div class="new-contact-card">
                 <div class="nc-info">
@@ -370,7 +434,8 @@
 
         function abrirYapear() {
             document.getElementById('pantalla-yapear').style.display = 'flex';
-            renderContacts(); // Dibuja la lista al abrir
+            renderFrecuentes(); 
+            renderContacts(); 
         }
 
         function cerrarYapear() {
@@ -379,7 +444,7 @@
 
         // --- 1. LÓGICA DE YAPEAR (BÚSQUEDA Y VALIDACIÓN) ---
         const searchInput = document.getElementById('searchInput');
-        const contactList = document.getElementById('contactList');
+        const mainYapearContent = document.getElementById('mainYapearContent');
         const newContactResult = document.getElementById('newContactResult');
         const dynamicNumber = document.getElementById('dynamicNumber');
 
@@ -395,16 +460,16 @@
                 e.target.value = cleanValue;
 
                 if (cleanValue.length === 9) {
-                    contactList.style.display = 'none'; 
+                    mainYapearContent.style.display = 'none'; 
                     newContactResult.style.display = 'block'; 
                     const formattedNumber = cleanValue.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
                     dynamicNumber.textContent = formattedNumber;
                 } else {
-                    contactList.style.display = 'block'; 
+                    mainYapearContent.style.display = 'block'; 
                     newContactResult.style.display = 'none'; 
                 }
             } else {
-                contactList.style.display = 'block';
+                mainYapearContent.style.display = 'block';
                 newContactResult.style.display = 'none';
             }
         });
@@ -424,7 +489,65 @@
             }
         });
 
-        // --- NUEVA LÓGICA DE CONTACTOS DINÁMICOS ---
+        // --- NUEVA LÓGICA: YAPEROS FRECUENTES ---
+        function renderFrecuentes() {
+            const container = document.getElementById('frecuentesList');
+            container.innerHTML = '';
+            
+            let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
+
+            // Si está vacío, inyectamos contactos de relleno
+            if (frecuentes.length === 0) {
+                frecuentes = [
+                    { nombre: "Maikol Crisanto", celular: "942555010" },
+                    { nombre: "Anghelo Huaman", celular: "977459001" },
+                    { nombre: "Maria Magdalena", celular: "934014267" }
+                ];
+            }
+
+            frecuentes.forEach(f => {
+                // Cálculo de Iniciales
+                let partes = f.nombre.trim().split(/\s+/);
+                let initials = "";
+                if (partes.length >= 2) {
+                    initials = (partes[0][0] + partes[1][0]).toUpperCase();
+                } else if (partes.length === 1 && partes[0].length > 0) {
+                    initials = partes[0].substring(0, 2).toUpperCase();
+                }
+
+                // Cálculo del Nombre Mostrado (Censura del apellido)
+                let nombreMostrado = f.nombre;
+                if (partes.length === 2) {
+                    nombreMostrado = partes[0] + " " + partes[1].substring(0, 3) + "*";
+                } else if (partes.length >= 3) {
+                    nombreMostrado = partes[0] + " " + partes[2].substring(0, 3) + "*";
+                }
+
+                // Cálculo del Número Censurado
+                let rawNum = f.celular.replace(/\D/g, '');
+                let maskedNum = `*** *** ${rawNum.slice(-3)}`;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'frecuente-item';
+                itemDiv.innerHTML = `
+                    <div class="frecuente-circle">${initials}</div>
+                    <div class="frecuente-name">${nombreMostrado}</div>
+                    <div class="frecuente-num">${maskedNum}</div>
+                `;
+                
+                itemDiv.onclick = function() {
+                    const loader = document.getElementById('loaderyapear');
+                    loader.classList.add('show');
+                    setTimeout(() => {
+                        window.location.href = 'monto.html?numero=' + rawNum + '&nombre=' + encodeURIComponent(f.nombre);
+                    }, 3000);
+                };
+                
+                container.appendChild(itemDiv);
+            });
+        }
+
+        // --- LÓGICA DE CONTACTOS DINÁMICOS GENERALES ---
         const defaultContactsArr = [
             { nombre: "Armando Garcia", celular: "966346842" },
             { nombre: "Jose Torres", celular: "983651056" },
@@ -478,7 +601,9 @@
                 listContainer.appendChild(itemDiv);
             });
         }
+        
         // Lo ejecutamos en la carga por si acaso
+        renderFrecuentes();
         renderContacts();
 
 

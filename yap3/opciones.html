@@ -126,7 +126,7 @@ input, textarea {
         input:checked + .slider:before { transform: translateX(22px); }
 
         /* Formulario para agregar */
-        .add-contact-form { display: flex; gap: 10px; margin-bottom: 20px; }
+        .add-contact-form { display: flex; gap: 10px; margin-bottom: 20px; flex-shrink: 0; }
         .input-group { flex: 1; display: flex; flex-direction: column; gap: 5px; }
         .contact-input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background-color: #fafafa; }
         .contact-input:focus { border-color: #7c4dff; background-color: white; }
@@ -151,21 +151,6 @@ input, textarea {
             font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10;
         }
 
-        /* Contenedor placeholder para el área grande de Configuración */
-        .future-space {
-            flex: 1;
-            border: 2px dashed #ddd;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #aaa;
-            font-size: 14px;
-            text-align: center;
-            padding: 20px;
-            margin-top: 5px;
-            background-color: #fafafa;
-        }
     </style>
 </head>
 <body>
@@ -258,7 +243,7 @@ input, textarea {
         </div>
 
         <div class="modal-overlay" id="configModalOverlay">
-            <div class="modal-panel" onclick="event.stopPropagation()" style="height: 75vh;">
+            <div class="modal-panel" onclick="event.stopPropagation()" style="height: 85vh;">
                 
                 <div class="modal-header">
                     <div class="modal-title">Configuración Avanzada</div>
@@ -281,9 +266,16 @@ input, textarea {
                     </label>
                 </div>
 
-                <div class="future-space">
-                    _print_Hola<br>xd.
+                <div style="font-weight: 700; color: #333; margin-top: 10px; margin-bottom: 10px; font-size: 15px;">Yaperos Frecuentes (Pantalla de Inicio)</div>
+                <div class="add-contact-form">
+                    <div class="input-group">
+                        <input type="text" id="inputFreqName" class="contact-input" placeholder="Nombre completo" autocomplete="off">
+                        <input type="tel" id="inputFreqNumber" class="contact-input" placeholder="Celular (9 dígitos)" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off">
+                    </div>
+                    <button class="btn-add" id="btnAddFreq" onclick="agregarFrecuente()">Añadir</button>
                 </div>
+                
+                <div class="custom-contact-list" id="freqContactList"></div>
 
             </div>
         </div>
@@ -448,16 +440,16 @@ input, textarea {
         }
 
         // =========================================
-        // LÓGICA DE CONFIGURACIÓN AVANZADA (NUEVO)
+        // LÓGICA DE CONFIGURACIÓN AVANZADA Y FRECUENTES
         // =========================================
         const configOverlay = document.getElementById('configModalOverlay');
         const switchCensura = document.getElementById('toggleCensuraSwitch');
-        const switchCensuraBaucher = document.getElementById('toggleCensuraBaucherSwitch'); // VARIABLE PARA EL NUEVO SWITCH
+        const switchCensuraBaucher = document.getElementById('toggleCensuraBaucherSwitch'); 
 
         window.abrirModalConfig = function() {
             configOverlay.classList.add('show');
             
-            // Por defecto activado si no existe la variable en memoria
+            // Carga de Switches
             let isCensored = localStorage.getItem('yape_censurar_nombres');
             if (isCensored === null) {
                 isCensored = 'true';
@@ -465,17 +457,22 @@ input, textarea {
             }
             switchCensura.checked = (isCensored === 'true');
 
-            // Cargar estado del switch Baucher (Apagado por defecto para que tú lo actives si quieres)
             let isCensoredBaucher = localStorage.getItem('yape_censurar_baucher');
             if (isCensoredBaucher === null) {
                 isCensoredBaucher = 'false';
                 localStorage.setItem('yape_censurar_baucher', 'false');
             }
             switchCensuraBaucher.checked = (isCensoredBaucher === 'true');
+
+            // Cargar lista de Frecuentes al abrir
+            let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
+            window.pintarListaFrecuentes(frecuentes);
         }
 
         window.cerrarModalConfig = function() {
             configOverlay.classList.remove('show');
+            document.getElementById('inputFreqName').value = '';
+            document.getElementById('inputFreqNumber').value = '';
         }
 
         configOverlay.addEventListener('click', window.cerrarModalConfig);
@@ -489,7 +486,6 @@ input, textarea {
             }
         });
 
-        // FUNCIONALIDAD DEL NUEVO SWITCH
         switchCensuraBaucher.addEventListener('change', function() {
             localStorage.setItem('yape_censurar_baucher', this.checked);
             if(this.checked){
@@ -498,6 +494,93 @@ input, textarea {
                 window.showToast("Nombres del baucher completos");
             }
         });
+
+        // --- LÓGICA DE YAPEROS FRECUENTES ---
+        const freqListContainer = document.getElementById('freqContactList');
+        const btnAddFreq = document.getElementById('btnAddFreq');
+
+        window.pintarListaFrecuentes = function(frecuentesArray) {
+            freqListContainer.innerHTML = ''; 
+
+            if (frecuentesArray.length === 0) {
+                freqListContainer.innerHTML = '<div class="empty-msg">No has agregado Yaperos Frecuentes aún.</div>';
+                return;
+            }
+
+            frecuentesArray.forEach((contact, index) => {
+                let numFormatted = contact.celular;
+                if(numFormatted.length === 9){
+                    numFormatted = numFormatted.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+                }
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'custom-item';
+                itemDiv.innerHTML = `
+                    <div class="ci-info">
+                        <span class="ci-name">${contact.nombre}</span>
+                        <span class="ci-number">${numFormatted}</span>
+                    </div>
+                    <button class="btn-delete" onclick="borrarFrecuente(${index})">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                freqListContainer.appendChild(itemDiv);
+            });
+        }
+
+        window.agregarFrecuente = async function() {
+            const nameInput = document.getElementById('inputFreqName');
+            const numInput = document.getElementById('inputFreqNumber');
+            
+            const nombreStr = nameInput.value.trim();
+            const numStr = numInput.value.trim();
+
+            if (nombreStr === '') { window.showToast("Escribe un nombre"); return; }
+            if (numStr.length !== 9) { window.showToast("El celular debe tener 9 números"); return; }
+
+            btnAddFreq.innerText = "...";
+            btnAddFreq.disabled = true;
+
+            try {
+                // Guarda en la base de datos de Firebase
+                await setDoc(doc(db, "usuarios_yape", numStr), { nombre: nombreStr });
+
+                let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
+                frecuentes.push({ nombre: nombreStr, celular: numStr });
+                localStorage.setItem('yape_frecuentes', JSON.stringify(frecuentes));
+
+                nameInput.value = '';
+                numInput.value = '';
+                window.pintarListaFrecuentes(frecuentes);
+                window.showToast("¡Frecuente Guardado en la Nube!");
+
+            } catch (error) {
+                console.error("Error al guardar en Firebase:", error);
+                window.showToast("Error de conexión");
+            } finally {
+                btnAddFreq.innerText = "Añadir";
+                btnAddFreq.disabled = false;
+            }
+        }
+
+        window.borrarFrecuente = async function(index) {
+            let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
+            const contactoABorrar = frecuentes[index];
+
+            if(!contactoABorrar) return;
+
+            frecuentes.splice(index, 1);
+            localStorage.setItem('yape_frecuentes', JSON.stringify(frecuentes));
+            window.pintarListaFrecuentes(frecuentes);
+            window.showToast("Borrando...");
+
+            try {
+                await deleteDoc(doc(db, "usuarios_yape", contactoABorrar.celular));
+                window.showToast("Frecuente Eliminado");
+            } catch (error) {
+                console.error("Error al borrar en Firebase:", error);
+            }
+        }
 
     </script>
 </body>
