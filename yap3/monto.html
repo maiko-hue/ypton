@@ -309,7 +309,19 @@ input, textarea {
         const nameSkeleton = document.getElementById('nameSkeleton');
 
         function displayLoadedName(name) {
-            nameInput.value = name;
+            let nombreMostrar = name;
+            
+            // --- LÓGICA DE CENSURA VISUAL DIRECTAMENTE EN MONTO.HTML ---
+            if (localStorage.getItem('yape_censurar_baucher') === 'true' && typeof nombreMostrar === 'string') {
+                let partes = nombreMostrar.trim().split(/\s+/);
+                if (partes.length === 2) {
+                    nombreMostrar = partes[0] + " " + partes[1].substring(0, 3) + "*";
+                } else if (partes.length >= 3) {
+                    nombreMostrar = partes[0] + " " + partes[2].substring(0, 3) + "*";
+                }
+            }
+            
+            nameInput.value = nombreMostrar;
             nameSkeleton.style.display = 'none';
             nameInput.style.display = 'block';
         }

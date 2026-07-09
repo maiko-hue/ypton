@@ -273,6 +273,14 @@ input, textarea {
                     </label>
                 </div>
 
+                <div class="switch-container">
+                    <span class="switch-label">Censurar nombres (Baucher)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleCensuraBaucherSwitch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 <div class="future-space">
                     _print_Hola<br>xd.
                 </div>
@@ -444,6 +452,7 @@ input, textarea {
         // =========================================
         const configOverlay = document.getElementById('configModalOverlay');
         const switchCensura = document.getElementById('toggleCensuraSwitch');
+        const switchCensuraBaucher = document.getElementById('toggleCensuraBaucherSwitch'); // VARIABLE PARA EL NUEVO SWITCH
 
         window.abrirModalConfig = function() {
             configOverlay.classList.add('show');
@@ -455,6 +464,14 @@ input, textarea {
                 localStorage.setItem('yape_censurar_nombres', 'true');
             }
             switchCensura.checked = (isCensored === 'true');
+
+            // Cargar estado del switch Baucher (Apagado por defecto para que tú lo actives si quieres)
+            let isCensoredBaucher = localStorage.getItem('yape_censurar_baucher');
+            if (isCensoredBaucher === null) {
+                isCensoredBaucher = 'false';
+                localStorage.setItem('yape_censurar_baucher', 'false');
+            }
+            switchCensuraBaucher.checked = (isCensoredBaucher === 'true');
         }
 
         window.cerrarModalConfig = function() {
@@ -469,6 +486,16 @@ input, textarea {
                 window.showToast("Nombres se ocultarán con *");
             } else {
                 window.showToast("Nombres se mostrarán completos");
+            }
+        });
+
+        // FUNCIONALIDAD DEL NUEVO SWITCH
+        switchCensuraBaucher.addEventListener('change', function() {
+            localStorage.setItem('yape_censurar_baucher', this.checked);
+            if(this.checked){
+                window.showToast("Nombres del baucher se reducirán");
+            } else {
+                window.showToast("Nombres del baucher completos");
             }
         });
 
