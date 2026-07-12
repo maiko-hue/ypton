@@ -8,7 +8,7 @@
     }
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Opciones</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="img/logo_yape_header.png" type="image/png">
@@ -91,8 +91,8 @@
         .back-icon:active { background: rgba(255,255,255,0.4); }
 
         .logo-img-custom {
-            width: 490px;
-            height: 490px;
+            width: 220px;
+            height: 220px;
             object-fit: contain;
             margin-top: -10px;
             opacity: 0.95;
@@ -211,7 +211,10 @@
            ========================================= */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 5000; display: none; justify-content: center; align-items: flex-end; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.show { display: flex; opacity: 1; }
-        .modal-panel { background-color: white; width: 100%; max-width: 480px; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); max-height: 85vh; }
+        
+        /* AÑADIDO: overflow-y: auto para evitar que se rompa si el contenido es largo */
+        .modal-panel { background-color: white; width: 100%; max-width: 480px; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); max-height: 85vh; overflow-y: auto; }
+        
         .modal-overlay.show .modal-panel { transform: translateY(0); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0;}
         .modal-title { font-size: 18px; font-weight: 700; color: #333; }
@@ -237,9 +240,14 @@
         .ci-name { font-weight: 600; color: #333; font-size: 15px; margin-bottom: 3px; }
         .ci-number { color: #888; font-size: 13px; }
         .btn-delete { background: none; border: none; color: #FF5252; font-size: 18px; cursor: pointer; padding: 5px; }
-        #modalToast { background-color: #333; color: white; text-align: center; border-radius: 30px; padding: 10px 20px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10000; }
-        .pin-screen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background-color: white; z-index: 6000; display: none; flex-direction: column; opacity: 0; transition: opacity 0.3s; }
+        
+        /* AÑADIDO: position: fixed; para asegurar que el toast sea visible */
+        #modalToast { background-color: #333; color: white; text-align: center; border-radius: 30px; padding: 10px 20px; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10000; }
+        
+        /* AÑADIDO: margin: 0 auto; left: 0; right: 0; max-width: 480px; para centrado en PC */
+        .pin-screen-overlay { position: fixed; top: 0; left: 0; right: 0; margin: 0 auto; width: 100%; max-width: 480px; height: 100dvh; background-color: white; z-index: 6000; display: none; flex-direction: column; opacity: 0; transition: opacity 0.3s; }
         .pin-screen-overlay.show { display: flex; opacity: 1; }
+        
         .pin-header { background-color: #742385; padding: 20px; display: flex; align-items: center; color: white; padding-top: max(20px, env(safe-area-inset-top)); }
         .pin-header-icon { font-size: 20px; cursor: pointer; padding: 5px; margin-right: 15px; }
         .pin-header-title { font-weight: 600; font-size: 17px; }
@@ -272,7 +280,6 @@
         
         <div class="header-hero">
             <i class="fa-solid fa-arrow-left back-icon" onclick="window.location.href='inicio.html'"></i>
-            <!-- Se mantiene la imagen superior original pero posicionada correctamente -->
             <img src="img/mascota.png" alt="Opciones" class="logo-img-custom">
         </div>
 
@@ -368,7 +375,6 @@
             <div class="section-title">Sistema</div>
             <div class="settings-section">
                 
-                <!-- Botón adaptado para que el script cambie el texto sin romperse -->
                 <div class="setting-item" onclick="forzarActualizacion()">
                     <div class="setting-left">
                         <div class="icon-circle bg-teal"><i class="fa-solid fa-arrows-rotate"></i></div>
@@ -402,127 +408,121 @@
                     <i class="fa-solid fa-chevron-right arrow-icon"></i>
                 </a>
             </div>
-
         </div>
-
-        <!-- ================= MODALES ORIGINALES INTACTOS ================= -->
-        <div class="modal-overlay" id="contactsModalOverlay">
-            <div class="modal-panel" onclick="event.stopPropagation()">
-                <div class="modal-header">
-                    <div class="modal-title">Contactos Personalizados</div>
-                    <button class="close-modal-btn" onclick="cerrarModalContactos()"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="switch-container">
-                    <span class="switch-label">Activar Lista Propia</span>
-                    <label class="switch">
-                        <input type="checkbox" id="toggleContactsSwitch">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="add-contact-form">
-                    <div class="input-group">
-                        <input type="text" id="inputNewName" class="contact-input" placeholder="Nombre completo" autocomplete="off">
-                        <input type="tel" id="inputNewNumber" class="contact-input" placeholder="Celular (9 dígitos)" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off">
-                    </div>
-                    <button class="btn-add" id="btnAddContact" onclick="agregarContacto()">Añadir</button>
-                </div>
-                <div class="custom-contact-list" id="customContactList"></div>
+    </div> <div class="modal-overlay" id="contactsModalOverlay">
+        <div class="modal-panel" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">Contactos Personalizados</div>
+                <button class="close-modal-btn" onclick="cerrarModalContactos()"><i class="fa-solid fa-xmark"></i></button>
             </div>
+            <div class="switch-container">
+                <span class="switch-label">Activar Lista Propia</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggleContactsSwitch">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="add-contact-form">
+                <div class="input-group">
+                    <input type="text" id="inputNewName" class="contact-input" placeholder="Nombre completo" autocomplete="off">
+                    <input type="tel" id="inputNewNumber" class="contact-input" placeholder="Celular (9 dígitos)" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off">
+                </div>
+                <button class="btn-add" id="btnAddContact" onclick="agregarContacto()">Añadir</button>
+            </div>
+            <div class="custom-contact-list" id="customContactList"></div>
         </div>
-
-        <div class="modal-overlay" id="configModalOverlay">
-            <div class="modal-panel" onclick="event.stopPropagation()" style="height: 85vh;">
-                <div class="modal-header">
-                    <div class="modal-title">Configuración Avanzada</div>
-                    <button class="close-modal-btn" onclick="cerrarModalConfig()"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="switch-container">
-                    <span class="switch-label">Censurar Nombres (En Baucher)</span>
-                    <label class="switch">
-                        <input type="checkbox" id="toggleCensuraSwitch">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="switch-container">
-                    <span class="switch-label">Censurar nombres (En Monto)</span>
-                    <label class="switch">
-                        <input type="checkbox" id="toggleCensuraBaucherSwitch">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div style="font-weight: 700; color: #333; margin-top: 10px; margin-bottom: 10px; font-size: 15px;">Yaperos Frecuentes (Pantalla de Inicio)</div>
-                <div class="add-contact-form">
-                    <div class="input-group">
-                        <input type="text" id="inputFreqName" class="contact-input" placeholder="Nombre completo" autocomplete="off">
-                        <input type="tel" id="inputFreqNumber" class="contact-input" placeholder="Celular (9 dígitos)" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off">
-                    </div>
-                    <button class="btn-add" id="btnAddFreq" onclick="agregarFrecuente()">Añadir</button>
-                </div>
-                <div class="custom-contact-list" id="freqContactList"></div>
-            </div>
-        </div>
-
-        <div class="pin-screen-overlay" id="pinScreenModal">
-            <div class="pin-header">
-                <i class="fa-solid fa-chevron-left pin-header-icon" onclick="cerrarModalPin()"></i>
-                <span class="pin-header-title">Cambiar PIN</span>
-            </div>
-            <div class="pin-hero">
-                <img src="img/change_password.webp" alt="Lock">
-            </div>
-            <div class="pin-btn-container">
-                <button class="btn-teal-pin" onclick="iniciarCambioPin()">Cambiar contraseña</button>
-            </div>
-        </div>
-
-        <div class="modal-overlay" id="customConfirmModal" style="z-index: 7000; align-items: center;">
-            <div class="yape-alert-card">
-                <div class="yape-alert-title">¿Estás seguro?</div>
-                <div class="yape-alert-text">Estás a punto de cambiar y definir tu PIN.</div>
-                <div class="yape-alert-actions">
-                    <button class="yape-btn-cancel" onclick="closeConfirmModal()">NO</button>
-                    <button class="yape-btn-confirm" onclick="proceedToPin()">SÍ</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-overlay" id="customPromptModal" style="z-index: 7000; align-items: center;">
-            <div class="yape-alert-card">
-                <div class="yape-alert-title" id="promptTitle">Nuevo PIN</div>
-                <div class="yape-alert-text" id="promptText">Ingresa tu nuevo PIN de 6 dígitos</div>
-                <input type="tel" id="customPinInputBox" class="yape-pin-input" maxlength="6" autocomplete="off" placeholder="••••••" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
-                <div class="yape-alert-actions" style="margin-top: 20px;">
-                    <button class="yape-btn-cancel" onclick="closePromptModal()">Cancelar</button>
-                    <button class="yape-btn-confirm" onclick="submitCustomPin()">Aceptar</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-overlay" id="customAlertModal" style="z-index: 7000; align-items: center;">
-            <div class="yape-alert-card-native">
-                <div class="yape-alert-text-native" id="alertText">Mensaje de error</div>
-                <div class="yape-alert-actions-native">
-                    <button class="yape-btn-text-only" onclick="closeCustomAlert()">ENTENDIDO</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-overlay" id="multiDeviceModal" style="z-index: 8000; align-items: center;">
-            <div class="yape-alert-card-native" style="align-items: center; text-align: center; border-radius: 16px;">
-                <div style="width: 60px; height: 60px; background-color: #f3e5f5; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-                    <i class="fa-solid fa-triangle-exclamation" style="color: #742385; font-size: 28px;"></i>
-                </div>
-                <div id="multiDeviceTitle" style="font-size: 18px; font-weight: 700; color: #742385; margin-bottom: 12px;">Sesión Cerrada</div>
-                <div id="multiDeviceText" class="yape-alert-text-native" style="text-align: center; margin-bottom: 25px;">Por tu seguridad, hemos cerrado tu sesión porque detectamos un acceso desde otro dispositivo.</div>
-                <button style="background: #00BFA5; color: white; border: none; padding: 14px; width: 100%; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer;" onclick="cerrarSesionMulti()">ENTENDIDO</button>
-            </div>
-        </div>
-
-        <div id="modalToast">Guardado</div>
-
     </div>
 
-    <!-- SCRIPT ORIGINAL INTACTO -->
+    <div class="modal-overlay" id="configModalOverlay">
+        <div class="modal-panel" onclick="event.stopPropagation()" style="height: 85vh;">
+            <div class="modal-header">
+                <div class="modal-title">Configuración Avanzada</div>
+                <button class="close-modal-btn" onclick="cerrarModalConfig()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">Censurar Nombres (En Baucher)</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggleCensuraSwitch">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">Censurar nombres (En Monto)</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggleCensuraBaucherSwitch">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div style="font-weight: 700; color: #333; margin-top: 10px; margin-bottom: 10px; font-size: 15px;">Yaperos Frecuentes (Pantalla de Inicio)</div>
+            <div class="add-contact-form">
+                <div class="input-group">
+                    <input type="text" id="inputFreqName" class="contact-input" placeholder="Nombre completo" autocomplete="off">
+                    <input type="tel" id="inputFreqNumber" class="contact-input" placeholder="Celular (9 dígitos)" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off">
+                </div>
+                <button class="btn-add" id="btnAddFreq" onclick="agregarFrecuente()">Añadir</button>
+            </div>
+            <div class="custom-contact-list" id="freqContactList"></div>
+        </div>
+    </div>
+
+    <div class="pin-screen-overlay" id="pinScreenModal">
+        <div class="pin-header">
+            <i class="fa-solid fa-chevron-left pin-header-icon" onclick="cerrarModalPin()"></i>
+            <span class="pin-header-title">Cambiar PIN</span>
+        </div>
+        <div class="pin-hero">
+            <img src="img/change_password.webp" alt="Lock">
+        </div>
+        <div class="pin-btn-container">
+            <button class="btn-teal-pin" onclick="iniciarCambioPin()">Cambiar contraseña</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="customConfirmModal" style="z-index: 7000; align-items: center;">
+        <div class="yape-alert-card">
+            <div class="yape-alert-title">¿Estás seguro?</div>
+            <div class="yape-alert-text">Estás a punto de cambiar y definir tu PIN.</div>
+            <div class="yape-alert-actions">
+                <button class="yape-btn-cancel" onclick="closeConfirmModal()">NO</button>
+                <button class="yape-btn-confirm" onclick="proceedToPin()">SÍ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="customPromptModal" style="z-index: 7000; align-items: center;">
+        <div class="yape-alert-card">
+            <div class="yape-alert-title" id="promptTitle">Nuevo PIN</div>
+            <div class="yape-alert-text" id="promptText">Ingresa tu nuevo PIN de 6 dígitos</div>
+            <input type="tel" id="customPinInputBox" class="yape-pin-input" maxlength="6" autocomplete="off" placeholder="••••••" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+            <div class="yape-alert-actions" style="margin-top: 20px;">
+                <button class="yape-btn-cancel" onclick="closePromptModal()">Cancelar</button>
+                <button class="yape-btn-confirm" onclick="submitCustomPin()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="customAlertModal" style="z-index: 7000; align-items: center;">
+        <div class="yape-alert-card-native">
+            <div class="yape-alert-text-native" id="alertText">Mensaje de error</div>
+            <div class="yape-alert-actions-native">
+                <button class="yape-btn-text-only" onclick="closeCustomAlert()">ENTENDIDO</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="multiDeviceModal" style="z-index: 8000; align-items: center;">
+        <div class="yape-alert-card-native" style="align-items: center; text-align: center; border-radius: 16px;">
+            <div style="width: 60px; height: 60px; background-color: #f3e5f5; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #742385; font-size: 28px;"></i>
+            </div>
+            <div id="multiDeviceTitle" style="font-size: 18px; font-weight: 700; color: #742385; margin-bottom: 12px;">Sesión Cerrada</div>
+            <div id="multiDeviceText" class="yape-alert-text-native" style="text-align: center; margin-bottom: 25px;">Por tu seguridad, hemos cerrado tu sesión porque detectamos un acceso desde otro dispositivo.</div>
+            <button style="background: #00BFA5; color: white; border: none; padding: 14px; width: 100%; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer;" onclick="cerrarSesionMulti()">ENTENDIDO</button>
+        </div>
+    </div>
+
+    <div id="modalToast">Guardado</div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
