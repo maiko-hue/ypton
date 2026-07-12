@@ -41,7 +41,12 @@
             height: 100dvh;
             overflow: hidden;
         }
-
+        img {
+         -webkit-touch-callout: none !important;
+         -webkit-user-drag: none !important;
+         -webkit-user-select: none !important;
+         pointer-events: none;
+        }
         .app-container {
             display: flex;
             flex-direction: column;
