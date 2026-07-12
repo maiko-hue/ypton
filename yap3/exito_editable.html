@@ -53,7 +53,12 @@ input, textarea {
             overflow-x: hidden;
             position: relative;
         }
-
+img {
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
+    -webkit-user-select: none !important;
+    pointer-events: none;
+}
         .container {
             width: 100%; min-height: 100dvh; display: flex; flex-direction: column; position: relative; padding: 10px 15px; z-index: 10;
         }
