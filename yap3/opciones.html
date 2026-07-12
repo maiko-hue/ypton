@@ -14,272 +14,404 @@
     <link rel="icon" href="img/logo_yape_header.png" type="image/png">
     <style>
         * {
-    /* Elimina el recuadro azul al hacer clic en celulares */
-    -webkit-tap-highlight-color: transparent;
-    outline: none !important;
-    
-    /* Bloquea la selección de texto en toda la app */
-    -webkit-user-select: none; 
-    -moz-user-select: none; 
-    -ms-user-select: none; 
-    user-select: none; 
-}
-
-/* Excepción para que sí se pueda seleccionar/escribir en los inputs */
-input, textarea {
-    -webkit-user-select: auto;
-    -moz-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
-}
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: white; }
-        .container { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; }
-        
-        .top-image {
-            width: 100%; height: 220px; background-color: #222;
-            background-image: url('img/header_opciones.png');
-            background-size: cover; background-position: center; position: relative;
+            -webkit-tap-highlight-color: transparent;
+            outline: none !important;
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none; 
+            box-sizing: border-box;
         }
-        
-        .back-arrow { position: absolute; top: 20px; left: 20px; color: white; font-size: 24px; cursor: pointer; }
 
-        .menu-container { padding: 20px; margin-top: -20px; background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; position: relative; }
-
-        .btn-option {
-            background: linear-gradient(90deg, #6200ea 0%, #7c4dff 100%);
-            color: white; padding: 18px; border-radius: 30px; margin-bottom: 15px;
-            display: flex; align-items: center; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(100, 0, 230, 0.3);
-            text-decoration: none; transition: transform 0.1s;
-            position: relative; /* Para el badge 'Nuevo' */
+        input, textarea {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
         }
-        .btn-option:active { transform: scale(0.98); }
 
-        .btn-icon { font-size: 24px; width: 40px; text-align: center; margin-right: 10px; }
-        .btn-text { font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .other-options-title { font-size: 16px; color: #666; margin: 20px 0 10px 10px; }
-        
-        .btn-cyan {
-            background: #00bcd4; color: white; padding: 18px; border-radius: 30px; margin-bottom: 15px;
-            display: flex; align-items: center; font-weight: 700; font-size: 14px;
-            text-transform: uppercase; text-decoration: none; cursor: pointer; transition: transform 0.1s;
+        :root {
+            --brand-purple: #742385;
+            --brand-dark-purple: #511973;
+            --brand-teal: #00BFA5;
+            --bg-gray: #f2f4f6;
+            --text-dark: #333;
+            --text-muted: #888;
         }
-        .btn-cyan:active { transform: scale(0.98); }
+
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg-gray); 
+            color: var(--text-dark); 
+            min-height: 100vh;
+        }
+
+        .container { 
+            max-width: 480px; 
+            margin: 0 auto; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
+        }
+
+        /* HEADER HERO */
+        .header-hero {
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-dark-purple) 100%);
+            height: 220px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(81, 25, 115, 0.3);
+            flex-shrink: 0;
+            padding-bottom: 20px;
+        }
+
+        .back-icon {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+        .back-icon:active { background: rgba(255,255,255,0.4); }
+
+        .logo-img-custom {
+            width: 490px;
+            height: 490px;
+            object-fit: contain;
+            margin-top: -10px;
+            opacity: 0.95;
+            filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.2));
+        }
+
+        /* TARJETA BLANCA FLOTANTE (MENU) */
+        .info-card {
+            background: white;
+            margin: -60px 20px 20px 20px;
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.4s ease-out;
+            padding-bottom: 40px;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-muted);
+            margin: 25px 0 10px 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .section-title:first-child { margin-top: 0; }
+
+        /* OPCIONES (LISTA) */
+        .settings-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 10px;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+            text-decoration: none;
+        }
+
+        .setting-item:active {
+            background: #f8f9fa;
+            border-color: #eee;
+        }
+
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .bg-purple { background: rgba(116, 35, 133, 0.1); color: var(--brand-purple); }
+        .bg-teal { background: rgba(0, 191, 165, 0.1); color: var(--brand-teal); }
+        .bg-orange { background: rgba(255, 152, 0, 0.1); color: #FF9800; }
+        .bg-blue { background: rgba(0, 136, 204, 0.1); color: #0088cc; }
+        .bg-red { background: rgba(255, 82, 82, 0.1); color: #FF5252; }
+        .bg-gray { background: #f2f2f2; color: #666; }
+        .bg-dark { background: #333; color: white; }
+
+        .setting-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .st-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .st-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .arrow-icon {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .divider {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 15px 0;
+        }
 
         /* =========================================
-           ESTILOS DEL MODAL (PANELES)
+           ESTILOS ORIGINALES DE MODALES INTACTOS
            ========================================= */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.6); z-index: 5000;
-            display: none; justify-content: center; align-items: flex-end;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 5000; display: none; justify-content: center; align-items: flex-end; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.show { display: flex; opacity: 1; }
-
-        .modal-panel {
-            background-color: white;
-            width: 100%; max-width: 480px;
-            border-top-left-radius: 24px; border-top-right-radius: 24px;
-            padding: 25px 20px; display: flex; flex-direction: column;
-            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            max-height: 85vh; /* Que no ocupe toda la pantalla si hay muchos contactos */
-        }
-        
+        .modal-panel { background-color: white; width: 100%; max-width: 480px; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); max-height: 85vh; }
         .modal-overlay.show .modal-panel { transform: translateY(0); }
-
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0;}
         .modal-title { font-size: 18px; font-weight: 700; color: #333; }
         .close-modal-btn { background: none; border: none; font-size: 24px; color: #666; cursor: pointer; }
-
-        .switch-container {
-            display: flex; justify-content: space-between; align-items: center;
-            background-color: #f5f5f5; padding: 15px; border-radius: 12px; margin-bottom: 20px;
-            flex-shrink: 0;
-        }
+        .switch-container { display: flex; justify-content: space-between; align-items: center; background-color: #f5f5f5; padding: 15px; border-radius: 12px; margin-bottom: 20px; flex-shrink: 0; }
         .switch-label { font-size: 15px; font-weight: 600; color: #444; }
-        
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #00BFA5; } /* Verde Yape */
+        input:checked + .slider { background-color: #00BFA5; }
         input:checked + .slider:before { transform: translateX(22px); }
-
         .add-contact-form { display: flex; gap: 10px; margin-bottom: 20px; flex-shrink: 0; }
         .input-group { flex: 1; display: flex; flex-direction: column; gap: 5px; }
         .contact-input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background-color: #fafafa; }
-        .contact-input:focus { border-color: #7c4dff; background-color: white; }
-        
-        .btn-add { background-color: #7c4dff; color: white; border: none; border-radius: 8px; padding: 0 20px; font-weight: 700; cursor: pointer; transition: 0.1s; }
+        .contact-input:focus { border-color: #742385; background-color: white; }
+        .btn-add { background-color: #742385; color: white; border: none; border-radius: 8px; padding: 0 20px; font-weight: 700; cursor: pointer; transition: 0.1s; }
         .btn-add:active { transform: scale(0.95); }
-
         .custom-contact-list { overflow-y: auto; flex: 1; padding-right: 5px; }
         .empty-msg { text-align: center; color: #999; font-size: 14px; margin-top: 20px; }
-        
         .custom-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
         .ci-info { display: flex; flex-direction: column; }
         .ci-name { font-weight: 600; color: #333; font-size: 15px; margin-bottom: 3px; }
         .ci-number { color: #888; font-size: 13px; }
         .btn-delete { background: none; border: none; color: #FF5252; font-size: 18px; cursor: pointer; padding: 5px; }
-
-        #modalToast {
-            background-color: #333; color: white; text-align: center; border-radius: 30px;
-            padding: 10px 20px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10000;
-        }
-
-        /* --- PANTALLA FULL SCREEN CAMBIAR PIN --- */
-        .pin-screen-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
-            background-color: white; z-index: 6000;
-            display: none; flex-direction: column;
-            opacity: 0; transition: opacity 0.3s;
-        }
-        .pin-screen-overlay.show {
-            display: flex; opacity: 1;
-        }
-        .pin-header {
-            background-color: #742284; padding: 20px;
-            display: flex; align-items: center; color: white;
-            padding-top: max(20px, env(safe-area-inset-top));
-        }
+        #modalToast { background-color: #333; color: white; text-align: center; border-radius: 30px; padding: 10px 20px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10000; }
+        .pin-screen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background-color: white; z-index: 6000; display: none; flex-direction: column; opacity: 0; transition: opacity 0.3s; }
+        .pin-screen-overlay.show { display: flex; opacity: 1; }
+        .pin-header { background-color: #742385; padding: 20px; display: flex; align-items: center; color: white; padding-top: max(20px, env(safe-area-inset-top)); }
         .pin-header-icon { font-size: 20px; cursor: pointer; padding: 5px; margin-right: 15px; }
         .pin-header-title { font-weight: 600; font-size: 17px; }
-        
-        .pin-hero {
-            width: 100%;
-            line-height: 0; 
-            background-color: white;
-        }
-        .pin-hero img {
-            width: 100%; height: auto; display: block; object-fit: cover;
-        }
-        
-        .pin-btn-container {
-            flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 25px;
-        }
-        .btn-teal-pin {
-            background-color: #00BFA5; color: white; padding: 18px;
-            border-radius: 8px; border: none; font-size: 16px; font-weight: 700;
-            width: 100%; cursor: pointer; text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 191, 165, 0.2);
-            transition: transform 0.1s;
-        }
+        .pin-hero { width: 100%; line-height: 0; background-color: white; }
+        .pin-hero img { width: 100%; height: auto; display: block; object-fit: cover; }
+        .pin-btn-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 25px; }
+        .btn-teal-pin { background-color: #00BFA5; color: white; padding: 18px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; width: 100%; cursor: pointer; text-align: center; box-shadow: 0 4px 10px rgba(0, 191, 165, 0.2); transition: transform 0.1s; }
         .btn-teal-pin:active { transform: scale(0.97); }
-
-        /* --- MODALES NATIVOS --- */
-        .yape-alert-card {
-            background: white; border-radius: 16px; padding: 24px; width: 85%; max-width: 320px;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .yape-alert-title { font-size: 18px; font-weight: 700; color: #742284; margin-bottom: 10px; }
+        .yape-alert-card { background: white; border-radius: 16px; padding: 24px; width: 85%; max-width: 320px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .yape-alert-title { font-size: 18px; font-weight: 700; color: #742385; margin-bottom: 10px; }
         .yape-alert-text { font-size: 14.5px; color: #555; margin-bottom: 20px; line-height: 1.4; }
         .yape-alert-actions { display: flex; width: 100%; gap: 10px; }
-        
         .yape-btn-cancel { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; background: white; color: #666; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; }
         .yape-btn-cancel:active { background: #f0f0f0; }
         .yape-btn-confirm { flex: 1; padding: 12px; border-radius: 25px; border: none; background: #00BFA5; color: white; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; }
         .yape-btn-confirm:active { transform: scale(0.96); }
-        
         .yape-pin-input { width: 100%; padding: 15px; border-radius: 10px; border: 2px solid #e0e0e0; font-size: 24px; text-align: center; letter-spacing: 8px; font-weight: 700; color: #333; outline: none; transition: border-color 0.2s; font-family: monospace; }
-        .yape-pin-input:focus { border-color: #742284; }
-
-        /* Estilo Nativo para el Error */
-        .yape-alert-card-native {
-            background: white; border-radius: 4px; padding: 24px; width: 85%; max-width: 320px;
-            display: flex; flex-direction: column; align-items: flex-start; text-align: left;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .yape-pin-input:focus { border-color: #742385; }
+        .yape-alert-card-native { background: white; border-radius: 4px; padding: 24px; width: 85%; max-width: 320px; display: flex; flex-direction: column; align-items: flex-start; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .yape-alert-text-native { font-size: 15px; color: #333; margin-bottom: 25px; line-height: 1.4; }
         .yape-alert-actions-native { display: flex; justify-content: flex-end; width: 100%; }
         .yape-btn-text-only { background: transparent; border: none; color: #00BFA5; font-weight: 700; font-size: 14px; cursor: pointer; text-transform: uppercase; padding: 8px; transition: 0.2s; }
         .yape-btn-text-only:active { background: #f0f0f0; border-radius: 4px; }
-
         @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="top-image">
-            <i class="fa-solid fa-chevron-left back-arrow" onclick="window.location.href='inicio.html'"></i>
-        </div>
-        <div class="menu-container">
-            
-            <a href="editar_datos.html" class="btn-option">
-                <div class="btn-icon"><i class="fa-regular fa-user"></i></div>
-                <div class="btn-text">Datos de mi cuenta</div>
-            </a>
-
-            <a href="AgregarCm.html" class="btn-option">
-                <div class="btn-icon"><i class="fa-solid fa-phone"></i></div>
-                <div class="btn-text">Agregar contacto</div>
-            </a>
-
-            <a href="AgregarQR.html" class="btn-option">
-                <div class="btn-icon"><i class="fa-solid fa-qrcode"></i></div>
-                <div class="btn-text">Agregar QR</div>
-            </a>
-
-            <a href="editable.html" class="btn-option">
-                <div class="btn-icon"><i class="fa-solid fa-receipt"></i></div>
-                <div class="btn-text">Editar Voucher</div>
-            </a>
-
-            <!-- BOTÓN DEFINIR PIN -->
-            <div class="btn-option" onclick="abrirModalPin()">
-                <div class="btn-icon"><i class="fa-solid fa-lock"></i></div>
-                <div class="btn-text">Definir Pin</div>
-            </div>
-
-            <div class="btn-option">
-                <div class="btn-icon"><i class="fa-solid fa-phone-volume"></i></div>
-                <div class="btn-text">Programar notificación n/a</div>
-            </div>
-
-            <div class="btn-option" onclick="abrirModalContactos()">
-                <div class="btn-icon"><i class="fa-solid fa-address-book"></i></div>
-                <div class="btn-text">Lista de Contactos</div>
-            </div>
-
-            <div class="btn-option" onclick="abrirModalConfig()">
-                <div class="btn-icon"><i class="fa-solid fa-gear"></i></div>
-                <div class="btn-text">Configuración Avanzada</div>
-            </div>
-
-            <div class="other-options-title">Otras opciones</div>
-
-            <div class="btn-cyan" onclick="forzarActualizacion()">
-                <div class="btn-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
-                <div>Actualizar App</div>
-            </div>
-
-            <a href="https://t.me/MaikolEsleiter" target="_blank" class="btn-cyan">
-                <div class="btn-icon"><i class="fa-solid fa-headset"></i></div>
-                <div>Contactar soporte</div>
-            </a>
-            
-            <div class="btn-cyan" onclick="window.location.href='sobre.html'">
-                <div class="btn-icon"><i class="fa-solid fa-circle-info"></i></div>
-                <div>Sobre esto</div>
-            </div>
+        
+        <div class="header-hero">
+            <i class="fa-solid fa-arrow-left back-icon" onclick="window.location.href='inicio.html'"></i>
+            <!-- Se mantiene la imagen superior original pero posicionada correctamente -->
+            <img src="img/mascota.png" alt="Opciones" class="logo-img-custom">
         </div>
 
+        <div class="info-card">
+            
+            <div class="section-title">Cuenta y Pagos</div>
+            <div class="settings-section">
+                <a href="editar_datos.html" class="setting-item">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-purple"><i class="fa-solid fa-user-pen"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Datos de mi cuenta</span>
+                            <span class="st-desc">Modifica tu perfil y saldo</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </a>
+
+                <a href="editable.html" class="setting-item">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-teal"><i class="fa-solid fa-receipt"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Editar Voucher</span>
+                            <span class="st-desc">Personaliza los comprobantes</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </a>
+
+                <div class="setting-item" onclick="abrirModalPin()">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-orange"><i class="fa-solid fa-lock"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Definir Pin</span>
+                            <span class="st-desc">Configura tu seguridad</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="section-title">Accesos y Contactos</div>
+            <div class="settings-section">
+                <a href="AgregarCm.html" class="setting-item">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-blue"><i class="fa-solid fa-user-plus"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Agregar contacto</span>
+                            <span class="st-desc">Añade usuarios rápidos</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </a>
+
+                <a href="AgregarQR.html" class="setting-item">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-red"><i class="fa-solid fa-qrcode"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Agregar QR</span>
+                            <span class="st-desc">Escanea y guarda códigos</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </a>
+
+                <div class="setting-item" onclick="abrirModalContactos()">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-gray"><i class="fa-solid fa-address-book"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Lista de Contactos</span>
+                            <span class="st-desc">Gestiona tus destinatarios</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+
+                <div class="setting-item" onclick="abrirModalConfig()">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-dark"><i class="fa-solid fa-gear"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Configuración Avanzada</span>
+                            <span class="st-desc">Ajustes del sistema</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="section-title">Sistema</div>
+            <div class="settings-section">
+                
+                <!-- Botón adaptado para que el script cambie el texto sin romperse -->
+                <div class="setting-item" onclick="forzarActualizacion()">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-teal"><i class="fa-solid fa-arrows-rotate"></i></div>
+                    </div>
+                    <div class="setting-text" style="flex: 1; margin-left: 15px;">
+                        <span class="st-title">Actualizar App</span>
+                        <span class="st-desc">Limpia el caché del sistema</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+
+                <a href="https://t.me/MaikolEsleiter" target="_blank" class="setting-item">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-blue"><i class="fa-solid fa-headset"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Contactar soporte</span>
+                            <span class="st-desc">Ayuda y asistencia técnica</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square arrow-icon"></i>
+                </a>
+                
+                <a href="sobre.html" class="setting-item">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-gray"><i class="fa-solid fa-circle-info"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Sobre esto</span>
+                            <span class="st-desc">Versión e información</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- ================= MODALES ORIGINALES INTACTOS ================= -->
         <div class="modal-overlay" id="contactsModalOverlay">
             <div class="modal-panel" onclick="event.stopPropagation()">
-                
                 <div class="modal-header">
                     <div class="modal-title">Contactos Personalizados</div>
                     <button class="close-modal-btn" onclick="cerrarModalContactos()"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-
                 <div class="switch-container">
                     <span class="switch-label">Activar Lista Propia</span>
                     <label class="switch">
@@ -287,7 +419,6 @@ input, textarea {
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 <div class="add-contact-form">
                     <div class="input-group">
                         <input type="text" id="inputNewName" class="contact-input" placeholder="Nombre completo" autocomplete="off">
@@ -295,20 +426,16 @@ input, textarea {
                     </div>
                     <button class="btn-add" id="btnAddContact" onclick="agregarContacto()">Añadir</button>
                 </div>
-
                 <div class="custom-contact-list" id="customContactList"></div>
-
             </div>
         </div>
 
         <div class="modal-overlay" id="configModalOverlay">
             <div class="modal-panel" onclick="event.stopPropagation()" style="height: 85vh;">
-                
                 <div class="modal-header">
                     <div class="modal-title">Configuración Avanzada</div>
                     <button class="close-modal-btn" onclick="cerrarModalConfig()"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-
                 <div class="switch-container">
                     <span class="switch-label">Censurar Nombres (En Baucher)</span>
                     <label class="switch">
@@ -316,7 +443,6 @@ input, textarea {
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 <div class="switch-container">
                     <span class="switch-label">Censurar nombres (En Monto)</span>
                     <label class="switch">
@@ -324,7 +450,6 @@ input, textarea {
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 <div style="font-weight: 700; color: #333; margin-top: 10px; margin-bottom: 10px; font-size: 15px;">Yaperos Frecuentes (Pantalla de Inicio)</div>
                 <div class="add-contact-form">
                     <div class="input-group">
@@ -333,13 +458,10 @@ input, textarea {
                     </div>
                     <button class="btn-add" id="btnAddFreq" onclick="agregarFrecuente()">Añadir</button>
                 </div>
-                
                 <div class="custom-contact-list" id="freqContactList"></div>
-
             </div>
         </div>
 
-        <!-- PANTALLA FULL SCREEN CAMBIAR PIN -->
         <div class="pin-screen-overlay" id="pinScreenModal">
             <div class="pin-header">
                 <i class="fa-solid fa-chevron-left pin-header-icon" onclick="cerrarModalPin()"></i>
@@ -353,9 +475,6 @@ input, textarea {
             </div>
         </div>
 
-        <!-- ================= MODALES CUSTOM ================= -->
-        
-        <!-- Modal Pregunta Inicial -->
         <div class="modal-overlay" id="customConfirmModal" style="z-index: 7000; align-items: center;">
             <div class="yape-alert-card">
                 <div class="yape-alert-title">¿Estás seguro?</div>
@@ -367,7 +486,6 @@ input, textarea {
             </div>
         </div>
 
-        <!-- Modal Digitar PIN -->
         <div class="modal-overlay" id="customPromptModal" style="z-index: 7000; align-items: center;">
             <div class="yape-alert-card">
                 <div class="yape-alert-title" id="promptTitle">Nuevo PIN</div>
@@ -380,7 +498,6 @@ input, textarea {
             </div>
         </div>
 
-        <!-- Alerta de Error Nativa -->
         <div class="modal-overlay" id="customAlertModal" style="z-index: 7000; align-items: center;">
             <div class="yape-alert-card-native">
                 <div class="yape-alert-text-native" id="alertText">Mensaje de error</div>
@@ -390,13 +507,12 @@ input, textarea {
             </div>
         </div>
 
-        <!-- Modal Sesión Múltiple / Inactividad (Seguridad) -->
         <div class="modal-overlay" id="multiDeviceModal" style="z-index: 8000; align-items: center;">
             <div class="yape-alert-card-native" style="align-items: center; text-align: center; border-radius: 16px;">
                 <div style="width: 60px; height: 60px; background-color: #f3e5f5; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-                    <i class="fa-solid fa-triangle-exclamation" style="color: #742284; font-size: 28px;"></i>
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #742385; font-size: 28px;"></i>
                 </div>
-                <div id="multiDeviceTitle" style="font-size: 18px; font-weight: 700; color: #742284; margin-bottom: 12px;">Sesión Cerrada</div>
+                <div id="multiDeviceTitle" style="font-size: 18px; font-weight: 700; color: #742385; margin-bottom: 12px;">Sesión Cerrada</div>
                 <div id="multiDeviceText" class="yape-alert-text-native" style="text-align: center; margin-bottom: 25px;">Por tu seguridad, hemos cerrado tu sesión porque detectamos un acceso desde otro dispositivo.</div>
                 <button style="background: #00BFA5; color: white; border: none; padding: 14px; width: 100%; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer;" onclick="cerrarSesionMulti()">ENTENDIDO</button>
             </div>
@@ -406,6 +522,7 @@ input, textarea {
 
     </div>
 
+    <!-- SCRIPT ORIGINAL INTACTO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -444,9 +561,6 @@ input, textarea {
             setTimeout(() => { toast.style.opacity = '0'; }, 2000);
         }
 
-        // =========================================
-        // GUARDIA DE SEGURIDAD (SESIÓN ÚNICA Y ESTADO ACTIVO)
-        // =========================================
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = doc(db, "clientes", user.email);
@@ -456,7 +570,6 @@ input, textarea {
                         const localToken = localStorage.getItem('sesion_token_yape');
                         const dbToken = userData.sesion_token;
 
-                        // 1. Filtro Anti-Clonación (Sesión Múltiple)
                         if (dbToken && localToken && dbToken !== localToken) {
                             localStorage.removeItem('sesion_iniciada');
                             document.getElementById('multiDeviceTitle').innerText = "Sesión Cerrada";
@@ -465,7 +578,6 @@ input, textarea {
                             return; 
                         }
 
-                        // 2. Filtro de Cuenta Activa
                         if (userData.estado !== "activo") {
                             localStorage.removeItem('sesion_iniciada');
                             document.getElementById('multiDeviceTitle').innerText = "Acceso Restringido";
@@ -488,9 +600,6 @@ input, textarea {
             });
         }
 
-        // =========================================
-        // LÓGICA DE DEFINIR PIN SIN ALERTAS NATIVAS
-        // =========================================
         const pinOverlay = document.getElementById('pinScreenModal');
         let currentPinStep = 1;
         let storedPin1 = "";
@@ -519,8 +628,6 @@ input, textarea {
             document.getElementById('promptTitle').innerText = "Nuevo PIN";
             document.getElementById('promptText').innerText = "Ingresa tu nuevo PIN de 6 dígitos";
             document.getElementById('customPromptModal').classList.add('show');
-            
-            // Auto focus
             setTimeout(() => document.getElementById('customPinInputBox').focus(), 100);
         }
 
@@ -548,10 +655,9 @@ input, textarea {
                     localStorage.setItem('yape_custom_pin', inputVal);
                     closePromptModal();
                     window.showToast("PIN definido correctamente");
-                    cerrarModalPin(); // Regresa al menú
+                    cerrarModalPin(); 
                 } else {
                     showCustomAlert("Los PINs ingresados no coinciden. Inténtalo de nuevo.");
-                    // Reiniciar proceso si se equivoca
                     currentPinStep = 1;
                     storedPin1 = "";
                     document.getElementById('customPinInputBox').value = "";
@@ -561,7 +667,6 @@ input, textarea {
             }
         }
 
-        // Mostrar Error Nativo
         window.showCustomAlert = function(msg) {
             document.getElementById('alertText').innerText = msg;
             document.getElementById('customAlertModal').classList.add('show');
@@ -571,10 +676,6 @@ input, textarea {
             document.getElementById('customAlertModal').classList.remove('show');
         }
 
-
-        // =========================================
-        // LÓGICA DE LA AGENDA PERSONALIZADA
-        // =========================================
         const overlay = document.getElementById('contactsModalOverlay');
         const switchToggle = document.getElementById('toggleContactsSwitch');
         const listContainer = document.getElementById('customContactList');
@@ -691,9 +792,6 @@ input, textarea {
             }
         }
 
-        // =========================================
-        // LÓGICA DE CONFIGURACIÓN AVANZADA Y FRECUENTES
-        // =========================================
         const configOverlay = document.getElementById('configModalOverlay');
         const switchCensura = document.getElementById('toggleCensuraSwitch');
         const switchCensuraBaucher = document.getElementById('toggleCensuraBaucherSwitch'); 
@@ -701,7 +799,6 @@ input, textarea {
         window.abrirModalConfig = function() {
             configOverlay.classList.add('show');
             
-            // Carga de Switches
             let isCensored = localStorage.getItem('yape_censurar_nombres');
             if (isCensored === null) {
                 isCensored = 'true';
@@ -716,7 +813,6 @@ input, textarea {
             }
             switchCensuraBaucher.checked = (isCensoredBaucher === 'true');
 
-            // Cargar lista de Frecuentes al abrir
             let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
             window.pintarListaFrecuentes(frecuentes);
         }
@@ -747,7 +843,6 @@ input, textarea {
             }
         });
 
-        // --- LÓGICA DE YAPEROS FRECUENTES ---
         const freqListContainer = document.getElementById('freqContactList');
         const btnAddFreq = document.getElementById('btnAddFreq');
 
@@ -794,7 +889,6 @@ input, textarea {
             btnAddFreq.disabled = true;
 
             try {
-                // Guarda en la base de datos de Firebase
                 await setDoc(doc(db, "usuarios_yape", numStr), { nombre: nombreStr });
 
                 let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
