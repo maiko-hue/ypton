@@ -36,12 +36,18 @@ input, textarea {
 }
         :root { --brand-purple: #742284; --brand-teal: #00BFA5; --bg-gray-bubble: #f2f3f5; --text-dark: #333; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(180deg, #581c78 0%, #742284 100%); background-attachment: fixed; color: var(--text-dark); min-height: 100dvh; width: 100%; overflow-x: hidden; position: relative; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(180deg, #5D037E 0%, #5D037E 100%); background-attachment: fixed; color: var(--text-dark); min-height: 100dvh; width: 100%; overflow-x: hidden; position: relative; }
         .container { width: 100%; min-height: 100dvh; display: flex; flex-direction: column; position: relative; padding: 10px 15px; z-index: 10; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 0px 5px 5px 5px; }
-        .logo-header-img { height: 80px; object-fit: contain; display: block; }
+        
+        /* HEADER ACTUALIZADO PARA QUEDAR SOBRE EL BANNER */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0px 5px 5px 5px; position: relative; z-index: 15; }
+        
+        /* NUEVO: ESTILO PARA EL BANNER DE FONDO SUPERIOR */
+        .top-bg-banner { position: absolute; top: 0; left: 0; width: 100%; height: 190px; object-fit: cover; object-position: top center; z-index: 1; pointer-events: none; }
+        
+        .logo-header-img { margin-top: 25px; height: 80px; object-fit: contain; display: block; }
         .close-btn { width: 30px; height: 30px; background-color: rgba(255, 255, 255, 0.25); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 18px; text-decoration: none; cursor: pointer; }
-        .success-card { background-color: white; border-radius: 20px; padding: 15px 20px 20px 20px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 10px; position: relative; z-index: 20; }
+        .success-card { margin-top: 80px; background-color: white; border-radius: 20px; padding: 15px 20px 20px 20px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 10px; position: relative; z-index: 20; }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         .yapeaste-title { color: var(--brand-purple); font-size: 24px; font-weight: 500; }
         .share-btn { display: flex; align-items: center; color: var(--brand-teal); font-weight: 700; font-size: 15px; cursor: pointer; background: none; border: none; }
@@ -113,6 +119,8 @@ input, textarea {
 <body>
 
     <div class="container">
+        <img src="img/pedropaulet100.jpg" alt="Banner Temático" class="top-bg-banner">
+
         <div class="header">
             <img src="img/animationyape.gif" alt="Yape" class="logo-header-img" id="logoGif">
             <img src="img/LogoYape.svg" alt="Yape" class="logo-header-img" id="logoStatic" style="display: none;">
