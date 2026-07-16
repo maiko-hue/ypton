@@ -43,11 +43,11 @@ input, textarea {
         .header { display: flex; justify-content: space-between; align-items: center; padding: 0px 5px 5px 5px; position: relative; z-index: 15; }
         
         /* NUEVO: ESTILO PARA EL BANNER DE FONDO SUPERIOR */
-        .top-bg-banner { position: absolute; top: 0; left: 0; width: 100%; height: 190px; object-fit: cover; object-position: top center; z-index: 1; pointer-events: none; }
+        .top-bg-banner { position: absolute; top: 15px; left: 5%; width: 90%; height: 160px; border-radius: 15px; object-fit: cover; object-position: top center; z-index: 1; pointer-events: none; }
         
-        .logo-header-img { margin-top: 25px; height: 80px; object-fit: contain; display: block; }
+        .logo-header-img { margin-top: 38px; margin-left: 15px; height: 80px; object-fit: contain; display: block; }
         .close-btn { width: 30px; height: 30px; background-color: rgba(255, 255, 255, 0.25); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 18px; text-decoration: none; cursor: pointer; }
-        .success-card { margin-top: 80px; background-color: white; border-radius: 20px; padding: 15px 20px 20px 20px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 10px; position: relative; z-index: 20; }
+        .success-card { margin-top: 60px; background-color: white; border-radius: 20px; padding: 15px 20px 20px 20px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 10px; position: relative; z-index: 20; }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         .yapeaste-title { color: var(--brand-purple); font-size: 24px; font-weight: 500; }
         .share-btn { display: flex; align-items: center; color: var(--brand-teal); font-weight: 700; font-size: 15px; cursor: pointer; background: none; border: none; }
@@ -119,7 +119,8 @@ input, textarea {
 <body>
 
     <div class="container">
-        <img src="img/pedropaulet100.jpg" alt="Banner Temático" class="top-bg-banner">
+        <!-- SE ASIGNA UN ID AL BANNER SUPERIOR PARA PODER CAMBIARLO POR JAVASCRIPT -->
+        <img src="img/10.jpg" alt="Banner Temático" class="top-bg-banner" id="topBgBanner">
 
         <div class="header">
             <img src="img/animationyape.gif" alt="Yape" class="logo-header-img" id="logoGif">
@@ -281,6 +282,27 @@ input, textarea {
         // 1. Mostrar Monto y Destino
         document.getElementById('finalAmount').textContent = montoFormateado;
         document.getElementById('finalDestino').textContent = destinoParam;
+
+        // --- NUEVA LÓGICA DE BANNERS DINÁMICOS SEGÚN EL MONTO ENVIADO ---
+        const valorNumericoMonto = parseFloat(monto);
+        const topBgBanner = document.getElementById('topBgBanner');
+
+        if (topBgBanner) {
+            if (valorNumericoMonto >= 0.10 && valorNumericoMonto <= 19.99) {
+                topBgBanner.src = "img/10.jpg";
+            } else if (valorNumericoMonto >= 20.00 && valorNumericoMonto <= 49.99) { // Ajustado a 49.99 para evitar vacíos
+                topBgBanner.src = "img/20.jpg";
+            } else if (valorNumericoMonto >= 50.00 && valorNumericoMonto <= 99.99) {
+                topBgBanner.src = "img/50.jpg";
+            } else if (valorNumericoMonto >= 100.00 && valorNumericoMonto <= 199.99) {
+                topBgBanner.src = "img/50.jpg";
+            } else if (valorNumericoMonto >= 200.00 && valorNumericoMonto <= 500.00) {
+                topBgBanner.src = "img/200.jpg";
+            } else {
+                // Por seguridad, si el monto es mayor a 500 o menor a 0.10, dejamos un banner por defecto
+                topBgBanner.src = "img/10.jpg";
+            }
+        }
 
         // 2. Lógica de Mostrar/Ocultar Celular CORREGIDA
         if (esQrParam || mostrarCelularParam === "false") {
