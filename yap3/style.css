@@ -1,4 +1,4 @@
-    * {
+* {
     /* Elimina el recuadro azul al hacer clic en celulares */
     -webkit-tap-highlight-color: transparent;
     outline: none !important;
@@ -213,24 +213,50 @@
         }
         
         .dot { 
-            width: 6px; 
-            height: 6px; 
+            width: 5px; 
+            height: 5px; 
             background-color: rgba(255, 255, 255, 0.4); 
             border-radius: 50%; 
             margin: 0 4px; 
+            position: relative;
+            overflow: hidden;
         }
 
         @keyframes growPill {
             from { width: 6px; background-color: rgba(255, 255, 255, 0.4); border-radius: 50%; }
-            to { width: 24px; background-color: white; border-radius: 10px; }
-        }
-        @keyframes shrinkPill {
-            from { width: 24px; background-color: white; border-radius: 10px; }
-            to { width: 6px; background-color: rgba(255, 255, 255, 0.4); border-radius: 50%; }
+            to { width: 40px; background-color: rgba(255, 255, 255, 0.4); border-radius: 10px; }
         }
         
-        .dot.active { animation: growPill 0.6s forwards cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .dot.was-active { animation: shrinkPill 0.6s forwards cubic-bezier(0.25, 0.8, 0.25, 1); }
+        @keyframes shrinkPill {
+            from { width: 24px; background-color: rgba(255, 255, 255, 0.4); border-radius: 10px; }
+            to { width: 6px; background-color: rgba(255, 255, 255, 0.4); border-radius: 50%; }
+        }
+
+        /* Nueva animación de carga de progreso (dura 4 segundos) */
+        @keyframes fillProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        .dot.active { 
+            animation: growPill 0.3s forwards cubic-bezier(0.25, 0.8, 0.25, 1); 
+        }
+        
+        /* El "relleno" que avanza dentro del punto activo */
+        .dot.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: white;
+            border-radius: 10px;
+            animation: fillProgress 4s linear forwards;
+        }
+
+        .dot.was-active { 
+            animation: shrinkPill 0.3s forwards cubic-bezier(0.25, 0.8, 0.25, 1); 
+        }
 
         /* --- SECCIÓN BLANCA --- */
         .white-section {
@@ -351,7 +377,7 @@
         }
 
 
-        .footer-spacer { flex-grow: 1; } 
+        .footer-spacer { flex-grow: 1; min-height: 20px;} 
 
         .footer-buttons-container {
             display: flex;
