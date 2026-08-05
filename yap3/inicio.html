@@ -6,6 +6,30 @@
     if (!localStorage.getItem('sesion_iniciada')) {
         window.location.href = 'index.html';
     }
+    
+    // --- LÓGICA DE APLICACIÓN DE ZOOM (SE DEBE EJECUTAR RÁPIDO) ---
+    // Lee el zoom configurado en opciones y lo aplica al :root
+    document.addEventListener("DOMContentLoaded", () => {
+        const zoomLevel = localStorage.getItem('yape_zoom_level') || '1';
+        
+        // Aplicamos el zoom usando la propiedad CSS 'zoom' al contenedor principal.
+        // Si no es soportado, usamos 'transform: scale' como fallback.
+        const appContainer = document.querySelector('.app-container');
+        if(appContainer) {
+            appContainer.style.zoom = zoomLevel;
+            
+            // ¡AQUÍ ESTÁ LA MAGIA! Ajustar la altura para compensar el encogimiento en TODOS los navegadores
+            if(zoomLevel !== '1') {
+                appContainer.style.height = `calc(100dvh / ${zoomLevel})`;
+            }
+
+            // Fallback para Firefox u otros navegadores que no soportan zoom
+            if (getComputedStyle(appContainer).zoom === undefined || getComputedStyle(appContainer).zoom === '') {
+                 appContainer.style.transform = `scale(${zoomLevel})`;
+                 appContainer.style.transformOrigin = 'top center';
+            }
+        }
+    });
     </script>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="img/favicon.png" type="image/png">

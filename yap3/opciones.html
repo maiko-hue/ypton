@@ -212,6 +212,43 @@
             margin: 15px 0;
         }
 
+        /* --- CONTROL DE ZOOM --- */
+        .zoom-container {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .zoom-btn {
+            flex: 1;
+            padding: 12px 0;
+            border: none;
+            background: var(--bg-gray);
+            color: var(--text-muted);
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .zoom-btn i {
+            font-size: 16px;
+        }
+
+        .zoom-btn.active {
+            background: var(--brand-teal);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 191, 165, 0.3);
+        }
+
         /* =========================================
            ESTILOS ORIGINALES DE MODALES INTACTOS
            ========================================= */
@@ -275,61 +312,6 @@
         .yape-btn-text-only { background: transparent; border: none; color: #00BFA5; font-weight: 700; font-size: 14px; cursor: pointer; text-transform: uppercase; padding: 8px; transition: 0.2s; }
         .yape-btn-text-only:active { background: #f0f0f0; border-radius: 4px; }
         @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        /* --- ESTILOS DEL BANNER DE PUBLICIDAD --- */
-        .ad-container {
-            position: relative;
-            width: 85%;
-            max-width: 340px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .ad-timer {
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
-        .ad-img-wrapper {
-            position: relative;
-            width: 100%;
-        }
-        .ad-img {
-            width: 100%;
-            height: auto;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            /* Importante: para que el banner se vea pero no se descargue */
-            pointer-events: none;
-        }
-        .close-ad-btn {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: white;
-            color: #333;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 10;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.2s;
-        }
-        .close-ad-btn:active {
-            transform: scale(0.9);
-        }
     </style>
 </head>
 <body>
@@ -429,7 +411,7 @@
 
             <hr class="divider">
 
-            <!-- NUEVA SECCIÓN MÁS DE APPSREBORN -->
+            <!-- SECCIÓN MÁS DE APPSREBORN -->
             <div class="section-title">Mas de AppsReborn</div>
             <div class="settings-section">
                 <a href="https://reniec.site" target="_blank" class="setting-item">
@@ -442,6 +424,31 @@
                     </div>
                     <i class="fa-solid fa-arrow-up-right-from-square arrow-icon"></i>
                 </a>
+            </div>
+
+            <hr class="divider">
+
+            <!-- NUEVA SECCIÓN ACCESIBILIDAD (ZOOM) -->
+            <div class="section-title">Accesibilidad (Zoom Inicio)</div>
+            <div class="settings-section">
+                <div class="zoom-container">
+                    <button class="zoom-btn" id="zoom-85" onclick="setZoom('0.85', '85')">
+                        <i class="fa-solid fa-magnifying-glass-minus"></i>
+                        <span style="font-size: 11px;">Pequeño</span>
+                    </button>
+                    <button class="zoom-btn" id="zoom-100" onclick="setZoom('1', '100')">
+                        <i class="fa-solid fa-expand"></i>
+                        <span style="font-size: 11px;">Normal</span>
+                    </button>
+                    <button class="zoom-btn" id="zoom-115" onclick="setZoom('1.15', '115')">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        <span style="font-size: 11px;">Grande</span>
+                    </button>
+                    <button class="zoom-btn" id="zoom-130" onclick="setZoom('1.3', '130')">
+                        <i class="fa-solid fa-magnifying-glass-plus" style="transform: scale(1.2);"></i>
+                        <span style="font-size: 11px;">Extra</span>
+                    </button>
+                </div>
             </div>
 
             <hr class="divider">
@@ -484,19 +491,6 @@
             </div>
         </div>
     </div> 
-
-    <!-- MODAL DE PUBLICIDAD (BANNER) -->
-    <div class="modal-overlay" id="adBannerModal" style="z-index: 9999; align-items: center;">
-        <div class="ad-container">
-            <div class="ad-timer" id="adTimerText">Cerrando en 10s</div>
-            <div class="ad-img-wrapper">
-                <button class="close-ad-btn" onclick="cerrarBannerAd()"><i class="fa-solid fa-xmark"></i></button>
-                <a href="https://reniec.site" target="_blank">
-    <img src="img/ad1.png" alt="Publicidad" class="ad-img">
-</a>
-            </div>
-        </div>
-    </div>
 
     <!-- RESTO DE MODALES ORIGINALES -->
     <div class="modal-overlay" id="contactsModalOverlay">
@@ -1018,33 +1012,32 @@
                 console.error("Error al borrar en Firebase:", error);
             }
         }
-    </script>
-    
-    <!-- LÓGICA DEL BANNER DE PUBLICIDAD (Independiente) -->
-    <script>
+
+        // --- LÓGICA DE CONTROL DE ZOOM ---
+        window.setZoom = function(level, idSuffix) {
+            // Guardamos el nivel en localstorage
+            localStorage.setItem('yape_zoom_level', level);
+            
+            // Apagamos todos los botones
+            document.querySelectorAll('.zoom-btn').forEach(btn => btn.classList.remove('active'));
+            // Encendemos el botón clickeado
+            document.getElementById('zoom-' + idSuffix).classList.add('active');
+            
+            window.showToast("Tamaño de Inicio actualizado");
+        }
+
+        // Al cargar la página, pintamos de verde el botón correcto
         document.addEventListener("DOMContentLoaded", () => {
-            const adModal = document.getElementById('adBannerModal');
-            const timerText = document.getElementById('adTimerText');
-            let timeLeft = 10;
-            let adInterval;
-
-            // Mostrar el banner solo si el usuario no tiene la sesión restringida
-            setTimeout(() => {
-                adModal.classList.add('show');
-                
-                adInterval = setInterval(() => {
-                    timeLeft--;
-                    if(timeLeft > 0) {
-                        timerText.innerText = `Cerrando en ${timeLeft}s`;
-                    } else {
-                        cerrarBannerAd();
-                    }
-                }, 1000);
-            }, 300); // Pequeño delay inicial
-
-            window.cerrarBannerAd = function() {
-                adModal.classList.remove('show');
-                clearInterval(adInterval);
+            let currentZoom = localStorage.getItem('yape_zoom_level') || '1';
+            let idSuffix = '100'; // Normal por defecto
+            
+            if (currentZoom === '0.85') idSuffix = '85';
+            if (currentZoom === '1.15') idSuffix = '115';
+            if (currentZoom === '1.3') idSuffix = '130';
+            
+            let activeBtn = document.getElementById('zoom-' + idSuffix);
+            if(activeBtn) {
+                activeBtn.classList.add('active');
             }
         });
     </script>
