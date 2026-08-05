@@ -14,89 +14,151 @@
     <link rel="icon" href="img/logo_yape_header.png" type="image/png">
     <style>
         * {
-    /* Elimina el recuadro azul al hacer clic en celulares */
-    -webkit-tap-highlight-color: transparent;
-    outline: none !important;
-    
-    /* Bloquea la selección de texto en toda la app */
-    -webkit-user-select: none; 
-    -moz-user-select: none; 
-    -ms-user-select: none; 
-    user-select: none; 
-}
+            /* Elimina el recuadro azul al hacer clic en celulares */
+            -webkit-tap-highlight-color: transparent;
+            outline: none !important;
+            
+            /* Bloquea la selección de texto en toda la app */
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none; 
+            box-sizing: border-box;
+        }
 
-/* Excepción para que sí se pueda seleccionar/escribir en los inputs */
-input, textarea {
-    -webkit-user-select: auto;
-    -moz-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
-}
+        /* Excepción para que sí se pueda seleccionar/escribir en los inputs */
+        input, textarea, select {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
+
         :root {
-            --brand-purple: #742284;
+            --brand-purple: #742385;
+            --brand-dark-purple: #511973;
+            --brand-teal: #00BFA5;
             --brand-lilac-inactive: #bfaec4;
-            --bg-app: #f0f1f3;
+            --bg-gray: #f2f4f6;
             --text-dark: #333;
-            --input-bg: #ffffff;
+            --text-muted: #888;
+            --border-color: #e0e0e0;
+            --input-bg: #f9f9fb;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-dark);
-            min-height: 100dvh;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
+        img {
+            -webkit-touch-callout: none !important;
+            -webkit-user-drag: none !important;
+            -webkit-user-select: none !important;
+            pointer-events: none;
         }
 
-        .header {
-            background-color: var(--brand-purple);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        body { 
+            overscroll-behavior-y: none;
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg-gray); 
+            color: var(--text-dark); 
+            min-height: 100vh;
+        }
+
+        .container { 
+            max-width: 480px; 
+            margin: 0 auto; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
             position: relative;
-            height: 60px;
+        }
+
+        /* --- HEADER HERO (Fondo curvo morado) --- */
+        .header-hero {
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-dark-purple) 100%);
+            height: 220px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(81, 25, 115, 0.3);
             flex-shrink: 0;
+            padding-bottom: 20px;
         }
 
-        .back-btn {
+        .back-icon {
             position: absolute;
-            left: 20px;
+            top: 25px;
+            left: 25px;
             color: white;
-            font-size: 20px;
-            text-decoration: none;
-            background: none; border: none; cursor: pointer;
+            font-size: 24px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+        .back-icon:active { background: rgba(255,255,255,0.4); }
+
+        .logo-img-custom {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin-top: -10px;
+            opacity: 0.95;
+            filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.2));
         }
 
-        .header-title { font-size: 18px; font-weight: 500; }
-
-        .content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+        /* --- TARJETA BLANCA FLOTANTE --- */
+        .info-card {
+            background: white;
+            margin: -60px 20px 20px 20px;
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.4s ease-out;
+            padding-bottom: 30px;
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--brand-purple);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        /* --- ELEMENTOS DEL FORMULARIO --- */
         .custom-input {
             width: 100%;
             background-color: var(--input-bg);
-            border: 1px solid transparent;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 16px;
             font-size: 15px;
             color: #555;
             font-family: inherit;
             box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: border-color 0.3s;
         }
-        .custom-input:focus { border-color: #ddd; }
-        .custom-input::placeholder { color: #aaa; }
+        .custom-input:focus { border-color: var(--brand-teal); }
+        .custom-input::placeholder { color: #aaa; font-weight: 400; }
         
         .custom-input:disabled {
             background-color: #e9ecef;
@@ -119,20 +181,19 @@ input, textarea {
             margin-bottom: 5px;
         }
         
-        .checkbox-label { font-size: 14px; color: #333; margin-left: 10px; font-weight: 400; }
-
+        .checkbox-label { font-size: 14px; color: #333; margin-left: 10px; font-weight: 500; }
         input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--brand-purple); cursor: pointer; }
 
-        /* --- NUEVO: SWITCH CENSURAR --- */
+        /* SWITCH CENSURAR */
         .censor-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 5px;
-            margin-top: -5px; /* Pegadito al input de nombre */
+            margin-top: -10px; 
             margin-bottom: 5px;
         }
-        .censor-text { font-size: 14px; color: #666; }
+        .censor-text { font-size: 13px; color: var(--text-muted); font-weight: 600; }
         
         .toggle-switch {
             width: 40px; height: 22px; background: #ccc; border-radius: 20px; position: relative; transition: background 0.3s; cursor: pointer;
@@ -143,142 +204,145 @@ input, textarea {
         }
         .toggle-switch.active .toggle-knob { left: 20px; }
 
-
-        .datetime-container { display: none; gap: 10px; margin-bottom: 10px; }
+        .datetime-container { display: none; gap: 10px; margin-bottom: 5px; }
         .datetime-container.show { display: flex; }
 
         .amount-container {
-            background-color: white;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 15px;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
-            margin-bottom: 5px;
         }
-        .currency-symbol { font-size: 28px; color: var(--brand-purple); font-weight: 500; margin-right: 10px; }
-        .amount-input { border: none; font-size: 32px; width: 100%; outline: none; color: #555; font-weight: 400; }
+        .currency-symbol { font-size: 28px; color: var(--brand-purple); font-weight: 600; margin-right: 10px; }
+        .amount-input { border: none; background: transparent; font-size: 32px; width: 100%; outline: none; color: #333; font-weight: 600; }
+        .amount-input::placeholder { color: #ccc; font-weight: 400; }
 
-        .helper-text { font-size: 12px; color: #777; margin-bottom: 10px; }
+        .helper-text { font-size: 12px; color: #999; margin-top: -10px; margin-bottom: 5px; margin-left: 5px; }
 
         .operation-row { display: flex; gap: 10px; align-items: center; }
         
         .btn-regenerate {
-            background-color: #6a1b9a;
+            background-color: var(--brand-purple);
             color: white;
             border: none;
             border-radius: 12px;
-            padding: 0 20px;
+            padding: 0 15px;
             height: 52px;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 13px;
             cursor: pointer;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s, transform 0.1s;
         }
-        .btn-regenerate:disabled {
-            background-color: #ccc;
-            cursor: default;
-        }
+        .btn-regenerate:active { transform: scale(0.95); }
+        .btn-regenerate:disabled { background-color: #ccc; cursor: default; transform: none; }
 
-        .disclaimer { font-size: 11px; color: #888; line-height: 1.3; margin-top: 5px; }
+        .disclaimer { font-size: 11px; color: #999; line-height: 1.4; margin-top: -5px; padding: 0 5px; }
 
-        /* MODIFICADO: Aumenté el padding inferior para dar espacio a los botones de navegación */
-        .footer { padding: 20px 20px 45px 20px; background-color: var(--bg-app); }
-
+        /* BOTÓN YAPEAR */
         .yapear-btn {
             width: 100%;
             background-color: var(--brand-lilac-inactive); 
             color: white;
             border: none;
-            padding: 16px;
-            border-radius: 25px;
+            padding: 18px;
+            border-radius: 30px;
             font-size: 18px;
-            font-weight: 500;
+            font-weight: 700;
             cursor: pointer;
             pointer-events: none;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s;
+            margin-top: 10px;
         }
         
         .yapear-btn.active {
-            background-color: var(--brand-purple);
+            background-color: var(--brand-teal);
             pointer-events: all;
-            box-shadow: 0 4px 10px rgba(116, 34, 132, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3);
         }
-        .yapear-btn.active:active { transform: scale(0.98); }
+        .yapear-btn.active:active { transform: scale(0.97); background-color: #00a892; }
 
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <button class="back-btn" onclick="window.location.href='inicio.html'">
-            <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <div class="header-title">Yapear a</div>
-    </div>
+    <div class="container">
+        
+        <!-- HEADER ESTILO OPCIONES.HTML -->
+        <div class="header-hero">
+            <i class="fa-solid fa-arrow-left back-icon" onclick="window.location.href='inicio.html'"></i>
+            <img src="img/secondlogo.png" alt="Logo" class="logo-img-custom">
+        </div>
 
-    <div class="content">
-        <input type="text" class="custom-input" id="inpNombre" placeholder="Nombre y Apellido" value="">
+        <!-- TARJETA FLOTANTE CON EL FORMULARIO -->
+        <div class="info-card">
+            
+            <div class="section-title">Edita tus comprobantes aqui:</div>
 
-        <div class="censor-container">
-            <span class="censor-text">Censurar nombre (*)</span>
-            <div class="toggle-switch active" id="toggleCensor">
-                <div class="toggle-knob"></div>
+            <input type="text" class="custom-input" id="inpNombre" placeholder="Nombre y Apellido" value="">
+
+            <div class="censor-container">
+                <span class="censor-text">Censurar nombre (*)</span>
+                <div class="toggle-switch active" id="toggleCensor">
+                    <div class="toggle-knob"></div>
+                </div>
             </div>
+
+            <input type="tel" class="custom-input" id="inpCelular" placeholder="Celular" maxlength="9" value="">
+
+            <select class="custom-input custom-select" id="bankSelect">
+                <option value="Yape">Yape</option>
+                <option value="Plin">Plin</option>
+                <option value="IziPay">IziPay</option>
+                <option value="Bim">Bim</option>
+                <option value="Tunki">Tunki</option>
+                <option value="Agora / Oh!">Agora / Oh!</option>
+                <option value="BCP">BCP</option>
+                <option value="BBVA">BBVA</option>
+                <option value="Interbank">Interbank</option>
+                <option value="Financiera Efectiva">Financiera Efectiva</option>
+                <option value="Dale">Dale</option>
+            </select>
+
+            <input type="text" class="custom-input" id="inpMensaje" placeholder="Agregar mensaje (opcional)">
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="checkFecha">
+                <label for="checkFecha" class="checkbox-label">Elegir fecha y hora manualmente</label>
+            </div>
+
+            <div class="datetime-container" id="dateInputs">
+                <input type="date" class="custom-input" id="customDate">
+                <input type="time" class="custom-input" id="customTime">
+            </div>
+
+            <div class="amount-container">
+                <span class="currency-symbol">S/</span>
+                <input type="number" class="amount-input" id="inpMonto" placeholder="0.00" value="">
+            </div>
+            <div class="helper-text">Puedes Yapear hasta S/500 diarios</div>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="checkOp" checked>
+                <label for="checkOp" class="checkbox-label">Ingresar N° de operación manual</label>
+            </div>
+
+            <div class="operation-row">
+                <input type="number" class="custom-input" id="opInput" value="01334523">
+                <button class="btn-regenerate" id="regenBtn">Regenerar</button>
+            </div>
+
+            <div class="disclaimer">
+                Se usará como "Nro. de operación". En Yape, el "Código de seguridad" son los 3 últimos dígitos.
+            </div>
+
+            <button class="yapear-btn" id="btnFinalYapear">Yapear</button>
         </div>
 
-        <input type="tel" class="custom-input" id="inpCelular" placeholder="Celular" maxlength="9" value="">
-
-        <select class="custom-input custom-select" id="bankSelect">
-            <option value="Yape">Yape</option>
-            <option value="Plin">Plin</option>
-            <option value="IziPay">IziPay</option>
-            <option value="Bim">Bim</option>
-            <option value="Tunki">Tunki</option>
-            <option value="Agora / Oh!">Agora / Oh!</option>
-            <option value="BCP">BCP</option>
-            <option value="BBVA">BBVA</option>
-            <option value="Interbank">Interbank</option>
-            <option value="Financiera Efectiva">Financiera Efectiva</option>
-            <option value="Dale">Dale</option>
-        </select>
-
-        <input type="text" class="custom-input" id="inpMensaje" placeholder="Agregar mensaje (opcional)">
-
-        <div class="checkbox-row">
-            <input type="checkbox" id="checkFecha">
-            <label for="checkFecha" class="checkbox-label">Elegir fecha y hora manualmente</label>
-        </div>
-
-        <div class="datetime-container" id="dateInputs">
-            <input type="date" class="custom-input" id="customDate">
-            <input type="time" class="custom-input" id="customTime">
-        </div>
-
-        <div class="amount-container">
-            <span class="currency-symbol">S/</span>
-            <input type="number" class="amount-input" id="inpMonto" placeholder="500" value="">
-        </div>
-        <div class="helper-text">Puedes Yapear hasta S/500 diarios</div>
-
-        <div class="checkbox-row">
-            <input type="checkbox" id="checkOp" checked>
-            <label for="checkOp" class="checkbox-label">Ingresar N° de operación manualmente</label>
-        </div>
-
-        <div class="operation-row">
-            <input type="number" class="custom-input" id="opInput" value="01334523">
-            <button class="btn-regenerate" id="regenBtn">Regenerar</button>
-        </div>
-
-        <div class="disclaimer">
-            Se usará como "Nro. de operación". En Yape, el "Código de seguridad" son los 3 últimos dígitos.
-        </div>
     </div>
 
-    <div class="footer">
-        <button class="yapear-btn" id="btnFinalYapear">Yapear</button>
-    </div>
-
+    <!-- LÓGICA DE JAVASCRIPT INTACTA -->
     <script>
         // --- Referencias ---
         const inpNombre = document.getElementById('inpNombre');
@@ -315,7 +379,7 @@ input, textarea {
         const minutes = String(now.getMinutes()).padStart(2, '0');
         customTime.value = `${hours}:${minutes}`;
 
-        // --- Validar Botón "Yapear" (Color Saturado) ---
+        // --- Validar Botón "Yapear" ---
         function validateForm() {
             const hasName = inpNombre.value.trim().length > 0;
             const hasCell = inpCelular.value.length === 9; 
