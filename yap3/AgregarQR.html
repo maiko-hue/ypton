@@ -146,7 +146,7 @@
             margin-bottom: 15px;
         }
 
-        /* --- ZONA DE SUBIDA DE IMAGEN --- */
+        /* --- ZONA DE SUBIDA DE IMAGEN (ACTUALIZADA) --- */
         .upload-area {
             background-color: var(--input-bg); 
             border: 2px dashed #ccc; 
@@ -157,19 +157,39 @@
             justify-content: center; 
             align-items: center;
             margin-bottom: 20px; 
-            cursor: pointer; 
             position: relative; 
             overflow: hidden;
             transition: all 0.3s ease;
             box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
-        .upload-area:hover { border-color: var(--brand-purple); background-color: rgba(116, 34, 132, 0.02); }
         
-        .upload-icon { font-size: 40px; color: var(--brand-purple); margin-bottom: 10px; opacity: 0.8;}
+        .scan-options-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .scan-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+
+        .scan-action:active {
+            background: rgba(116, 34, 132, 0.1);
+        }
+        
+        .upload-icon { font-size: 35px; color: var(--brand-purple); margin-bottom: 10px; opacity: 0.8;}
         .upload-text { font-size: 14px; color: var(--text-muted); font-weight: 600;}
         
         #previewImg {
-            width: 100%; height: 100%; object-fit: contain; position: absolute; top:0; left:0; display: none; background: transparent;
+            width: 100%; height: 100%; object-fit: contain; position: absolute; top:0; left:0; display: none; background: transparent; cursor: pointer;
         }
 
         /* --- FORMULARIO Y CAMPOS --- */
@@ -323,11 +343,30 @@
             <div class="section-title">Nuevo Código QR</div>
 
             <label class="label">Imagen del QR</label>
-            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                <div class="upload-text">Toca para subir imagen</div>
-                <img id="previewImg" src="" alt="QR Preview">
-                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewFile()">
+            <div class="upload-area" id="uploadArea">
+                
+                <div id="uploadPlaceholder" style="width: 100%; text-align: center;">
+                    <div class="scan-options-container">
+                        <!-- OPCIÓN CÁMARA DIRECTA -->
+                        <div class="scan-action" onclick="document.getElementById('cameraInput').click()">
+                            <i class="fa-solid fa-camera upload-icon"></i>
+                            <div class="upload-text">Tomar Foto</div>
+                        </div>
+                        
+                        <!-- OPCIÓN GALERÍA -->
+                        <div class="scan-action" onclick="document.getElementById('fileInput').click()">
+                            <i class="fa-solid fa-images upload-icon"></i>
+                            <div class="upload-text">Subir Galería</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 11px; color: #aaa; margin-top: 5px;">(Toca la imagen para borrarla si te equivocas)</div>
+                </div>
+
+                <img id="previewImg" src="" alt="QR Preview" onclick="resetUpload()">
+                
+                <!-- INPUTS OCULTOS (Uno normal y uno configurado para abrir cámara) -->
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewFile('fileInput')">
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="previewFile('cameraInput')">
             </div>
 
             <div class="form-group">
@@ -370,14 +409,25 @@
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
         }
 
+        // --- FUNCIÓN PARA LIMPIAR LA SELECCIÓN ---
+        window.resetUpload = function() {
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('previewImg').src = '';
+            document.getElementById('uploadPlaceholder').style.display = 'block';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('cameraInput').value = '';
+            scannedQrCode = null;
+        }
+
         // --- FUNCIÓN PARA PREVISUALIZAR Y LEER EL QR ---
-        window.previewFile = function() {
+        window.previewFile = function(inputId) {
             const preview = document.getElementById('previewImg');
-            const file = document.querySelector('input[type=file]').files[0];
+            const file = document.getElementById(inputId).files[0];
             const reader = new FileReader();
 
             reader.addEventListener("load", function () {
-                // 1. Mostrar imagen
+                // 1. Ocultar los botones y mostrar imagen
+                document.getElementById('uploadPlaceholder').style.display = 'none';
                 preview.src = reader.result;
                 preview.style.display = 'block';
 
@@ -418,9 +468,13 @@
             const imgCheck = document.getElementById('previewImg').src;
             const loader = document.getElementById('pacmanLoader');
 
+            // Verifica si subió archivo por la galería O por la cámara
+            const fileLen = document.getElementById('fileInput').files.length;
+            const camLen = document.getElementById('cameraInput').files.length;
+
             // VALIDACIÓN
-            if(!imgCheck || imgCheck === "" || document.getElementById('fileInput').files.length === 0) {
-                showToast("Falta subir la imagen", "error");
+            if(!imgCheck || imgCheck === "" || (fileLen === 0 && camLen === 0)) {
+                showToast("Falta capturar o subir la imagen", "error");
                 return;
             }
             if(name.trim() === "") {
