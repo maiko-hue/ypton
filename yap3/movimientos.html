@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script type="module" src="seguridad.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Yape - Movimientos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="img/favicon.png" type="image/png">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #FFFFFF;
+            color: #333;
+        }
+
+        /* HEADER */
+        .header {
+            background-color: #742284;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-icon {
+            font-size: 20px;
+            cursor: pointer;
+            width: 30px;
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            flex: 1;
+        }
+
+        .header-right-icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .content {
+            padding: 15px 20px;
+            padding-bottom: 40px;
+        }
+
+        /* BANNER */
+        .banner {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* ESTILOS DE LISTA DE MOVIMIENTOS */
+        .month-group {
+            margin-bottom: 15px;
+        }
+
+        .month-title {
+            color: #742284;
+            font-size: 14.5px;
+            font-weight: 400;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .movement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+        }
+
+        .movement-item:active {
+            background-color: #f9f9f9;
+        }
+
+        .mov-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .mov-name {
+            font-size: 15px;
+            color: #111;
+            font-weight: 400;
+        }
+
+        .mov-time {
+            font-size: 12.5px;
+            color: #888;
+        }
+
+        .mov-amount {
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .amount-red {
+            color: #e53935;
+        }
+
+        .amount-black {
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            font-size: 15px;
+        }
+
+        /* ANIMACIÓN SKELETON */
+        .skeleton-wrapper {
+            display: block;
+        }
+
+        .skeleton {
+            background: #eee;
+            background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+            border-radius: 4px;
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position-x: -200%; }
+        }
+
+        .sk-month { width: 110px; height: 18px; margin-bottom: 15px; margin-top: 10px; }
+        .sk-name { width: 130px; height: 16px; margin-bottom: 6px; }
+        .sk-time { width: 85px; height: 12px; }
+        .sk-amount { width: 75px; height: 16px; }
+        
+        .sk-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        #movementsData {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <i class="fa-solid fa-arrow-left header-icon" onclick="window.location.href='inicio.html'"></i>
+        <div class="header-title">Movimientos</div>
+        <div class="header-right-icons">
+            <i class="fa-regular fa-envelope header-icon" style="font-size: 18px;"></i>
+            <i class="fa-solid fa-sliders header-icon" style="font-size: 17px;"></i>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Banner Metropolitano -->
+        <img src="img/metropolitano.webp" class="banner" alt="Promo Metropolitano">
+
+        <!-- Contenedor Skeleton (Cargando) -->
+        <div id="skeletonLoader" class="skeleton-wrapper">
+            <div class="skeleton sk-month"></div>
+            
+            <div class="sk-item">
+                <div class="mov-left">
+                    <div class="skeleton sk-name"></div>
+                    <div class="skeleton sk-time"></div>
+                </div>
+                <div class="skeleton sk-amount"></div>
+            </div>
+            
+            <div class="sk-item">
+                <div class="mov-left">
+                    <div class="skeleton sk-name" style="width: 150px;"></div>
+                    <div class="skeleton sk-time" style="width: 95px;"></div>
+                </div>
+                <div class="skeleton sk-amount"></div>
+            </div>
+
+            <div class="skeleton sk-month" style="margin-top: 25px;"></div>
+            
+            <div class="sk-item" style="border-bottom: none;">
+                <div class="mov-left">
+                    <div class="skeleton sk-name" style="width: 110px;"></div>
+                    <div class="skeleton sk-time"></div>
+                </div>
+                <div class="skeleton sk-amount"></div>
+            </div>
+        </div>
+
+        <!-- Contenedor de Movimientos Reales -->
+        <div id="movementsData">
+            <!-- Los movimientos se inyectarán aquí mediante JS -->
+        </div>
+    </div>
+
+    <script>
+        // Mapeo robusto de meses para evitar duplicados por variaciones de texto
+        const monthMap = {
+            "ene": "Enero", "feb": "Febrero", "mar": "Marzo", "abr": "Abril",
+            "may": "Mayo", "jun": "Junio", "jul": "Julio", "ago": "Agosto",
+            "sep": "Setiembre", "sept": "Setiembre", "oct": "Octubre", 
+            "nov": "Noviembre", "dic": "Diciembre"
+        };
+
+        // Obtenemos la fecha de hoy para el formato "Hoy 12:09 pm"
+        const now = new Date();
+        const mesesCortos = ["ene.", "feb.", "mar.", "abr.", "may.", "jun.", "jul.", "ago.", "sep.", "oct.", "nov.", "dic."];
+        const hoyString = `${now.getDate()} ${mesesCortos[now.getMonth()]} ${now.getFullYear()}`;
+
+        // Función principal para renderizar movimientos
+        function renderizarMovimientos() {
+            const container = document.getElementById('movementsData');
+            container.innerHTML = ''; // Limpiar data actual
+            
+            let movimientos = JSON.parse(localStorage.getItem('yape_movements')) || [];
+
+            if (movimientos.length === 0) {
+                container.innerHTML = '<div class="empty-state">No tienes movimientos recientes.</div>';
+                return;
+            }
+
+            // 1. Agrupar movimientos por Mes y Año
+            const grupos = {};
+            
+            movimientos.forEach(mov => {
+                let fechaArr = mov.fechaSolo ? mov.fechaSolo.split(' ') : [];
+                let groupKey = "Historial"; // Fallback por si la fecha está mal guardada
+                
+                if(fechaArr.length === 3) {
+                    // Limpiamos la cadena quitando puntos para una mejor coincidencia
+                    let mesCorto = fechaArr[1].toLowerCase().replace(/\./g, '');
+                    let mesLargo = monthMap[mesCorto] || fechaArr[1];
+                    // Aseguramos que empiece con mayúscula por si acaso
+                    mesLargo = mesLargo.charAt(0).toUpperCase() + mesLargo.slice(1);
+                    groupKey = `${mesLargo} ${fechaArr[2]}`; // Ej: "Setiembre 2026"
+                }
+                
+                if(!grupos[groupKey]) {
+                    grupos[groupKey] = [];
+                }
+                grupos[groupKey].push(mov);
+            });
+
+            // 2. Generar el HTML agrupado
+            for (const [mesAño, listaMovimientos] of Object.entries(grupos)) {
+                
+                // Crear título del mes
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'month-group';
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'month-title';
+                titleDiv.textContent = mesAño;
+                monthDiv.appendChild(titleDiv);
+
+                // Crear los items dentro de ese mes
+                listaMovimientos.forEach((mov) => {
+                    const item = document.createElement('div');
+                    item.className = 'movement-item';
+
+                    // Formateo del Nombre (Censurando apellido con *)
+                    let nombreMostrado = mov.nombre;
+                    const partes = mov.nombre.split(" ");
+                    if (partes.length > 1) {
+                        nombreMostrado = `${partes[0]} ${partes[1].substring(0, 3)}*`;
+                    }
+                    if (mov.destino && mov.destino !== "Yape") {
+                        nombreMostrado = `${mov.destino} - ${nombreMostrado}`;
+                    }
+
+                    // Formateo de la Hora/Fecha ("Hoy 12:09 pm" o "26 sep. 12:09 pm")
+                    let timeDisplay = "";
+                    let horaLimpia = (mov.horaSolo || '').toLowerCase(); // Para asegurar am/pm en minuscula
+                    
+                    if(mov.fechaSolo === hoyString) {
+                        timeDisplay = `Hoy ${horaLimpia}`;
+                    } else {
+                        // Si no es hoy, mostramos la fecha corta + hora
+                        let fechaCorta = mov.fechaSolo ? mov.fechaSolo.split(' ').slice(0,2).join(' ') : "";
+                        timeDisplay = `${fechaCorta} ${horaLimpia}`;
+                    }
+
+                    // Formateo del Monto y Signo
+                    let amountClass = 'amount-red'; 
+                    let sign = '-S/ ';
+                    if (mov.tipo === 'ingreso') {
+                        amountClass = 'amount-black';
+                        sign = ' S/ '; // Espacio para que cuadre visualmente
+                    }
+                    let montoFormateado = parseFloat(mov.monto).toFixed(2);
+
+                    item.innerHTML = `
+                        <div class="mov-left">
+                            <span class="mov-name">${nombreMostrado}</span>
+                            <span class="mov-time">${timeDisplay}</span>
+                        </div>
+                        <span class="mov-amount ${amountClass}">${sign}${montoFormateado}</span>
+                    `;
+
+                    // Al hacer click manda a exito.html (Igual que inicio)
+                    item.onclick = () => {
+                        let rawNum = mov.numero || "999";
+                        let isQr = isNaN(rawNum.replace(/\s/g, '')); 
+                        let mostrarCelular = mov.mostrar_celular || "asteriscos"; 
+                        
+                        const url = `exito.html?monto=${mov.monto}&nombre=${encodeURIComponent(mov.nombre)}&fecha=${encodeURIComponent(mov.fechaSolo || '')}&hora=${encodeURIComponent(mov.horaSolo || '')}&numero=${encodeURIComponent(rawNum)}&operacion=${mov.operacion || '00000000'}&codigo=${mov.codigo || '000'}&mensaje=${encodeURIComponent(mov.mensaje || '')}&destino=${encodeURIComponent(mov.destino || 'Yape')}&tipo=${mov.tipo || 'gasto'}&es_qr=${isQr}&mostrar_celular=${mostrarCelular}`;
+                        
+                        window.location.href = url;
+                    };
+
+                    monthDiv.appendChild(item);
+                });
+
+                container.appendChild(monthDiv);
+            }
+        }
+
+        // --- SISTEMA PREPARADO PARA EL FUTURO (Eliminar todos los movimientos) ---
+        // Podrás llamar a esta función desde cualquier otro script u HTML usando window.eliminarTodosLosMovimientos()
+        window.eliminarTodosLosMovimientos = function() {
+            localStorage.removeItem('yape_movements'); // Borra la base de datos local
+            renderizarMovimientos(); // Vuelve a cargar la vista (quedará en blanco con el mensaje)
+        };
+
+        // --- EJECUCIÓN AL INICIAR LA PÁGINA ---
+        window.addEventListener('load', () => {
+            // 1. Preparamos el HTML con los datos reales en el background
+            renderizarMovimientos();
+
+            // 2. Simulamos la carga Skeleton de 3 segundos
+            setTimeout(() => {
+                document.getElementById('skeletonLoader').style.display = 'none';
+                document.getElementById('movementsData').style.display = 'block';
+            }, 3000);
+        });
+
+    </script>
+</body>
+</html>
