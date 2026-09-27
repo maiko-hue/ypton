@@ -85,6 +85,80 @@
         .frecuente-num {
             font-size: 11px; color: #888; text-align: center; font-weight: 500;
         }
+
+        /* --- ESTILOS DE NOTIFICACIÓN PUSH RE-DISEÑADA --- */
+        .fake-notification {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 400px;
+            background-color: rgba(245, 245, 245, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: flex-start;
+            padding: 14px 16px;
+            z-index: 9999;
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            pointer-events: auto;
+        }
+        .fake-notification.show {
+            top: 15px;
+            opacity: 1;
+        }
+        /* Estilos Tema Oscuro */
+        .fake-notification.noti-dark {
+            background-color: #202020 !important;
+        }
+        .fake-notification.noti-dark .notif-title {
+            color: #ffffff !important;
+        }
+        .fake-notification.noti-dark .notif-time {
+            color: #a0a0a0 !important;
+        }
+        .fake-notification.noti-dark .notif-text {
+            color: #d0d0d0 !important;
+        }
+        
+        .notif-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 12px;
+            object-fit: contain;
+        }
+        .notif-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .notif-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #111;
+            letter-spacing: -0.2px;
+        }
+        .notif-time {
+            font-size: 12px;
+            color: #666;
+            font-weight: 400;
+        }
+        .notif-text {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.35;
+        }
     </style>
 </head>
 <body>
@@ -933,44 +1007,171 @@
 
         // --- 6. MAGIA DEL FALSO PAGO PUSH (NUEVO) ---
         let isNotifying = false;
+        let notifTimer = null;
+        const notifBanner = document.getElementById('fake-notification');
+        
+        // --- LÓGICA DE SWIPE PARA CERRAR NOTIFICACIÓN ---
+        let notifStartX = 0;
+        let notifCurrentX = 0;
+
+        notifBanner.addEventListener('touchstart', (e) => {
+            notifStartX = e.touches[0].clientX;
+            notifBanner.style.transition = 'none'; // Quitar transición para que el globo siga el dedo
+        }, {passive: true});
+
+        notifBanner.addEventListener('touchmove', (e) => {
+            notifCurrentX = e.touches[0].clientX - notifStartX;
+            // Solo permitir deslizar hacia la izquierda
+            if (notifCurrentX < 0) {
+                notifBanner.style.transform = `translateX(calc(-50% + ${notifCurrentX}px))`;
+            }
+        }, {passive: true});
+
+        notifBanner.addEventListener('touchend', () => {
+            notifBanner.style.transition = 'top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s ease, opacity 0.3s ease';
+            
+            // Si deslizó lo suficiente (ej: 70px) a la izquierda, la cerramos
+            if (notifCurrentX < -70) {
+                notifBanner.style.transform = `translateX(calc(-50% - 100vw))`;
+                notifBanner.style.opacity = '0';
+                
+                setTimeout(() => {
+                    notifBanner.classList.remove('show');
+                    // Resetear el globo a su posición original oculto
+                    setTimeout(() => {
+                        notifBanner.style.transform = 'translateX(-50%)';
+                        notifBanner.style.opacity = '1';
+                        isNotifying = false;
+                    }, 50);
+                }, 300);
+                
+                if(notifTimer) clearTimeout(notifTimer);
+                
+            } else {
+                // Si no deslizó lo suficiente, que el globo regrese al centro
+                notifBanner.style.transform = 'translateX(-50%)';
+            }
+            notifCurrentX = 0;
+        });
 
         function generarPagoFalso() {
-            if (isNotifying) return; // Evita spam si presionan varias veces
+            if (isNotifying) return; // Evita spam si presionan varias veces seguidas
             isNotifying = true;
 
-            // Listas para crear un nombre creíble
-            const nombres = ["Juan", "Maria", "Carlos", "Ana", "Luis", "Jorge", "Lucia", "Diego", "Valeria", "Maikol", "Jose", "Cristian", "Armando", "Pedro", "Sofia"];
-            const apellidos = ["Perez", "Garcia", "Torres", "Rojas", "Flores", "Sanchez", "Diaz", "Chavez", "Gomez", "Huaman", "Crisanto", "Gonzales", "Ramirez"];
-            
-            const nRandom = nombres[Math.floor(Math.random() * nombres.length)];
-            const aRandom = apellidos[Math.floor(Math.random() * apellidos.length)];
-            const nombreCompleto = nRandom + " " + aRandom;
-
-            // Generar Monto (100.00 a 500.00)
-            const montoRandom = (Math.random() * (500 - 100) + 100).toFixed(2);
-
-            // Cerrar menú inferior si estaba abierto
+            // CERRAR MENU INFERIOR SI ESTABA ABIERTO
             fullMenuOverlay.classList.remove('show');
             setTimeout(() => { fullMenuOverlay.style.transform = ''; }, 400);
 
-            // 1. Mostrar Notificación Visual
+            // --- 1. LEER CONFIGURACIÓN DESDE OPCIONES ---
+            let isRandom = localStorage.getItem('yape_noti_random') !== 'false';
+            let isDark = localStorage.getItem('yape_noti_dark') === 'true';
+
+            // APLICAR TEMA OSCURO/CLARO
+            if(isDark) {
+                notifBanner.classList.add('noti-dark');
+            } else {
+                notifBanner.classList.remove('noti-dark');
+            }
+
+            // VARIABLES FINALES A USAR
+            let nombreCompleto = "";
+            let montoRandom = "0.00";
+            let codigoRandom = "";
+
+            // --- GENERAR NOMBRE ---
+            if (isRandom) {
+                const nombres = ["Juan", "Maria", "Carlos", "Ana", "Luis", "Jorge", "Lucia", "Diego", "Valeria", "Maikol", "Jose", "Cristian", "Armando", "Pedro", "Sofia"];
+                const apellidos = ["Perez", "Garcia", "Torres", "Rojas", "Flores", "Sanchez", "Diaz", "Chavez", "Gomez", "Huaman", "Crisanto", "Gonzales", "Ramirez"];
+                nombreCompleto = nombres[Math.floor(Math.random() * nombres.length)] + " " + apellidos[Math.floor(Math.random() * apellidos.length)];
+            } else {
+                let customNames = JSON.parse(localStorage.getItem('yape_noti_remitentes')) || [];
+                if(customNames.length > 0) {
+                    nombreCompleto = customNames[Math.floor(Math.random() * customNames.length)];
+                } else {
+                    nombreCompleto = "Usuario Desconocido"; // Por si desactivó random y no puso nada
+                }
+            }
+
+            // --- GENERAR MONTO ---
+            if (isRandom) {
+                montoRandom = (Math.random() * (500 - 100) + 100).toFixed(2);
+            } else {
+                let tipoMonto = localStorage.getItem('yape_noti_monto_tipo') || 'rango';
+                if (tipoMonto === 'rango') {
+                    let min = parseFloat(localStorage.getItem('yape_noti_monto_min'));
+                    let max = parseFloat(localStorage.getItem('yape_noti_monto_max'));
+                    if(isNaN(min)) min = 0;
+                    if(isNaN(max)) max = 500;
+                    if (min > max) { let t = min; min = max; max = t; } // Corregir si los puso al revés
+                    montoRandom = (Math.random() * (max - min) + min).toFixed(2);
+                } else {
+                    let fijo = parseFloat(localStorage.getItem('yape_noti_monto_fijo'));
+                    if(isNaN(fijo)) fijo = 70;
+                    montoRandom = fijo.toFixed(2);
+                }
+            }
+
+            // --- GENERAR NRO DE OPERACIÓN Y CÓDIGO DE SEGURIDAD ---
+            let numOpRandom = Math.floor(10000000 + Math.random() * 90000000).toString();
+            
+            if (isRandom) {
+                codigoRandom = numOpRandom.slice(-3); // Toma los últimos 3 de la operación
+            } else {
+                let isCodRandom = localStorage.getItem('yape_noti_cod_random') !== 'false';
+                if (isCodRandom) {
+                    codigoRandom = numOpRandom.slice(-3);
+                } else {
+                    codigoRandom = localStorage.getItem('yape_noti_cod_fijo') || "123";
+                    codigoRandom = codigoRandom.padStart(3, '0'); // Asegura que sean 3 dígitos
+                    // Sincroniza la operación para que termine igual que el código fijo que puso
+                    numOpRandom = numOpRandom.slice(0, 5) + codigoRandom; 
+                }
+            }
+
+            // --- FORMATO DE TEXTOS EXCLUSIVO PARA LA NOTIFICACIÓN ---
+            
+            // 1. Censurar nombre a 3 letras con asterisco (Ej: Maikol Esl*)
+            let nombreNoti = nombreCompleto;
+            let partes = nombreCompleto.trim().split(/\s+/);
+            if (partes.length > 1) {
+                let apellido = partes[1];
+                nombreNoti = `${partes[0]} ${apellido.substring(0, 3)}*`;
+            } else if (partes.length === 1 && partes[0].length > 0) {
+                nombreNoti = `${partes[0].substring(0, 3)}*`; // Si puso un solo nombre
+            }
+
+            // 2. Obtener Hora Actual
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampmNoti = hours >= 12 ? 'p.m.' : 'a.m.'; // Formato de la imagen
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            let minStr = minutes < 10 ? '0' + minutes : minutes;
+            
+            // 3. Escribir textos en el HTML de la Noti
+            document.querySelector('.notif-title').innerText = "Confirmación de Pago";
+            document.querySelector('.notif-time').innerText = `${hours}:${minStr} ${ampmNoti}`;
+            
             const notifText = document.getElementById('notif-msg');
-            notifText.innerText = `¡Yape! ${nombreCompleto} te envio un pago por S/ ${montoRandom}`;
-            
-            const notifBanner = document.getElementById('fake-notification');
+            let montoFormatNoti = parseFloat(montoRandom) % 1 === 0 ? parseInt(montoRandom) : parseFloat(montoRandom).toFixed(2);
+            notifText.innerText = `${nombreNoti} te envió un pago por S/ ${montoFormatNoti}. El cód. de seguridad es: ${codigoRandom}`;
+
+            // --- MOSTRAR NOTIFICACIÓN VISUAL Y REPRODUCIR SONIDO ---
             notifBanner.classList.add('show');
-            
-            // Reproducir sonido
             const sound = new Audio('img/ysnid.mp3');
             sound.play().catch(e => console.log("Navegador bloqueó el audio", e));
 
-            // Esconder la notificación tras 4 segundos
-            setTimeout(() => {
-                notifBanner.classList.remove('show');
-                isNotifying = false;
-            }, 4000);
+            // TEMPORIZADOR DE CIERRE AUTOMÁTICO (4.5 segundos)
+            if(notifTimer) clearTimeout(notifTimer);
+            notifTimer = setTimeout(() => {
+                if(notifBanner.classList.contains('show')) {
+                    notifBanner.classList.remove('show');
+                    isNotifying = false;
+                }
+            }, 4500);
 
-            // 2. Afectar el Saldo
+            // --- AFECTAR EL SALDO EN PANTALLA ---
             let savedBalance = localStorage.getItem('yape_balance') || "1200.00";
             let cleanBalance = parseFloat(savedBalance.replace(/,/g, ''));
             if(isNaN(cleanBalance)) cleanBalance = 0;
@@ -979,44 +1180,32 @@
             let formattedNewBalance = newBalance.toFixed(2);
             localStorage.setItem('yape_balance', formattedNewBalance);
 
-            // Reflejar en pantalla si el ojo está abierto y la animación no está corriendo
             if (isBalanceVisible && !isBalanceLoading) {
                 document.getElementById('balanceAmount').textContent = "S/ " + newBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
 
-            // 3. Afectar el Historial y preparar el Voucher
+            // --- GUARDAR EN HISTORIAL (ESTO VIAJA AL EXITO.HTML) ---
             let movimientos = JSON.parse(localStorage.getItem('yape_movements')) || [];
             
-            // Helper para obtener fecha y hora real del celular
-            const now = new Date();
             const mesesStr = ["ene.", "feb.", "mar.", "abr.", "may.", "jun.", "jul.", "ago.", "sep.", "oct.", "nov.", "dic."];
             const mesFormat = mesesStr[now.getMonth()];
-            
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            const ampm = hours >= 12 ? 'p. m.' : 'a. m.';
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
-            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const ampmHist = now.getHours() >= 12 ? 'p. m.' : 'a. m.';
             
             const fechaLarga = `${now.getDate()} ${mesFormat} ${now.getFullYear()}`;
-            const horaString = `${hours < 10 ? '0'+hours : hours}:${minutes} ${ampm}`;
-            const fechaCorta = `${now.getDate()} ${mesFormat}`;
+            const horaStringHist = `${hours < 10 ? '0'+hours : hours}:${minStr} ${ampmHist}`;
 
             const numeroCelularRandom = "9" + Math.floor(10000000 + Math.random() * 90000000);
-            const numOpRandom = Math.floor(10000000 + Math.random() * 90000000).toString();
-            const codigoRandom = numOpRandom.slice(-3);
 
             let nuevoIngreso = {
                 monto: montoRandom,
-                nombre: nombreCompleto,
-                fecha: `${fechaLarga} - ${horaString}`,
+                nombre: nombreCompleto, // Aquí guardamos el nombre real entero, no el censurado
+                fecha: `${fechaLarga} - ${horaStringHist}`,
                 fechaSolo: fechaLarga,
-                horaSolo: horaString,
+                horaSolo: horaStringHist,
                 tipo: 'ingreso',
                 numero: numeroCelularRandom,
                 operacion: numOpRandom,
-                codigo: codigoRandom,
+                codigo: codigoRandom, // ¡El mismo código viaja al exito.html!
                 destino: 'Yape',
                 mostrar_celular: 'asteriscos',
                 mensaje: ''

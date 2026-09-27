@@ -23,7 +23,7 @@
             box-sizing: border-box;
         }
 
-        input, textarea {
+        input, textarea, select {
             -webkit-user-select: auto;
             -moz-user-select: auto;
             -ms-user-select: auto;
@@ -337,6 +337,18 @@
                     <i class="fa-solid fa-chevron-right arrow-icon"></i>
                 </a>
 
+                <!-- NUEVO BOTÓN ADMINISTRAR NOTI FALSA -->
+                <div class="setting-item" onclick="abrirModalNotiFalsa()">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-orange"><i class="fa-solid fa-comment-dots"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Administrar noti falsa</span>
+                            <span class="st-desc">Personaliza el mensaje push</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+
                 <a href="editable.html" class="setting-item">
                     <div class="setting-left">
                         <div class="icon-circle bg-teal"><i class="fa-solid fa-receipt"></i></div>
@@ -350,7 +362,7 @@
 
                 <div class="setting-item" onclick="abrirModalPin()">
                     <div class="setting-left">
-                        <div class="icon-circle bg-orange"><i class="fa-solid fa-lock"></i></div>
+                        <div class="icon-circle bg-orange" style="background: rgba(255, 152, 0, 0.1); color: #FF9800;"><i class="fa-solid fa-lock"></i></div>
                         <div class="setting-text">
                             <span class="st-title">Definir Pin</span>
                             <span class="st-desc">Configura tu seguridad</span>
@@ -503,6 +515,96 @@
         </div>
     </div> 
 
+    <!-- NUEVO MODAL: ADMINISTRAR NOTIFICACIÓN FALSA -->
+    <div class="modal-overlay" id="notiFalsaModalOverlay">
+        <div class="modal-panel" onclick="event.stopPropagation()" style="height: 85vh;">
+            <div class="modal-header">
+                <div class="modal-title">Configurar Notificación</div>
+                <button class="close-modal-btn" onclick="cerrarModalNotiFalsa()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="switch-container">
+                <span class="switch-label">Notificaciones con datos randoms</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggleNotiRandom" onchange="toggleNotiPanel()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- CONTENEDOR DE OPCIONES PERSONALIZADAS (Oculto si el switch de arriba está activo) -->
+            <div id="panelNotiCustom" style="display: none;">
+                
+                <div class="switch-container" style="margin-bottom: 20px;">
+                    <span class="switch-label">Modo Oscuro (#202020)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleNotiTema" onchange="guardarConfigNotiInputs()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <hr class="divider">
+
+                <div class="section-title" style="margin: 15px 0 5px 0; color: #333;">Remitentes Personalizados</div>
+                <div style="font-size: 12px; color: #888; margin-bottom: 15px; font-weight: 500;">Máximo 2 nombres. Solo 1 o 2 palabras (Ej: Juan Perez).</div>
+                <div class="add-contact-form">
+                    <div class="input-group">
+                        <input type="text" id="inputNotiName" class="contact-input" placeholder="Ingresa un nombre" autocomplete="off">
+                    </div>
+                    <button class="btn-add" onclick="agregarNotiRemitente()">Añadir</button>
+                </div>
+                <div class="custom-contact-list" id="listNotiNames" style="max-height: 120px; overflow-y: auto;"></div>
+
+                <hr class="divider" style="margin-top: 25px;">
+
+                <div class="section-title" style="margin: 15px 0 10px 0; color: #333;">Configuración de Monto</div>
+                <select id="selectMontoTipo" class="contact-input" style="width: 100%; margin-bottom: 15px; padding: 14px;" onchange="cambiarTipoMonto()">
+                    <option value="rango">Rango de monto aleatorio</option>
+                    <option value="fijo">Monto fijo</option>
+                </select>
+
+                <!-- Caja para Rango -->
+                <div id="boxMontoRango" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div class="input-group">
+                        <span style="font-size: 11px; font-weight: bold; color: #777; margin-bottom: 2px;">Mínimo</span>
+                        <input type="number" id="inputNotiMontoMin" class="contact-input" placeholder="0" max="500" oninput="validarMontoMaximo(this)">
+                    </div>
+                    <div class="input-group">
+                        <span style="font-size: 11px; font-weight: bold; color: #777; margin-bottom: 2px;">Máximo</span>
+                        <input type="number" id="inputNotiMontoMax" class="contact-input" placeholder="500" max="500" oninput="validarMontoMaximo(this)">
+                    </div>
+                </div>
+
+                <!-- Caja para Fijo -->
+                <div id="boxMontoFijo" style="display: none; margin-bottom: 15px;">
+                    <div class="input-group">
+                        <span style="font-size: 11px; font-weight: bold; color: #777; margin-bottom: 2px;">Monto exacto</span>
+                        <input type="number" id="inputNotiMontoFijo" class="contact-input" placeholder="Ej: 70" max="500" style="width: 100%;" oninput="validarMontoMaximo(this)">
+                    </div>
+                </div>
+
+                <hr class="divider" style="margin-top: 25px;">
+
+                <div class="section-title" style="margin: 15px 0 10px 0; color: #333;">Código de Seguridad</div>
+                <div class="switch-container" style="margin-bottom: 15px;">
+                    <span class="switch-label">Generar código random</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleNotiCodRandom" onchange="cambiarTipoCodigo()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div id="boxCodFijo" style="display: none; margin-bottom: 40px;">
+                    <div class="input-group">
+                        <span style="font-size: 11px; font-weight: bold; color: #777; margin-bottom: 2px;">Código personalizado</span>
+                        <input type="tel" id="inputNotiCodFijo" class="contact-input" placeholder="Ej: 106" maxlength="3" style="width: 100%;" oninput="this.value = this.value.replace(/[^0-9]/g, ''); guardarConfigNotiInputs();">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
     <!-- RESTO DE MODALES ORIGINALES -->
     <div class="modal-overlay" id="contactsModalOverlay">
         <div class="modal-panel" onclick="event.stopPropagation()">
@@ -630,7 +732,7 @@
 
     <div id="modalToast">Guardado</div>
 
-    <!-- SCRIPTS DE FIREBASE INTACTOS -->
+    <!-- SCRIPTS GENERALES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -712,21 +814,10 @@
         let currentPinStep = 1;
         let storedPin1 = "";
 
-        window.abrirModalPin = function() {
-            pinOverlay.classList.add('show');
-        }
-
-        window.cerrarModalPin = function() {
-            pinOverlay.classList.remove('show');
-        }
-
-        window.iniciarCambioPin = function() {
-            document.getElementById('customConfirmModal').classList.add('show');
-        }
-
-        window.closeConfirmModal = function() {
-            document.getElementById('customConfirmModal').classList.remove('show');
-        }
+        window.abrirModalPin = function() { pinOverlay.classList.add('show'); }
+        window.cerrarModalPin = function() { pinOverlay.classList.remove('show'); }
+        window.iniciarCambioPin = function() { document.getElementById('customConfirmModal').classList.add('show'); }
+        window.closeConfirmModal = function() { document.getElementById('customConfirmModal').classList.remove('show'); }
 
         window.proceedToPin = function() {
             closeConfirmModal();
@@ -780,44 +871,32 @@
             if(e) e.preventDefault();
             document.getElementById('confirmDeleteMovementsModal').classList.add('show');
         }
-
         window.closeBorrarMovimientosModal = function(e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             document.getElementById('confirmDeleteMovementsModal').classList.remove('show');
         }
-
         window.confirmBorrarMovimientos = function(e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             localStorage.removeItem('yape_movements');
             closeBorrarMovimientosModal();
             window.showToast("Movimientos borrados");
         }
-
         window.showCustomAlert = function(msg) {
             document.getElementById('alertText').innerText = msg;
             document.getElementById('customAlertModal').classList.add('show');
         }
-
         window.closeCustomAlert = function() {
             document.getElementById('customAlertModal').classList.remove('show');
         }
 
+        // MODAL CONTACTOS
         const overlay = document.getElementById('contactsModalOverlay');
         const switchToggle = document.getElementById('toggleContactsSwitch');
         const listContainer = document.getElementById('customContactList');
         const btnAdd = document.getElementById('btnAddContact');
 
-        window.abrirModalContactos = function() {
-            overlay.classList.add('show');
-            cargarDatosGuardados(); 
-        }
-
-        window.cerrarModalContactos = function() {
-            overlay.classList.remove('show');
-            document.getElementById('inputNewName').value = '';
-            document.getElementById('inputNewNumber').value = '';
-        }
-
+        window.abrirModalContactos = function() { overlay.classList.add('show'); cargarDatosGuardados(); }
+        window.cerrarModalContactos = function() { overlay.classList.remove('show'); document.getElementById('inputNewName').value = ''; document.getElementById('inputNewNumber').value = ''; }
         overlay.addEventListener('click', window.cerrarModalContactos);
 
         window.cargarDatosGuardados = function() {
@@ -829,38 +908,18 @@
 
         switchToggle.addEventListener('change', function() {
             localStorage.setItem('yape_use_custom_contacts', this.checked);
-            if(this.checked){
-                window.showToast("Lista Propia Activada");
-            } else {
-                window.showToast("Contactos por defecto Activados");
-            }
+            if(this.checked){ window.showToast("Lista Propia Activada"); } else { window.showToast("Contactos por defecto Activados"); }
         });
 
         window.pintarLista = function(contactsArray) {
             listContainer.innerHTML = ''; 
-
-            if (contactsArray.length === 0) {
-                listContainer.innerHTML = '<div class="empty-msg">No has agregado ningún contacto aún.</div>';
-                return;
-            }
-
+            if (contactsArray.length === 0) { listContainer.innerHTML = '<div class="empty-msg">No has agregado ningún contacto aún.</div>'; return; }
             contactsArray.forEach((contact, index) => {
                 let numFormatted = contact.celular;
-                if(numFormatted.length === 9){
-                    numFormatted = numFormatted.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
-                }
-
+                if(numFormatted.length === 9){ numFormatted = numFormatted.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3'); }
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'custom-item';
-                itemDiv.innerHTML = `
-                    <div class="ci-info">
-                        <span class="ci-name">${contact.nombre}</span>
-                        <span class="ci-number">${numFormatted}</span>
-                    </div>
-                    <button class="btn-delete" onclick="borrarContacto(${index})">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                `;
+                itemDiv.innerHTML = `<div class="ci-info"><span class="ci-name">${contact.nombre}</span><span class="ci-number">${numFormatted}</span></div><button class="btn-delete" onclick="borrarContacto(${index})"><i class="fa-solid fa-trash-can"></i></button>`;
                 listContainer.appendChild(itemDiv);
             });
         }
@@ -868,135 +927,62 @@
         window.agregarContacto = async function() {
             const nameInput = document.getElementById('inputNewName');
             const numInput = document.getElementById('inputNewNumber');
-            
             const nombreStr = nameInput.value.trim();
             const numStr = numInput.value.trim();
-
             if (nombreStr === '') { window.showToast("Escribe un nombre"); return; }
             if (numStr.length !== 9) { window.showToast("El celular debe tener 9 números"); return; }
-
-            btnAdd.innerText = "...";
-            btnAdd.disabled = true;
-
+            btnAdd.innerText = "..."; btnAdd.disabled = true;
             try {
                 await setDoc(doc(db, "usuarios_yape", numStr), { nombre: nombreStr });
-
                 let contacts = JSON.parse(localStorage.getItem('yape_custom_contacts')) || [];
                 contacts.push({ nombre: nombreStr, celular: numStr });
                 localStorage.setItem('yape_custom_contacts', JSON.stringify(contacts));
-
-                nameInput.value = '';
-                numInput.value = '';
-                window.pintarLista(contacts);
-                window.showToast("¡Guardado en la Nube!");
-
-            } catch (error) {
-                console.error("Error al guardar en Firebase:", error);
-                window.showToast("Error de conexión");
-            } finally {
-                btnAdd.innerText = "Añadir";
-                btnAdd.disabled = false;
-            }
+                nameInput.value = ''; numInput.value = ''; window.pintarLista(contacts); window.showToast("¡Guardado en la Nube!");
+            } catch (error) { window.showToast("Error de conexión"); } finally { btnAdd.innerText = "Añadir"; btnAdd.disabled = false; }
         }
 
         window.borrarContacto = async function(index) {
             let contacts = JSON.parse(localStorage.getItem('yape_custom_contacts')) || [];
             const contactoABorrar = contacts[index];
-
             if(!contactoABorrar) return;
-
             contacts.splice(index, 1);
             localStorage.setItem('yape_custom_contacts', JSON.stringify(contacts));
-            window.pintarLista(contacts);
-            window.showToast("Borrando...");
-
-            try {
-                await deleteDoc(doc(db, "usuarios_yape", contactoABorrar.celular));
-                window.showToast("Contacto Eliminado");
-            } catch (error) {
-                console.error("Error al borrar en Firebase:", error);
-            }
+            window.pintarLista(contacts); window.showToast("Borrando...");
+            try { await deleteDoc(doc(db, "usuarios_yape", contactoABorrar.celular)); window.showToast("Contacto Eliminado"); } catch (error) {}
         }
 
+        // MODAL CONFIGURACION
         const configOverlay = document.getElementById('configModalOverlay');
         const switchCensura = document.getElementById('toggleCensuraSwitch');
         const switchCensuraBaucher = document.getElementById('toggleCensuraBaucherSwitch'); 
 
         window.abrirModalConfig = function() {
             configOverlay.classList.add('show');
-            
             let isCensored = localStorage.getItem('yape_censurar_nombres');
-            if (isCensored === null) {
-                isCensored = 'true';
-                localStorage.setItem('yape_censurar_nombres', 'true');
-            }
+            if (isCensored === null) { isCensored = 'true'; localStorage.setItem('yape_censurar_nombres', 'true'); }
             switchCensura.checked = (isCensored === 'true');
-
             let isCensoredBaucher = localStorage.getItem('yape_censurar_baucher');
-            if (isCensoredBaucher === null) {
-                isCensoredBaucher = 'false';
-                localStorage.setItem('yape_censurar_baucher', 'false');
-            }
+            if (isCensoredBaucher === null) { isCensoredBaucher = 'false'; localStorage.setItem('yape_censurar_baucher', 'false'); }
             switchCensuraBaucher.checked = (isCensoredBaucher === 'true');
-
             let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
             window.pintarListaFrecuentes(frecuentes);
         }
-
-        window.cerrarModalConfig = function() {
-            configOverlay.classList.remove('show');
-            document.getElementById('inputFreqName').value = '';
-            document.getElementById('inputFreqNumber').value = '';
-        }
-
+        window.cerrarModalConfig = function() { configOverlay.classList.remove('show'); document.getElementById('inputFreqName').value = ''; document.getElementById('inputFreqNumber').value = ''; }
         configOverlay.addEventListener('click', window.cerrarModalConfig);
-
-        switchCensura.addEventListener('change', function() {
-            localStorage.setItem('yape_censurar_nombres', this.checked);
-            if(this.checked){
-                window.showToast("Nombres se ocultarán con *");
-            } else {
-                window.showToast("Nombres se mostrarán completos");
-            }
-        });
-
-        switchCensuraBaucher.addEventListener('change', function() {
-            localStorage.setItem('yape_censurar_baucher', this.checked);
-            if(this.checked){
-                window.showToast("Nombres del baucher se reducirán");
-            } else {
-                window.showToast("Nombres del baucher completos");
-            }
-        });
+        switchCensura.addEventListener('change', function() { localStorage.setItem('yape_censurar_nombres', this.checked); window.showToast(this.checked ? "Nombres se ocultarán con *" : "Nombres se mostrarán completos"); });
+        switchCensuraBaucher.addEventListener('change', function() { localStorage.setItem('yape_censurar_baucher', this.checked); window.showToast(this.checked ? "Nombres del baucher se reducirán" : "Nombres del baucher completos"); });
 
         const freqListContainer = document.getElementById('freqContactList');
         const btnAddFreq = document.getElementById('btnAddFreq');
 
         window.pintarListaFrecuentes = function(frecuentesArray) {
             freqListContainer.innerHTML = ''; 
-
-            if (frecuentesArray.length === 0) {
-                freqListContainer.innerHTML = '<div class="empty-msg">No has agregado Yaperos Frecuentes aún.</div>';
-                return;
-            }
-
+            if (frecuentesArray.length === 0) { freqListContainer.innerHTML = '<div class="empty-msg">No has agregado Yaperos Frecuentes aún.</div>'; return; }
             frecuentesArray.forEach((contact, index) => {
                 let numFormatted = contact.celular;
-                if(numFormatted.length === 9){
-                    numFormatted = numFormatted.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
-                }
-
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'custom-item';
-                itemDiv.innerHTML = `
-                    <div class="ci-info">
-                        <span class="ci-name">${contact.nombre}</span>
-                        <span class="ci-number">${numFormatted}</span>
-                    </div>
-                    <button class="btn-delete" onclick="borrarFrecuente(${index})">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                `;
+                if(numFormatted.length === 9){ numFormatted = numFormatted.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3'); }
+                const itemDiv = document.createElement('div'); itemDiv.className = 'custom-item';
+                itemDiv.innerHTML = `<div class="ci-info"><span class="ci-name">${contact.nombre}</span><span class="ci-number">${numFormatted}</span></div><button class="btn-delete" onclick="borrarFrecuente(${index})"><i class="fa-solid fa-trash-can"></i></button>`;
                 freqListContainer.appendChild(itemDiv);
             });
         }
@@ -1004,83 +990,214 @@
         window.agregarFrecuente = async function() {
             const nameInput = document.getElementById('inputFreqName');
             const numInput = document.getElementById('inputFreqNumber');
-            
-            const nombreStr = nameInput.value.trim();
-            const numStr = numInput.value.trim();
-
+            const nombreStr = nameInput.value.trim(); const numStr = numInput.value.trim();
             if (nombreStr === '') { window.showToast("Escribe un nombre"); return; }
             if (numStr.length !== 9) { window.showToast("El celular debe tener 9 números"); return; }
-
-            btnAddFreq.innerText = "...";
-            btnAddFreq.disabled = true;
-
+            btnAddFreq.innerText = "..."; btnAddFreq.disabled = true;
             try {
                 await setDoc(doc(db, "usuarios_yape", numStr), { nombre: nombreStr });
-
                 let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
                 frecuentes.push({ nombre: nombreStr, celular: numStr });
                 localStorage.setItem('yape_frecuentes', JSON.stringify(frecuentes));
-
-                nameInput.value = '';
-                numInput.value = '';
-                window.pintarListaFrecuentes(frecuentes);
-                window.showToast("¡Frecuente Guardado en la Nube!");
-
-            } catch (error) {
-                console.error("Error al guardar en Firebase:", error);
-                window.showToast("Error de conexión");
-            } finally {
-                btnAddFreq.innerText = "Añadir";
-                btnAddFreq.disabled = false;
-            }
+                nameInput.value = ''; numInput.value = ''; window.pintarListaFrecuentes(frecuentes); window.showToast("¡Frecuente Guardado en la Nube!");
+            } catch (error) { window.showToast("Error de conexión"); } finally { btnAddFreq.innerText = "Añadir"; btnAddFreq.disabled = false; }
         }
 
         window.borrarFrecuente = async function(index) {
             let frecuentes = JSON.parse(localStorage.getItem('yape_frecuentes')) || [];
             const contactoABorrar = frecuentes[index];
-
             if(!contactoABorrar) return;
-
             frecuentes.splice(index, 1);
             localStorage.setItem('yape_frecuentes', JSON.stringify(frecuentes));
-            window.pintarListaFrecuentes(frecuentes);
-            window.showToast("Borrando...");
-
-            try {
-                await deleteDoc(doc(db, "usuarios_yape", contactoABorrar.celular));
-                window.showToast("Frecuente Eliminado");
-            } catch (error) {
-                console.error("Error al borrar en Firebase:", error);
-            }
+            window.pintarListaFrecuentes(frecuentes); window.showToast("Borrando...");
+            try { await deleteDoc(doc(db, "usuarios_yape", contactoABorrar.celular)); window.showToast("Frecuente Eliminado"); } catch (error) {}
         }
 
-        // --- LÓGICA DE CONTROL DE ZOOM ---
+        // LÓGICA DE CONTROL DE ZOOM
         window.setZoom = function(level, idSuffix) {
-            // Guardamos el nivel en localstorage
             localStorage.setItem('yape_zoom_level', level);
-            
-            // Apagamos todos los botones
             document.querySelectorAll('.zoom-btn').forEach(btn => btn.classList.remove('active'));
-            // Encendemos el botón clickeado
             document.getElementById('zoom-' + idSuffix).classList.add('active');
-            
             window.showToast("Tamaño de Inicio actualizado");
         }
 
-        // Al cargar la página, pintamos de verde el botón correcto
         document.addEventListener("DOMContentLoaded", () => {
             let currentZoom = localStorage.getItem('yape_zoom_level') || '1';
-            let idSuffix = '100'; // Normal por defecto
-            
+            let idSuffix = '100'; 
             if (currentZoom === '0.85') idSuffix = '85';
             if (currentZoom === '1.15') idSuffix = '115';
             if (currentZoom === '1.3') idSuffix = '130';
-            
             let activeBtn = document.getElementById('zoom-' + idSuffix);
-            if(activeBtn) {
-                activeBtn.classList.add('active');
-            }
+            if(activeBtn) { activeBtn.classList.add('active'); }
         });
+
+        /* =========================================
+           NUEVA LÓGICA: ADMINISTRAR NOTI FALSA
+           ========================================= */
+        const notiOverlay = document.getElementById('notiFalsaModalOverlay');
+
+        window.abrirModalNotiFalsa = function() {
+            notiOverlay.classList.add('show');
+            cargarConfigNoti();
+        }
+
+        window.cerrarModalNotiFalsa = function() {
+            notiOverlay.classList.remove('show');
+        }
+
+        notiOverlay.addEventListener('click', window.cerrarModalNotiFalsa);
+
+        function cargarConfigNoti() {
+            // 1. Cargar Switch Principal (Random)
+            let isRandom = localStorage.getItem('yape_noti_random');
+            if (isRandom === null) isRandom = 'true';
+            document.getElementById('toggleNotiRandom').checked = (isRandom === 'true');
+
+            // 2. Cargar Tema
+            let isDark = localStorage.getItem('yape_noti_dark') === 'true';
+            document.getElementById('toggleNotiTema').checked = isDark;
+
+            // 3. Cargar Nombres Remitentes
+            let names = JSON.parse(localStorage.getItem('yape_noti_remitentes')) || [];
+            pintarNotiRemitentes(names);
+
+            // 4. Cargar Tipo de Monto y Valores
+            let montoTipo = localStorage.getItem('yape_noti_monto_tipo') || 'rango';
+            document.getElementById('selectMontoTipo').value = montoTipo;
+            document.getElementById('inputNotiMontoMin').value = localStorage.getItem('yape_noti_monto_min') || '';
+            document.getElementById('inputNotiMontoMax').value = localStorage.getItem('yape_noti_monto_max') || '';
+            document.getElementById('inputNotiMontoFijo').value = localStorage.getItem('yape_noti_monto_fijo') || '';
+
+            // 5. Cargar Código de Seguridad
+            let codRandom = localStorage.getItem('yape_noti_cod_random');
+            if (codRandom === null) codRandom = 'true';
+            document.getElementById('toggleNotiCodRandom').checked = (codRandom === 'true');
+            document.getElementById('inputNotiCodFijo').value = localStorage.getItem('yape_noti_cod_fijo') || '';
+
+            // Renderizar vistas según las configuraciones cargadas
+            toggleNotiPanel();
+            cambiarTipoMonto();
+            cambiarTipoCodigo();
+        }
+
+        window.toggleNotiPanel = function() {
+            const isRandom = document.getElementById('toggleNotiRandom').checked;
+            localStorage.setItem('yape_noti_random', isRandom);
+            const panel = document.getElementById('panelNotiCustom');
+            
+            if (isRandom) {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'block';
+            }
+        }
+
+        window.cambiarTipoMonto = function() {
+            const tipo = document.getElementById('selectMontoTipo').value;
+            localStorage.setItem('yape_noti_monto_tipo', tipo);
+            
+            if (tipo === 'rango') {
+                document.getElementById('boxMontoRango').style.display = 'flex';
+                document.getElementById('boxMontoFijo').style.display = 'none';
+            } else {
+                document.getElementById('boxMontoRango').style.display = 'none';
+                document.getElementById('boxMontoFijo').style.display = 'block';
+            }
+        }
+
+        window.cambiarTipoCodigo = function() {
+            const isCodRandom = document.getElementById('toggleNotiCodRandom').checked;
+            localStorage.setItem('yape_noti_cod_random', isCodRandom);
+
+            if (isCodRandom) {
+                document.getElementById('boxCodFijo').style.display = 'none';
+            } else {
+                document.getElementById('boxCodFijo').style.display = 'block';
+            }
+        }
+
+        // Guarda valores de inputs al escribir
+        window.guardarConfigNotiInputs = function() {
+            localStorage.setItem('yape_noti_dark', document.getElementById('toggleNotiTema').checked);
+            localStorage.setItem('yape_noti_monto_min', document.getElementById('inputNotiMontoMin').value);
+            localStorage.setItem('yape_noti_monto_max', document.getElementById('inputNotiMontoMax').value);
+            localStorage.setItem('yape_noti_monto_fijo', document.getElementById('inputNotiMontoFijo').value);
+            localStorage.setItem('yape_noti_cod_fijo', document.getElementById('inputNotiCodFijo').value);
+        }
+
+        // Restringe que los montos no pasen de 500
+        window.validarMontoMaximo = function(elemento) {
+            let val = parseFloat(elemento.value);
+            if (val > 500) {
+                elemento.value = 500;
+                window.showToast("El máximo permitido es 500");
+            }
+            if (val < 0) {
+                elemento.value = 0;
+            }
+            guardarConfigNotiInputs();
+        }
+
+        // --- SISTEMA DE REMITENTES (NOMBRES) ---
+        window.pintarNotiRemitentes = function(namesArray) {
+            const listContainer = document.getElementById('listNotiNames');
+            listContainer.innerHTML = ''; 
+
+            if (namesArray.length === 0) {
+                listContainer.innerHTML = '<div class="empty-msg">No has agregado ningún nombre.</div>';
+                return;
+            }
+
+            namesArray.forEach((name, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'custom-item';
+                itemDiv.innerHTML = `
+                    <div class="ci-info">
+                        <span class="ci-name">${name}</span>
+                    </div>
+                    <button class="btn-delete" onclick="borrarNotiRemitente(${index})">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                listContainer.appendChild(itemDiv);
+            });
+        }
+
+        window.agregarNotiRemitente = function() {
+            let names = JSON.parse(localStorage.getItem('yape_noti_remitentes')) || [];
+            if (names.length >= 2) {
+                window.showToast("Solo puedes agregar 2 nombres máximo.");
+                return;
+            }
+
+            let input = document.getElementById('inputNotiName');
+            let val = input.value.trim();
+            if (!val) {
+                window.showToast("Escribe un nombre");
+                return;
+            }
+
+            // Validar máximo 2 palabras
+            let palabras = val.split(/\s+/);
+            if (palabras.length > 2) {
+                window.showToast("Solo se permiten 1 o 2 palabras.");
+                return;
+            }
+
+            names.push(val);
+            localStorage.setItem('yape_noti_remitentes', JSON.stringify(names));
+            input.value = "";
+            pintarNotiRemitentes(names);
+            window.showToast("Remitente agregado");
+        }
+
+        window.borrarNotiRemitente = function(index) {
+            let names = JSON.parse(localStorage.getItem('yape_noti_remitentes')) || [];
+            names.splice(index, 1);
+            localStorage.setItem('yape_noti_remitentes', JSON.stringify(names));
+            pintarNotiRemitentes(names);
+        }
+
     </script>
 </body>
 </html>
