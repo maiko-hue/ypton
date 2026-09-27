@@ -358,6 +358,17 @@
                     </div>
                     <i class="fa-solid fa-chevron-right arrow-icon"></i>
                 </div>
+                
+                <div class="setting-item" onclick="abrirModalBorrarMovimientos(event)">
+                    <div class="setting-left">
+                        <div class="icon-circle bg-red"><i class="fa-solid fa-trash-can"></i></div>
+                        <div class="setting-text">
+                            <span class="st-title">Borrar movimientos</span>
+                            <span class="st-desc">Elimina tu historial de operaciones</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
             </div>
 
             <hr class="divider">
@@ -573,6 +584,18 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMACIÓN PARA BORRAR MOVIMIENTOS -->
+    <div class="modal-overlay" id="confirmDeleteMovementsModal" style="z-index: 7000; align-items: center;">
+        <div class="yape-alert-card">
+            <div class="yape-alert-title">Advertencia</div>
+            <div class="yape-alert-text">Estas a punto de borrar todos tus movimientos ¿Esta usted seguro?</div>
+            <div class="yape-alert-actions">
+                <button type="button" class="yape-btn-cancel" onclick="closeBorrarMovimientosModal(event)">No</button>
+                <button type="button" class="yape-btn-confirm" onclick="confirmBorrarMovimientos(event)">Si</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="customPromptModal" style="z-index: 7000; align-items: center;">
         <div class="yape-alert-card">
             <div class="yape-alert-title" id="promptTitle">Nuevo PIN</div>
@@ -750,6 +773,24 @@
                     document.getElementById('promptText').innerText = "Ingresa tu nuevo PIN de 6 dígitos";
                 }
             }
+        }
+
+        // --- FUNCIONES PARA BORRAR MOVIMIENTOS ---
+        window.abrirModalBorrarMovimientos = function(e) {
+            if(e) e.preventDefault();
+            document.getElementById('confirmDeleteMovementsModal').classList.add('show');
+        }
+
+        window.closeBorrarMovimientosModal = function(e) {
+            if(e) { e.preventDefault(); e.stopPropagation(); }
+            document.getElementById('confirmDeleteMovementsModal').classList.remove('show');
+        }
+
+        window.confirmBorrarMovimientos = function(e) {
+            if(e) { e.preventDefault(); e.stopPropagation(); }
+            localStorage.removeItem('yape_movements');
+            closeBorrarMovimientosModal();
+            window.showToast("Movimientos borrados");
         }
 
         window.showCustomAlert = function(msg) {
