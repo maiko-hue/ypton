@@ -145,14 +145,55 @@ input, textarea {
         .security-section {
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            margin-top: 15px;
+            margin-bottom: 25px;
         }
 
         .security-img {
             width: 100%;
             max-width: 365px;
             object-fit: contain;
+        }
+
+        .options-grid {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            width: 100%;
+        }
+
+        .option-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .option-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FFFFFF;
+            border-radius: 14px;
+            width: 58px;
+            height: 58px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .option-box img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        .option-wrapper span {
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 500;
+            line-height: 1.2;
+            text-align: center;
         }
 
         /* Panel Inferior */
@@ -463,8 +504,25 @@ input, textarea {
                 </div>
             </div>
 
-            <div class="security-section">
-                <img src="img/opseguridad.png" alt="Opciones de Seguridad" class="security-img">
+            <div class="security-section options-grid">
+                <div class="option-wrapper">
+                    <div class="option-box">
+                        <img src="img/olvidemiclave.svg" alt="Olvido de clave">
+                    </div>
+                    <span>Olvido de<br>clave</span>
+                </div>
+                <div class="option-wrapper">
+                    <div class="option-box">
+                        <img src="img/changuenum.svg" alt="Cambio de número">
+                    </div>
+                    <span>Cambio de<br>número</span>
+                </div>
+                <div class="option-wrapper">
+                    <div class="option-box">
+                        <img src="img/supporticon.svg" alt="Ayuda">
+                    </div>
+                    <span>Ayuda</span>
+                </div>
             </div>
 
             <div class="bottom-panel">
