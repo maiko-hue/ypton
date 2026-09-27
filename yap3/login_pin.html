@@ -4,7 +4,7 @@
     <script type="module" src="seguridad.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Yape - Inicio</title>
+    <title>Inicio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="img/favicon.png" type="image/png">
     <style>
@@ -168,6 +168,7 @@ input, textarea {
             flex-direction: column;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
         }
 
         .option-box {
@@ -201,12 +202,11 @@ input, textarea {
             background-color: white;
             border-top-left-radius: 25px;
             border-top-right-radius: 25px;
-            padding: 30px 20px 40px 20px;
+            padding: 30px 20px 25px 20px;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 45vh; 
         }
 
         .login-title {
@@ -244,7 +244,7 @@ input, textarea {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 0px;
             max-width: 350px; 
         }
 
@@ -493,9 +493,7 @@ input, textarea {
 
         <div id="loginScreen">
             <div class="login-header">
-                <div class="help-pill">
-                    <img src="img/soporte-icon.svg" alt="Ayuda" class="help-icon"> Ayuda
-                </div>
+                <!-- Botón de Ayuda superior eliminado -->
             </div>
 
             <div class="qr-section">
@@ -505,7 +503,7 @@ input, textarea {
             </div>
 
             <div class="security-section options-grid">
-                <div class="option-wrapper">
+                <div class="option-wrapper" onclick="olvidoClave()">
                     <div class="option-box">
                         <img src="img/olvidemiclave.svg" alt="Olvido de clave">
                     </div>
@@ -557,8 +555,6 @@ input, textarea {
                         <i class="fa-solid fa-delete-left" style="color: #888;"></i>
                     </div>
                 </div>
-
-                <div class="forgot-pass" onclick="olvidoClave()">¿OLVIDASTE TU CLAVE?</div>
             </div>
         </div>
 
