@@ -266,7 +266,8 @@
             border-top-left-radius: 24px;
             border-top-right-radius: 24px;
             margin-top: -25px; 
-            padding: 25px 20px 20px 20px;
+            /* Se añade el método moderno env(safe-area-inset-bottom) para alzar contenido si hay barra de navegación en Android/iOS */
+            padding: 25px 20px max(30px, calc(20px + env(safe-area-inset-bottom))) 20px;
             display: flex;
             flex-direction: column;
             flex-grow: 1; 
@@ -385,7 +386,7 @@
             display: flex;
             gap: 12px;
             margin-top: 10px;
-            padding-bottom: 10px;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
         }
 
         .btn {
