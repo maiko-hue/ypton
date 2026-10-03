@@ -734,22 +734,9 @@
 
     <!-- SCRIPTS GENERALES -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDHDXn-R6jgd4fBkgW4KzFp6p6Ym_yqQoI",
-            authDomain: "yapedata.firebaseapp.com",
-            projectId: "yapedata",
-            storageBucket: "yapedata.firebasestorage.app",
-            messagingSenderId: "228862586517",
-            appId: "1:228862586517:web:4e2b2578fe0f826e32b59c"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        import { auth, db } from "./firebase.js";
+        import { doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         window.forzarActualizacion = function() {
             event.currentTarget.querySelector('div:nth-child(2)').innerText = "Actualizando...";
@@ -770,35 +757,6 @@
             toast.style.opacity = '1';
             setTimeout(() => { toast.style.opacity = '0'; }, 2000);
         }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const userRef = doc(db, "clientes", user.email);
-                onSnapshot(userRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        const localToken = localStorage.getItem('sesion_token_yape');
-                        const dbToken = userData.sesion_token;
-
-                        if (dbToken && localToken && dbToken !== localToken) {
-                            localStorage.removeItem('sesion_iniciada');
-                            document.getElementById('multiDeviceTitle').innerText = "Sesión Cerrada";
-                            document.getElementById('multiDeviceText').innerText = "Por tu seguridad, hemos cerrado tu sesión porque detectamos un acceso desde otro dispositivo.";
-                            document.getElementById('multiDeviceModal').style.display = 'flex';
-                            return; 
-                        }
-
-                        if (userData.estado !== "activo") {
-                            localStorage.removeItem('sesion_iniciada');
-                            document.getElementById('multiDeviceTitle').innerText = "Acceso Restringido";
-                            document.getElementById('multiDeviceText').innerHTML = `Hola <b>${userData.nombre || user.email}</b>, tu acceso se encuentra <b>inactivo</b>.`;
-                            document.getElementById('multiDeviceModal').style.display = 'flex';
-                            return;
-                        }
-                    }
-                });
-            }
-        });
 
         window.cerrarSesionMulti = function() {
             signOut(auth).then(() => {
