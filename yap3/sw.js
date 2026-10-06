@@ -1,5 +1,5 @@
-// sw.js - Service Worker Nivel Producción (Anti-fallos)
-const CACHE_NAME = 'yape-v5'; // Cambiado a v5 para forzar la actualización de todos los íconos
+﻿// sw.js - Service Worker Nivel Producción (Anti-fallos)
+const CACHE_NAME = 'yape-mudanza-v1'; // Cambiado a v5 para forzar la actualización de todos los íconos
 
 // Lista VIP de memoria: cacheamos todo el núcleo de la app para que cargue en 0 segundos
 const urlsToCache = [

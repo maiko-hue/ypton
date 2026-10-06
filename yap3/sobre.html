@@ -1,285 +1,80 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
-    <script type="module" src="seguridad.js"></script>
-    <script>
-    if (!localStorage.getItem('sesion_iniciada')) {
-        window.location.href = 'index.html';
-    }
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sobre esto</title>
+    <title>Nos mudamos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="img/logo_yape_header.png" type="image/png">
     <style>
-        * {
-    /* Elimina el recuadro azul al hacer clic en celulares */
-    -webkit-tap-highlight-color: transparent;
-    outline: none !important;
-    
-    /* Bloquea la selección de texto en toda la app */
-    -webkit-user-select: none; 
-    -moz-user-select: none; 
-    -ms-user-select: none; 
-    user-select: none; 
-}
-
-/* Excepción para que sí se pueda seleccionar/escribir en los inputs */
-input, textarea {
-    -webkit-user-select: auto;
-    -moz-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
-}
-        :root {
-            --brand-purple: #742385;
-            --brand-dark-purple: #511973;
-            --brand-teal: #00BFA5;
-            --bg-gray: #f2f4f6;
-            --text-dark: #333;
-        }
-
-        /* QUITAMOS EL AZUL AL DAR CLICK GLOBALMENTE */
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            outline: none; 
-        }
-
-        body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--bg-gray); 
-            color: var(--text-dark); 
-            height: 100vh;
-            overflow-y: auto; /* Permitir scroll si la pantalla es pequeña */
-        }
-img {
-    -webkit-touch-callout: none !important;
-    -webkit-user-drag: none !important;
-    -webkit-user-select: none !important;
-    pointer-events: none;
-}
-        .container { 
-            max-width: 480px; 
-            margin: 0 auto; 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            position: relative;
-        }
-
-        /* HEADER LLAMATIVO */
-        .header-hero {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-dark-purple) 100%);
-            height: 200px;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(81, 25, 115, 0.3);
-            flex-shrink: 0;
-        }
-
-        .back-icon {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            background: rgba(255,255,255,0.2);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.3s;
-        }
-        .back-icon:active { background: rgba(255,255,255,0.4); }
-
-        .logo-icon {
-            font-size: 60px;
-            color: white;
-            margin-top: -20px;
-            opacity: 0.9;
-        }
-
-        /* TARJETA FLOTANTE */
-        .info-card {
-            background: white;
-            margin: -50px 20px 20px 20px;
-            padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            text-align: center;
-            position: relative;
-            z-index: 2;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .version-badge {
-            background-color: var(--brand-teal);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 700;
-            display: inline-block;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0, 191, 165, 0.3);
-        }
-
-        .main-title {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--brand-dark-purple);
-            margin: 0 0 5px 0;
-        }
-
-        .update-text {
-            font-size: 13px;
-            color: #888;
-            font-weight: 600;
-            margin-bottom: 25px;
-            letter-spacing: 0.5px;
-        }
-
-        /* CAJA DE IMPORTANTE */
-        .important-box {
-            background-color: #FFF8E1;
-            border-left: 4px solid #FFC107;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: left;
-            margin-top: 10px;
-        }
-
-        .important-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #F57F17;
-            font-weight: 800;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .important-text {
-            font-size: 13px;
-            line-height: 1.5;
-            color: #5D4037;
-        }
-
-        /* NUEVA SECCIÓN DE BOTONES */
-        .new-section-title {
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--brand-dark-purple);
-            margin-top: 30px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .new-section-desc {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .btn-link {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-            transition: transform 0.1s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .btn-link:active { transform: scale(0.98); }
-
-        .btn-telegram {
-            background-color: #2CA5E0; /* Color Telegram */
-            color: white;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+        body { background: #742385; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; text-align: center; }
+        .logo-container { margin-bottom: 30px; animation: float 3s ease-in-out infinite; }
+        .logo-container img { width: 120px; height: 120px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); object-fit: contain; }
+        h1 { font-size: 24px; font-weight: 800; margin-bottom: 15px; }
+        p.subtitle { font-size: 16px; font-weight: 600; color: #e1bceb; margin-bottom: 30px; line-height: 1.5; }
+        .btn-container { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 15px; }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border-radius: 30px; font-size: 16px; font-weight: 700; text-decoration: none; color: white; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .btn:active { transform: scale(0.96); }
+        .btn-main { background: #00BFA5; }
+        .btn-secondary { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); }
         
-        .btn-support {
-            background-color: #333;
-            color: white;
-        }
+        .info-box { margin-top: 40px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; display: flex; align-items: flex-start; gap: 12px; text-align: left; max-width: 340px; border: 1px solid rgba(255,255,255,0.1); }
+        .info-box svg { width: 24px; height: 24px; flex-shrink: 0; fill: #00BFA5; margin-top: 2px; }
+        .info-box p { font-size: 13px; color: #f0f0f0; line-height: 1.5; }
 
-        .btn-icon { margin-right: 8px; font-size: 18px; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
 
-        .footer {
-            margin-top: auto;
-            text-align: center;
-            padding: 20px;
-            color: #aaa;
-            font-size: 12px;
-        }
+        .floating-bubble-buy { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; text-decoration: none; z-index: 100; animation: floatBubble 3s ease-in-out infinite; }
+        .bubble-img-wrapper { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 3px solid #00BFA5; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 5px; }
+        .bubble-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .bubble-text-buy { background: rgba(0,0,0,0.7); color: white; font-size: 11px; padding: 4px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; backdrop-filter: blur(2px); }
+        @keyframes floatBubble { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
     </style>
 </head>
 <body>
-    <div class="container">
-        
-        <div class="header-hero">
-            <i class="fa-solid fa-arrow-left back-icon" onclick="window.history.back()"></i>
-            <i class="fa-solid fa-code logo-icon"></i>
-        </div>
 
-        <div class="info-card">
-            
-            <div class="version-badge">Versión 3.0</div>
-            
-            <h1 class="main-title">Proyecto Yapeton</h1>
-            
-            <div class="update-text">
-                <i class="fa-regular fa-clock"></i> Ultima Actualización: 9/07/26 | V 3.0 OFICIAL
-            </div>
-
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-
-            <div class="important-box">
-                <div class="important-header">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    IMPORTANTE:
-                </div>
-                <div class="important-text">
-                    Asegúrense de configurar el zoom de la pagina para que se vea como una app nativa, solo háganlo si no se ve bien, para más info consulta a tu vendedor.
-                </div>
-            </div>
-
-            <div class="new-section-title">FUNCIONES MEJORADAS Y NUEVAS</div>
-            <div class="new-section-desc">Unete al grupo oficial para que te enteres de todo,</div>
-
-            <a href="https://t.me/appsreborn" target="_blank" class="btn-link btn-telegram">
-                <i class="fa-brands fa-telegram btn-icon"></i> CLICK AQUI
-            </a>
-
-            <a href="https://t.me/MaikolEsleiter" target="_blank" class="btn-link btn-support">
-                <i class="fa-solid fa-headset btn-icon"></i> SOPORTE
-            </a>
-
-        </div>
-
-        <div class="footer">
-            FIN
-        </div>
-
+    <div class="logo-container">
+        <img src="img/secondlogo.png" alt="Logo" onerror="this.src='img/icon.png'; this.onerror=null;">
     </div>
+
+    <h1>Â¡Nos mudamos a otra versiÃ³n!</h1>
+    <p class="subtitle">Descarga tu APK y obtÃ©n tu link en el grupo oficial.</p>
+
+    <div class="btn-container">
+        <a href="https://t.me/appsreborn" class="btn btn-main">
+            <i class="fa-brands fa-telegram" style="font-size: 20px;"></i> Grupo Oficial
+        </a>
+        <a href="https://t.me/appsreborn_dev" class="btn btn-secondary">
+            <i class="fa-solid fa-life-ring"></i> Respaldo
+        </a>
+        <a href="https://www.appsreborn.shop/" class="btn btn-secondary">
+            <i class="fa-solid fa-globe"></i> Web Oficial
+        </a>
+    </div>
+
+    <div class="info-box">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+        <p>Si has comprado esta app, en el grupo VIP estÃ¡ toda la info de la v.5.0, dale una chequeada.</p>
+    </div>
+
+    <a href="https://t.me/MaikolEsleiter" class="floating-bubble-buy">
+        <div class="bubble-img-wrapper">
+            <img src="img/photo_2026-05-31_20-35-06.jpg" alt="Comprar">
+        </div>
+        <span class="bubble-text-buy">Click aquÃ­ para comprar acceso</span>
+    </a>
+
+    <script>
+        // Limpiar localStorage y cachÃ© para forzar salida total si el usuario usaba la app
+        localStorage.clear();
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
+        }
+    </script>
 </body>
 </html>

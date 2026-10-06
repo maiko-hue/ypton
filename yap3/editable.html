@@ -1,464 +1,80 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
-    <script type="module" src="seguridad.js"></script>
-    <script>
-    if (!localStorage.getItem('sesion_iniciada')) {
-        window.location.href = 'index.html';
-    }
-    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Yapear Editable</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nos mudamos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="img/logo_yape_header.png" type="image/png">
     <style>
-        * {
-            /* Elimina el recuadro azul al hacer clic en celulares */
-            -webkit-tap-highlight-color: transparent;
-            outline: none !important;
-            
-            /* Bloquea la selección de texto en toda la app */
-            -webkit-user-select: none; 
-            -moz-user-select: none; 
-            -ms-user-select: none; 
-            user-select: none; 
-            box-sizing: border-box;
-        }
-
-        /* Excepción para que sí se pueda seleccionar/escribir en los inputs */
-        input, textarea, select {
-            -webkit-user-select: auto;
-            -moz-user-select: auto;
-            -ms-user-select: auto;
-            user-select: auto;
-        }
-
-        :root {
-            --brand-purple: #742385;
-            --brand-dark-purple: #511973;
-            --brand-teal: #00BFA5;
-            --brand-lilac-inactive: #bfaec4;
-            --bg-gray: #f2f4f6;
-            --text-dark: #333;
-            --text-muted: #888;
-            --border-color: #e0e0e0;
-            --input-bg: #f9f9fb;
-        }
-
-        img {
-            -webkit-touch-callout: none !important;
-            -webkit-user-drag: none !important;
-            -webkit-user-select: none !important;
-            pointer-events: none;
-        }
-
-        body { 
-            overscroll-behavior-y: none;
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--bg-gray); 
-            color: var(--text-dark); 
-            min-height: 100vh;
-        }
-
-        .container { 
-            max-width: 480px; 
-            margin: 0 auto; 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            position: relative;
-        }
-
-        /* --- HEADER HERO (Fondo curvo morado) --- */
-        .header-hero {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-dark-purple) 100%);
-            height: 220px;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(81, 25, 115, 0.3);
-            flex-shrink: 0;
-            padding-bottom: 20px;
-        }
-
-        .back-icon {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            background: rgba(255,255,255,0.2);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.3s;
-            z-index: 10;
-        }
-        .back-icon:active { background: rgba(255,255,255,0.4); }
-
-        .logo-img-custom {
-            width: 150px;
-            height: 150px;
-            object-fit: contain;
-            margin-top: -10px;
-            opacity: 0.95;
-            filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.2));
-        }
-
-        /* --- TARJETA BLANCA FLOTANTE --- */
-        .info-card {
-            background: white;
-            margin: -60px 20px 20px 20px;
-            padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            position: relative;
-            z-index: 2;
-            animation: slideUp 0.4s ease-out;
-            padding-bottom: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .section-title {
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--brand-purple);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-
-        /* --- ELEMENTOS DEL FORMULARIO --- */
-        .custom-input {
-            width: 100%;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 15px;
-            color: #555;
-            font-family: inherit;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            transition: border-color 0.3s;
-        }
-        .custom-input:focus { border-color: var(--brand-teal); }
-        .custom-input::placeholder { color: #aaa; font-weight: 400; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+        body { background: #742385; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; text-align: center; }
+        .logo-container { margin-bottom: 30px; animation: float 3s ease-in-out infinite; }
+        .logo-container img { width: 120px; height: 120px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); object-fit: contain; }
+        h1 { font-size: 24px; font-weight: 800; margin-bottom: 15px; }
+        p.subtitle { font-size: 16px; font-weight: 600; color: #e1bceb; margin-bottom: 30px; line-height: 1.5; }
+        .btn-container { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 15px; }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border-radius: 30px; font-size: 16px; font-weight: 700; text-decoration: none; color: white; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .btn:active { transform: scale(0.96); }
+        .btn-main { background: #00BFA5; }
+        .btn-secondary { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); }
         
-        .custom-input:disabled {
-            background-color: #e9ecef;
-            color: #999;
-        }
+        .info-box { margin-top: 40px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; display: flex; align-items: flex-start; gap: 12px; text-align: left; max-width: 340px; border: 1px solid rgba(255,255,255,0.1); }
+        .info-box svg { width: 24px; height: 24px; flex-shrink: 0; fill: #00BFA5; margin-top: 2px; }
+        .info-box p { font-size: 13px; color: #f0f0f0; line-height: 1.5; }
 
-        .custom-select {
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 16px;
-        }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
 
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-        
-        .checkbox-label { font-size: 14px; color: #333; margin-left: 10px; font-weight: 500; }
-        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--brand-purple); cursor: pointer; }
-
-        /* SWITCH CENSURAR */
-        .censor-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 5px;
-            margin-top: -10px; 
-            margin-bottom: 5px;
-        }
-        .censor-text { font-size: 13px; color: var(--text-muted); font-weight: 600; }
-        
-        .toggle-switch {
-            width: 40px; height: 22px; background: #ccc; border-radius: 20px; position: relative; transition: background 0.3s; cursor: pointer;
-        }
-        .toggle-switch.active { background: var(--brand-purple); }
-        .toggle-knob {
-            width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.3s;
-        }
-        .toggle-switch.active .toggle-knob { left: 20px; }
-
-        .datetime-container { display: none; gap: 10px; margin-bottom: 5px; }
-        .datetime-container.show { display: flex; }
-
-        .amount-container {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-        }
-        .currency-symbol { font-size: 28px; color: var(--brand-purple); font-weight: 600; margin-right: 10px; }
-        .amount-input { border: none; background: transparent; font-size: 32px; width: 100%; outline: none; color: #333; font-weight: 600; }
-        .amount-input::placeholder { color: #ccc; font-weight: 400; }
-
-        .helper-text { font-size: 12px; color: #999; margin-top: -10px; margin-bottom: 5px; margin-left: 5px; }
-
-        .operation-row { display: flex; gap: 10px; align-items: center; }
-        
-        .btn-regenerate {
-            background-color: var(--brand-purple);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 0 15px;
-            height: 52px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            transition: opacity 0.3s, transform 0.1s;
-        }
-        .btn-regenerate:active { transform: scale(0.95); }
-        .btn-regenerate:disabled { background-color: #ccc; cursor: default; transform: none; }
-
-        .disclaimer { font-size: 11px; color: #999; line-height: 1.4; margin-top: -5px; padding: 0 5px; }
-
-        /* BOTÓN YAPEAR */
-        .yapear-btn {
-            width: 100%;
-            background-color: var(--brand-lilac-inactive); 
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            pointer-events: none;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s;
-            margin-top: 10px;
-        }
-        
-        .yapear-btn.active {
-            background-color: var(--brand-teal);
-            pointer-events: all;
-            box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3);
-        }
-        .yapear-btn.active:active { transform: scale(0.97); background-color: #00a892; }
-
+        .floating-bubble-buy { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; text-decoration: none; z-index: 100; animation: floatBubble 3s ease-in-out infinite; }
+        .bubble-img-wrapper { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 3px solid #00BFA5; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 5px; }
+        .bubble-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .bubble-text-buy { background: rgba(0,0,0,0.7); color: white; font-size: 11px; padding: 4px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; backdrop-filter: blur(2px); }
+        @keyframes floatBubble { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <!-- HEADER ESTILO OPCIONES.HTML -->
-        <div class="header-hero">
-            <i class="fa-solid fa-arrow-left back-icon" onclick="window.location.href='inicio.html'"></i>
-            <img src="img/secondlogo.png" alt="Logo" class="logo-img-custom">
-        </div>
-
-        <!-- TARJETA FLOTANTE CON EL FORMULARIO -->
-        <div class="info-card">
-            
-            <div class="section-title">Edita tus comprobantes aqui:</div>
-
-            <input type="text" class="custom-input" id="inpNombre" placeholder="Nombre y Apellido" value="">
-
-            <div class="censor-container">
-                <span class="censor-text">Censurar nombre (*)</span>
-                <div class="toggle-switch active" id="toggleCensor">
-                    <div class="toggle-knob"></div>
-                </div>
-            </div>
-
-            <input type="tel" class="custom-input" id="inpCelular" placeholder="Celular" maxlength="9" value="">
-
-            <select class="custom-input custom-select" id="bankSelect">
-                <option value="Yape">Yape</option>
-                <option value="Plin">Plin</option>
-                <option value="IziPay">IziPay</option>
-                <option value="Bim">Bim</option>
-                <option value="Tunki">Tunki</option>
-                <option value="Agora / Oh!">Agora / Oh!</option>
-                <option value="BCP">BCP</option>
-                <option value="BBVA">BBVA</option>
-                <option value="Interbank">Interbank</option>
-                <option value="Financiera Efectiva">Financiera Efectiva</option>
-                <option value="Dale">Dale</option>
-            </select>
-
-            <input type="text" class="custom-input" id="inpMensaje" placeholder="Agregar mensaje (opcional)">
-
-            <div class="checkbox-row">
-                <input type="checkbox" id="checkFecha">
-                <label for="checkFecha" class="checkbox-label">Elegir fecha y hora manualmente</label>
-            </div>
-
-            <div class="datetime-container" id="dateInputs">
-                <input type="date" class="custom-input" id="customDate">
-                <input type="time" class="custom-input" id="customTime">
-            </div>
-
-            <div class="amount-container">
-                <span class="currency-symbol">S/</span>
-                <input type="number" class="amount-input" id="inpMonto" placeholder="0.00" value="">
-            </div>
-            <div class="helper-text">Puedes Yapear hasta S/500 diarios</div>
-
-            <div class="checkbox-row">
-                <input type="checkbox" id="checkOp" checked>
-                <label for="checkOp" class="checkbox-label">Ingresar N° de operación manual</label>
-            </div>
-
-            <div class="operation-row">
-                <input type="number" class="custom-input" id="opInput" value="01334523">
-                <button class="btn-regenerate" id="regenBtn">Regenerar</button>
-            </div>
-
-            <div class="disclaimer">
-                Se usará como "Nro. de operación". En Yape, el "Código de seguridad" son los 3 últimos dígitos.
-            </div>
-
-            <button class="yapear-btn" id="btnFinalYapear">Yapear</button>
-        </div>
-
+    <div class="logo-container">
+        <img src="img/secondlogo.png" alt="Logo" onerror="this.src='img/icon.png'; this.onerror=null;">
     </div>
 
-    <!-- LÓGICA DE JAVASCRIPT INTACTA -->
+    <h1>Â¡Nos mudamos a otra versiÃ³n!</h1>
+    <p class="subtitle">Descarga tu APK y obtÃ©n tu link en el grupo oficial.</p>
+
+    <div class="btn-container">
+        <a href="https://t.me/appsreborn" class="btn btn-main">
+            <i class="fa-brands fa-telegram" style="font-size: 20px;"></i> Grupo Oficial
+        </a>
+        <a href="https://t.me/appsreborn_dev" class="btn btn-secondary">
+            <i class="fa-solid fa-life-ring"></i> Respaldo
+        </a>
+        <a href="https://www.appsreborn.shop/" class="btn btn-secondary">
+            <i class="fa-solid fa-globe"></i> Web Oficial
+        </a>
+    </div>
+
+    <div class="info-box">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+        <p>Si has comprado esta app, en el grupo VIP estÃ¡ toda la info de la v.5.0, dale una chequeada.</p>
+    </div>
+
+    <a href="https://t.me/MaikolEsleiter" class="floating-bubble-buy">
+        <div class="bubble-img-wrapper">
+            <img src="img/photo_2026-05-31_20-35-06.jpg" alt="Comprar">
+        </div>
+        <span class="bubble-text-buy">Click aquÃ­ para comprar acceso</span>
+    </a>
+
     <script>
-        // --- Referencias ---
-        const inpNombre = document.getElementById('inpNombre');
-        const inpCelular = document.getElementById('inpCelular');
-        const inpMonto = document.getElementById('inpMonto');
-        const btnFinalYapear = document.getElementById('btnFinalYapear');
-        
-        const checkOp = document.getElementById('checkOp');
-        const opInput = document.getElementById('opInput');
-        const regenBtn = document.getElementById('regenBtn');
-
-        const checkFecha = document.getElementById('checkFecha');
-        const dateInputs = document.getElementById('dateInputs');
-        const customDate = document.getElementById('customDate');
-        const customTime = document.getElementById('customTime');
-
-        // Toggle Censura
-        const toggleCensor = document.getElementById('toggleCensor');
-        let isCensorActive = true; // Por defecto activado
-
-        toggleCensor.addEventListener('click', () => {
-            isCensorActive = !isCensorActive;
-            if(isCensorActive) {
-                toggleCensor.classList.add('active');
-            } else {
-                toggleCensor.classList.remove('active');
-            }
-        });
-
-        // --- Inicialización Fecha/Hora ---
-        const now = new Date();
-        customDate.valueAsDate = now;
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        customTime.value = `${hours}:${minutes}`;
-
-        // --- Validar Botón "Yapear" ---
-        function validateForm() {
-            const hasName = inpNombre.value.trim().length > 0;
-            const hasCell = inpCelular.value.length === 9; 
-            const hasAmount = inpMonto.value.trim().length > 0 && parseFloat(inpMonto.value) > 0;
-
-            if (hasName && hasCell && hasAmount) {
-                btnFinalYapear.classList.add('active');
-            } else {
-                btnFinalYapear.classList.remove('active');
-            }
+        // Limpiar localStorage y cachÃ© para forzar salida total si el usuario usaba la app
+        localStorage.clear();
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
         }
-
-        // --- Eventos de Inputs para validación ---
-        inpNombre.addEventListener('input', validateForm);
-        inpMonto.addEventListener('input', validateForm);
-        
-        inpCelular.addEventListener('input', function(e) {
-            let val = e.target.value.replace(/\D/g, '');
-            if (val.length > 9) val = val.slice(0, 9);
-            e.target.value = val;
-            validateForm();
-        });
-
-        // --- Lógica Checkbox Operación ---
-        checkOp.addEventListener('change', () => {
-            if(checkOp.checked) {
-                opInput.disabled = false;
-                regenBtn.disabled = false;
-            } else {
-                opInput.disabled = true;
-                regenBtn.disabled = true;
-            }
-        });
-
-        // --- Lógica Checkbox Fecha ---
-        checkFecha.addEventListener('change', () => {
-            if(checkFecha.checked) {
-                dateInputs.classList.add('show');
-            } else {
-                dateInputs.classList.remove('show');
-            }
-        });
-
-        // --- Generar Operación ---
-        opInput.value = Math.floor(10000000 + Math.random() * 90000000);
-        regenBtn.addEventListener('click', () => {
-            const randomOp = Math.floor(10000000 + Math.random() * 90000000);
-            opInput.value = randomOp;
-        });
-
-        // --- Acción del Botón Yapear ---
-        btnFinalYapear.addEventListener('click', () => {
-            const nombre = inpNombre.value;
-            const numero = inpCelular.value;
-            const destino = document.getElementById('bankSelect').value;
-            const mensaje = document.getElementById('inpMensaje').value;
-            const monto = inpMonto.value;
-            const operacion = opInput.value; 
-
-            let fechaStr = "";
-            let horaStr = "";
-            
-            if(checkFecha.checked) {
-                fechaStr = customDate.value; 
-                horaStr = customTime.value; 
-            }
-
-            // AÑADIDO: &censurar=true/false
-            let url = `exito_editable.html?nombre=${encodeURIComponent(nombre)}&numero=${numero}&destino=${encodeURIComponent(destino)}&monto=${monto}&operacion=${operacion}&mensaje=${encodeURIComponent(mensaje)}&censurar=${isCensorActive}`;
-
-            if(fechaStr && horaStr) {
-                url += `&fecha=${fechaStr}&hora=${horaStr}`;
-            }
-
-            window.location.href = url;
-        });
-        
-        validateForm();
-
     </script>
 </body>
 </html>

@@ -1,369 +1,80 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
-    <script type="module" src="seguridad.js"></script>
-    <script>
-    if (!localStorage.getItem('sesion_iniciada')) {
-        window.location.href = 'index.html';
-    }
-    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Contacto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nos mudamos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="img/logo_yape_header.png" type="image/png">
     <style>
-        * {
-            /* Elimina el recuadro azul al hacer clic en celulares */
-            -webkit-tap-highlight-color: transparent;
-            outline: none !important;
-            
-            /* Bloquea la selección de texto en toda la app */
-            -webkit-user-select: none; 
-            -moz-user-select: none; 
-            -ms-user-select: none; 
-            user-select: none; 
-            box-sizing: border-box;
-        }
-
-        /* Excepción para que sí se pueda seleccionar/escribir en los inputs */
-        input, textarea {
-            -webkit-user-select: auto;
-            -moz-user-select: auto;
-            -ms-user-select: auto;
-            user-select: auto;
-        }
-
-        :root {
-            --brand-purple: #742385;
-            --brand-dark-purple: #511973;
-            --brand-teal: #00BFA5;
-            --bg-gray: #f2f4f6;
-            --text-dark: #333;
-            --text-muted: #888;
-            --border-color: #e0e0e0;
-        }
-
-        img {
-            -webkit-touch-callout: none !important;
-            -webkit-user-drag: none !important;
-            -webkit-user-select: none !important;
-            pointer-events: none;
-        }
-
-        body { 
-            overscroll-behavior-y: none;
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--bg-gray); 
-            color: var(--text-dark); 
-            min-height: 100vh;
-        }
-
-        .container { 
-            max-width: 480px; 
-            margin: 0 auto; 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            position: relative;
-        }
-
-        /* --- HEADER HERO (Fondo curvo morado) --- */
-        .header-hero {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-dark-purple) 100%);
-            height: 220px;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(81, 25, 115, 0.3);
-            flex-shrink: 0;
-            padding-bottom: 20px;
-        }
-
-        .back-icon {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            background: rgba(255,255,255,0.2);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.3s;
-            z-index: 10;
-        }
-        .back-icon:active { background: rgba(255,255,255,0.4); }
-
-        .logo-img-custom {
-            width: 150px;
-            height: 150px;
-            object-fit: contain;
-            margin-top: -10px;
-            opacity: 0.95;
-            filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.2));
-        }
-
-        /* --- TARJETA BLANCA FLOTANTE --- */
-        .info-card {
-            background: white;
-            margin: -60px 20px 20px 20px;
-            padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            position: relative;
-            z-index: 2;
-            animation: slideUp 0.4s ease-out;
-            padding-bottom: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .section-title {
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--brand-purple);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 15px;
-        }
-
-        /* --- FORMULARIO Y CAMPOS --- */
-        .form-group { margin-bottom: 20px; }
-        .label { 
-            font-size: 13px; 
-            color: var(--brand-purple); 
-            text-transform: uppercase; 
-            font-weight: 700; 
-            margin-bottom: 8px; 
-            display: block; 
-            letter-spacing: 0.5px; 
-            margin-left: 5px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+        body { background: #742385; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; text-align: center; }
+        .logo-container { margin-bottom: 30px; animation: float 3s ease-in-out infinite; }
+        .logo-container img { width: 120px; height: 120px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); object-fit: contain; }
+        h1 { font-size: 24px; font-weight: 800; margin-bottom: 15px; }
+        p.subtitle { font-size: 16px; font-weight: 600; color: #e1bceb; margin-bottom: 30px; line-height: 1.5; }
+        .btn-container { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 15px; }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border-radius: 30px; font-size: 16px; font-weight: 700; text-decoration: none; color: white; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .btn:active { transform: scale(0.96); }
+        .btn-main { background: #00BFA5; }
+        .btn-secondary { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); }
         
-        .input-card {
-            background-color: white; border-radius: 12px; padding: 14px 18px;
-            border: 1px solid var(--border-color); display: flex; align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.3s ease;
-        }
-        .input-card:focus-within { border-color: var(--brand-teal); box-shadow: 0 2px 8px rgba(0, 191, 165, 0.2); }
-        
-        .input-field {
-            background: transparent; border: none; color: var(--text-dark); width: 100%;
-            font-size: 15px; font-weight: 600; outline: none; font-family: inherit;
-        }
-        .input-field::placeholder { color: #aaa; font-weight: 400; }
-        .input-icon { color: var(--brand-purple); font-size: 18px; margin-right: 15px; width: 24px; text-align: center; opacity: 0.8; }
+        .info-box { margin-top: 40px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; display: flex; align-items: flex-start; gap: 12px; text-align: left; max-width: 340px; border: 1px solid rgba(255,255,255,0.1); }
+        .info-box svg { width: 24px; height: 24px; flex-shrink: 0; fill: #00BFA5; margin-top: 2px; }
+        .info-box p { font-size: 13px; color: #f0f0f0; line-height: 1.5; }
 
-        /* Botón Guardar */
-        .btn-save {
-            width: 100%; margin-top: 15px; background-color: var(--brand-teal);
-            color: white; padding: 16px; border-radius: 30px; border: none; 
-            font-size: 16px; font-weight: 700; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3); transition: transform 0.1s, background-color 0.2s;
-        }
-        .btn-save:active { transform: scale(0.97); background-color: #00a892; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
 
-        /* --- ESTILOS DE TU ANIMACIÓN (PACMAN) --- */
-        .custom-loader-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 9999;
-            display: none; justify-content: center; align-items: center;
-            flex-direction: column; backdrop-filter: blur(4px);
-        }
-
-        .loader { width: 8em; height: 8em; }
-        .loader__eye1, .loader__eye2, .loader__mouth1, .loader__mouth2 { animation: eye1 3s ease-in-out infinite; }
-        .loader__eye1, .loader__eye2 { transform-origin: 64px 64px; }
-        .loader__eye2 { animation-name: eye2; }
-        .loader__mouth1 { animation-name: mouth1; }
-        .loader__mouth2 { animation-name: mouth2; visibility: hidden; }
-
-        @keyframes eye1 {
-            from { transform: rotate(-260deg) translate(0, -56px); }
-            50%, 60% { animation-timing-function: cubic-bezier(0.17, 0, 0.58, 1); transform: rotate(-40deg) translate(0, -56px) scale(1); }
-            to { transform: rotate(225deg) translate(0, -56px) scale(0.35); }
-        }
-        @keyframes eye2 {
-            from { transform: rotate(-260deg) translate(0, -56px); }
-            50% { transform: rotate(40deg) translate(0, -56px) rotate(-40deg) scale(1); }
-            52.5% { transform: rotate(40deg) translate(0, -56px) rotate(-40deg) scale(1, 0); }
-            55%, 70% { animation-timing-function: cubic-bezier(0, 0, 0.28, 1); transform: rotate(40deg) translate(0, -56px) rotate(-40deg) scale(1); }
-            to { transform: rotate(150deg) translate(0, -56px) scale(0.4); }
-        }
-        @keyframes mouth1 {
-            from { animation-timing-function: ease-in; stroke-dasharray: 0 351.86; stroke-dashoffset: 0; }
-            25% { animation-timing-function: ease-out; stroke-dasharray: 175.93 351.86; stroke-dashoffset: 0; }
-            50% { animation-timing-function: steps(1, start); stroke-dasharray: 175.93 351.86; stroke-dashoffset: -175.93; visibility: visible; }
-            75%, to { visibility: hidden; }
-        }
-        @keyframes mouth2 {
-            from { animation-timing-function: steps(1, end); visibility: hidden; }
-            50% { animation-timing-function: ease-in-out; visibility: visible; stroke-dashoffset: 0; }
-            to { stroke-dashoffset: -351.86; }
-        }
-
-        /* --- NOTIFICACIÓN PERSONALIZADA (TOAST) --- */
-        .toast {
-            visibility: hidden; min-width: 250px; margin-left: -125px;
-            background-color: #333; color: #fff; text-align: center;
-            border-radius: 50px; padding: 16px; position: fixed;
-            z-index: 10000; left: 50%; bottom: 30px; font-size: 14px; font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); opacity: 0;
-            transition: opacity 0.3s, bottom 0.3s;
-        }
-
-        .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-        .toast.success { background-color: var(--brand-teal); color: white; }
-        .toast.error { background-color: #ff5252; color: white; }
-
+        .floating-bubble-buy { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; text-decoration: none; z-index: 100; animation: floatBubble 3s ease-in-out infinite; }
+        .bubble-img-wrapper { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 3px solid #00BFA5; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 5px; }
+        .bubble-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .bubble-text-buy { background: rgba(0,0,0,0.7); color: white; font-size: 11px; padding: 4px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; backdrop-filter: blur(2px); }
+        @keyframes floatBubble { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
     </style>
 </head>
 <body>
-    
-    <!-- LOADER PACMAN -->
-    <div class="custom-loader-overlay" id="pacmanLoader">
-        <svg height="108px" width="108px" viewBox="0 0 128 128" class="loader">
-            <defs>
-              <clipPath id="loader-eyes">
-                <circle transform="rotate(-40,64,64) translate(0,-56)" r="8" cy="64" cx="64" class="loader__eye1"></circle>
-                <circle transform="rotate(40,64,64) translate(0,-56)" r="8" cy="64" cx="64" class="loader__eye2"></circle>
-              </clipPath>
-              <linearGradient y2="1" x2="0" y1="0" x1="0" id="loader-grad">
-                <stop stop-color="#000" offset="0%"></stop>
-                <stop stop-color="#fff" offset="100%"></stop>
-              </linearGradient>
-              <mask id="loader-mask">
-                <rect fill="url(#loader-grad)" height="128" width="128" y="0" x="0"></rect>
-              </mask>
-            </defs>
-            <g stroke-dasharray="175.93 351.86" stroke-width="12" stroke-linecap="round">
-              <g>
-                <rect clip-path="url(#loader-eyes)" height="64" width="128" fill="hsl(193,90%,50%)"></rect>
-                <g stroke="hsl(193,90%,50%)" fill="none">
-                  <circle transform="rotate(180,64,64)" r="56" cy="64" cx="64" class="loader__mouth1"></circle>
-                  <circle transform="rotate(0,64,64)" r="56" cy="64" cx="64" class="loader__mouth2"></circle>
-                </g>
-              </g>
-              <g mask="url(#loader-mask)">
-                <rect clip-path="url(#loader-eyes)" height="64" width="128" fill="hsl(223,90%,50%)"></rect>
-                <g stroke="hsl(223,90%,50%)" fill="none">
-                  <circle transform="rotate(180,64,64)" r="56" cy="64" cx="64" class="loader__mouth1"></circle>
-                  <circle transform="rotate(0,64,64)" r="56" cy="64" cx="64" class="loader__mouth2"></circle>
-                </g>
-              </g>
-            </g>
+
+    <div class="logo-container">
+        <img src="img/secondlogo.png" alt="Logo" onerror="this.src='img/icon.png'; this.onerror=null;">
+    </div>
+
+    <h1>Â¡Nos mudamos a otra versiÃ³n!</h1>
+    <p class="subtitle">Descarga tu APK y obtÃ©n tu link en el grupo oficial.</p>
+
+    <div class="btn-container">
+        <a href="https://t.me/appsreborn" class="btn btn-main">
+            <i class="fa-brands fa-telegram" style="font-size: 20px;"></i> Grupo Oficial
+        </a>
+        <a href="https://t.me/appsreborn_dev" class="btn btn-secondary">
+            <i class="fa-solid fa-life-ring"></i> Respaldo
+        </a>
+        <a href="https://www.appsreborn.shop/" class="btn btn-secondary">
+            <i class="fa-solid fa-globe"></i> Web Oficial
+        </a>
+    </div>
+
+    <div class="info-box">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
         </svg>
-        <p style="margin-top:20px; font-weight:600; color:white;">Guardando en la Nube...</p>
+        <p>Si has comprado esta app, en el grupo VIP estÃ¡ toda la info de la v.5.0, dale una chequeada.</p>
     </div>
 
-    <div id="toast" class="toast">Mensaje aquí</div>
-
-    <div class="container">
-        
-        <!-- HEADER ESTILO OPCIONES.HTML -->
-        <div class="header-hero">
-            <i class="fa-solid fa-arrow-left back-icon" onclick="window.location.href='opciones.html'"></i>
-            <img src="img/secondlogo.png" alt="Logo" class="logo-img-custom">
+    <a href="https://t.me/MaikolEsleiter" class="floating-bubble-buy">
+        <div class="bubble-img-wrapper">
+            <img src="img/photo_2026-05-31_20-35-06.jpg" alt="Comprar">
         </div>
+        <span class="bubble-text-buy">Click aquÃ­ para comprar acceso</span>
+    </a>
 
-        <!-- TARJETA FLOTANTE CON EL FORMULARIO -->
-        <div class="info-card">
-            <div class="section-title">Agregar Contacto Rápido</div>
-
-            <div class="form-group">
-                <label class="label">Número de Celular</label>
-                <div class="input-card">
-                    <i class="fa-solid fa-mobile-screen input-icon"></i>
-                    <input type="tel" id="contactNumber" class="input-field" placeholder="999 999 999" maxlength="9" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="label">Nombre y Apellido</label>
-                <div class="input-card">
-                    <i class="fa-regular fa-user input-icon"></i>
-                    <input type="text" id="contactName" class="input-field" placeholder="Ej. Juan Pérez">
-                </div>
-            </div>
-
-            <button class="btn-save" id="btnGuardar">Guardar</button>
-        </div>
-
-    </div>
-
-    <!-- LÓGICA DE FIREBASE INTACTA -->
-    <script type="module">
-        // 1. IMPORTAMOS TU CONEXIÓN A FIREBASE
-        import { db, doc, setDoc } from './firebase.js';
-
-        // Función para mostrar el mensaje personalizado (Se mantiene igual)
-        window.showToast = function(message, type) {
-            var x = document.getElementById("toast");
-            x.textContent = message;
-            x.className = "toast show " + type; 
-            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    <script>
+        // Limpiar localStorage y cachÃ© para forzar salida total si el usuario usaba la app
+        localStorage.clear();
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
         }
-
-        document.getElementById('btnGuardar').addEventListener('click', async () => {
-            const numero = document.getElementById('contactNumber').value;
-            const nombre = document.getElementById('contactName').value;
-            const loader = document.getElementById('pacmanLoader');
-
-            // VALIDACIÓN ESTRICTA
-            if(numero.length !== 9 || nombre.trim() === "") {
-                showToast("Datos Erroneos", "error"); 
-                return;
-            }
-
-            // SI TODO ESTÁ BIEN, MOSTRAMOS PACMAN
-            loader.style.display = 'flex';
-
-            try {
-                // --- AQUÍ OCURRE LA MAGIA DE LA NUBE ---
-                // Guardamos en la colección "usuarios_yape". 
-                // El ID del documento será el número de teléfono.
-                await setDoc(doc(db, "usuarios_yape", numero), {
-                    nombre: nombre
-                });
-                
-                // (Opcional) Guardamos localmente también por si acaso
-                localStorage.setItem('temp_contact_num', numero);
-                localStorage.setItem('temp_contact_name', nombre);
-
-                // Esperamos un poquito para que se aprecie la animación (estética)
-                setTimeout(() => {
-                    loader.style.display = 'none'; // Ocultar animación
-                    
-                    showToast("¡Guardado en la Nube!", "success");
-
-                    // Redirigir
-                    setTimeout(() => {
-                        window.location.href = 'opciones.html';
-                    }, 1500);
-
-                }, 2000);
-
-            } catch (error) {
-                console.error("Error al guardar:", error);
-                loader.style.display = 'none';
-                showToast("Error de conexión", "error");
-            }
-        });
     </script>
 </body>
 </html>
